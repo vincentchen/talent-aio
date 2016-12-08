@@ -9,7 +9,7 @@
  *
  * **************************************************************************
  */
-package com.talent.aio.examples.server.im;
+package com.talent.aio.examples.client;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -18,16 +18,16 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.client.AioClientHandler;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
-import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.task.PacketMeta;
+import com.talent.aio.examples.client.handler.AuthRespHandler;
+import com.talent.aio.examples.client.handler.ChatRespHandler;
+import com.talent.aio.examples.client.handler.ImBsAioHandlerIntf;
+import com.talent.aio.examples.client.handler.JoinRespHandler;
 import com.talent.aio.examples.common.im.Command;
 import com.talent.aio.examples.common.im.ImPacket;
-import com.talent.aio.examples.server.im.handler.AuthHandler;
-import com.talent.aio.examples.server.im.handler.ChatHandler;
-import com.talent.aio.examples.server.im.handler.ImBsAioHandlerIntf;
-import com.talent.aio.examples.server.im.handler.JoinHandler;
 
 /**
  * 
@@ -39,17 +39,17 @@ import com.talent.aio.examples.server.im.handler.JoinHandler;
  *  (1) | 2016年11月18日 | tanyaowu | 新建类
  *
  */
-public class ImAioHandler implements AioHandler<Object, ImPacket, Object>
+public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Object>
 {
-	private static Logger log = LoggerFactory.getLogger(ImAioHandler.class);
+	private static Logger log = LoggerFactory.getLogger(ImAioClientHandler.class);
 	
 	
 	private static Map<Short, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
 	static
 	{
-		handlerMap.put(Command.AUTH_REQ, new AuthHandler());
-		handlerMap.put(Command.CHAT_REQ, new ChatHandler());
-		handlerMap.put(Command.JOIN_GROUP_REQ, new JoinHandler());
+		handlerMap.put(Command.AUTH_RESP, new AuthRespHandler());
+		handlerMap.put(Command.CHAT_RESP, new ChatRespHandler());
+		handlerMap.put(Command.JOIN_GROUP_RESP, new JoinRespHandler());
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class ImAioHandler implements AioHandler<Object, ImPacket, Object>
 	 * @创建时间:　2016年11月18日 上午9:13:15
 	 * 
 	 */
-	public ImAioHandler()
+	public ImAioClientHandler()
 	{}
 
 	/**
@@ -87,6 +87,7 @@ public class ImAioHandler implements AioHandler<Object, ImPacket, Object>
 	{
 		Short command = packet.getCommand();
 		ImBsAioHandlerIntf handler = handlerMap.get(command);
+		com.talent.aio.examples.common.im.CommandStat.getCount(command).incrementAndGet();
 		if (handler != null)
 		{
 			return handler.handler(packet, channelContext);
@@ -109,17 +110,14 @@ public class ImAioHandler implements AioHandler<Object, ImPacket, Object>
 	{
 		byte[] body = packet.getBody();
 		int bodyLen = 0;
-		if (body == null)
-		{
-			bodyLen = 0;
-		} else
+		if (body != null)
 		{
 			bodyLen = body.length;
 		}
 
 		int allLen = ImPacket.HEADER_LENGHT + bodyLen;
 		ByteBuffer buffer = ByteBuffer.allocate(allLen);//io.netty.buffer.Unpooled.buffer(initialCapacity);
-		buffer.order(channelContext.getAioConfig().getByteOrder());
+		buffer.order(channelContext.getGroupContext().getByteOrder());
 		
 
 		buffer.put(ImPacket.VERSION);
@@ -175,7 +173,7 @@ public class ImAioHandler implements AioHandler<Object, ImPacket, Object>
 
 		if (bodyLength > ImPacket.MAX_LENGTH_OF_BODY || bodyLength < 0)
 		{
-			throw new AioDecodeException("bodyLength [" + bodyLength + "] is not right, remote:" + channelContext.getRemoteNode());
+			throw new AioDecodeException("bodyLength [" + bodyLength + "] is not right, remote:" + channelContext.getClientNode());
 		}
 
 		short command = buffer.getShort();
@@ -242,8 +240,24 @@ public class ImAioHandler implements AioHandler<Object, ImPacket, Object>
 	@Override
 	public void onClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
 	{
-		// TODO Auto-generated method stub
 		
+		
+	}
+
+	
+	private static ImPacket heartbeatPacket = new ImPacket(Command.HEARTBEAT_REQ);
+	/** 
+	 * @see com.talent.aio.client.AioClientHandler#heartbeatPacket()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月6日 下午2:18:16
+	 * 
+	 */
+	@Override
+	public ImPacket heartbeatPacket()
+	{
+		return heartbeatPacket;
 	}
 
 }

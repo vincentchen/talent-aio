@@ -3,13 +3,14 @@
  */
 package com.talent.aio.common.threadpool;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.Executor;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
-import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * The Class AbstractSynRunnable.
@@ -35,31 +36,49 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(AbstractSynRunnable.class);
 
-	/** 正在运行该任务的线程. */
-	private java.util.concurrent.atomic.AtomicInteger currThreads = new java.util.concurrent.atomic.AtomicInteger();
+	private ObjWithReadWriteLock<Boolean> runningLock = new ObjWithReadWriteLock<>(false);
+
+	//	/** 正在运行该任务的线程数. */
+	//	private java.util.concurrent.atomic.AtomicInteger currThreads = new java.util.concurrent.atomic.AtomicInteger();
+
+	private Executor executor;
 
 	/**
 	 * Instantiates a new abstract syn runnable.
 	 */
-	protected AbstractSynRunnable()
+	protected AbstractSynRunnable(Executor executor)
 	{
-
+		this.setExecutor(executor);
 	}
 
-	/**
-	 * 等待运行本任务的线程个数.
-	 *
-	 * @return the int
+	/** 
+	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#runningLock()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月3日 下午1:53:03
+	 * 
 	 */
-	public int waitingRunCount()
+	@Override
+	public ObjWithReadWriteLock<Boolean> runningLock()
 	{
-		int size = getCurrThreads().get() - 1;
-		if (size > 0)
-		{
-			log.info("{} threads wait for me, i am {}", size, this);
-		}
-		return size;
+		return runningLock;
 	}
+
+	//	/**
+	//	 * 等待运行本任务的线程个数.
+	//	 *
+	//	 * @return the int
+	//	 */
+	//	public int waitingRunCount()
+	//	{
+	//		int size = getCurrThreadCount().get() - 1;
+	//		if (size > 0)
+	//		{
+	//			log.info("{} threads wait for me, i am {}", size, this);
+	//		}
+	//		return size;
+	//	}
 
 	/** 
 	 * @see java.lang.Runnable#run()
@@ -71,56 +90,44 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 	@Override
 	public final void run()
 	{
-		//		Thread currthread = Thread.currentThread();
-		getCurrThreads().incrementAndGet();
-		long starttime = SystemTimer.currentTimeMillis();
-		long starttime1 = SystemTimer.currentTimeMillis();
-		long endtime1 = SystemTimer.currentTimeMillis();
-		synchronized (this)
+		if (isCanceled())  //任务已经被取消
 		{
-			boolean nextRunning = false;
+			return;
+		}
+		
+		ObjWithReadWriteLock<Boolean> runningLock = runningLock();
+		WriteLock writeLock = runningLock.getLock().writeLock();
+		boolean trylock = writeLock.tryLock();
+		if (!trylock)
+		{
+			return;
+		}
+		runningLock.setObj(true);
+		
+		try
+		{
+			runTask();
+		} catch (Exception e)
+		{
+			log.error(e.toString(), e);
+		} finally
+		{
 			try
 			{
-				starttime1 = SystemTimer.currentTimeMillis();
-				setRunning(true);
-
-				if (waitingRunCount() > 0)
-				{
-					nextRunning = false;
-					return;
-				}
-
-				runTask();
-			} catch (Exception e)
-			{
-				log.error(e.toString(), e);
+				runningLock().setObj(false);
 			} finally
 			{
-				if (waitingRunCount() > 0)
+				writeLock.unlock();
+				if (isNeededExecute())
 				{
-					nextRunning = false;
+//					log.error(this + "-----------------------------------------------------------------------------------------需要运行");
+					getExecutor().execute(this);
 				}
-				setRunning(nextRunning);
-				getCurrThreads().decrementAndGet();
-				this.notify();
 			}
-			endtime1 = SystemTimer.currentTimeMillis();
-		}
-		long endtime = SystemTimer.currentTimeMillis();
-		long timecost = endtime - starttime;
-		long timecost1 = endtime1 - starttime1;
-		if (timecost > 500L)
-		{
-			log.warn("任务耗时:{}ms,{}ms, {}", timecost, timecost1, this);
+
 		}
 
 	}
-
-	/** 是否正在执行，true:正在执行，false：不是正在执行. */
-	private boolean isRunning = false;
-
-	/** 是否在执行列表中，true:是的，false:没有纳入计划执行列表. */
-	private boolean isInSchedule = false;
 
 	private boolean isCanceled = false;
 
@@ -134,61 +141,61 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 		this.isCanceled = isCanceled;
 	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#setRunning(boolean)
-	 * 
-	 * @param isRunning
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:01
-	 * 
-	 */
-	@Override
-	public void setRunning(boolean isRunning)
-	{
-		this.isRunning = isRunning;
-	}
+	//	/** 
+	//	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#setRunning(boolean)
+	//	 * 
+	//	 * @param isRunning
+	//	 * @重写人: tanyaowu
+	//	 * @重写时间: 2016年11月15日 上午9:07:01
+	//	 * 
+	//	 */
+	//	@Override
+	//	public void setRunning(boolean isRunning)
+	//	{
+	//		this.isRunning = isRunning;
+	//	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#isRunning()
-	 * 
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:01
-	 * 
-	 */
-	@Override
-	public boolean isRunning()
-	{
-		return isRunning;
-	}
+	//	/** 
+	//	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#isRunning()
+	//	 * 
+	//	 * @return
+	//	 * @重写人: tanyaowu
+	//	 * @重写时间: 2016年11月15日 上午9:07:01
+	//	 * 
+	//	 */
+	//	@Override
+	//	public boolean isRunning()
+	//	{
+	//		return isRunning;
+	//	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#setInSchedule(boolean)
-	 * 
-	 * @param isInSchedule
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:01
-	 * 
-	 */
-	@Override
-	public void setInSchedule(boolean isInSchedule)
-	{
-		this.isInSchedule = isInSchedule;
-	}
+	//	/** 
+	//	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#setInSchedule(boolean)
+	//	 * 
+	//	 * @param isInSchedule
+	//	 * @重写人: tanyaowu
+	//	 * @重写时间: 2016年11月15日 上午9:07:01
+	//	 * 
+	//	 */
+	//	@Override
+	//	public void setInSchedule(boolean isInSchedule)
+	//	{
+	//		this.isInSchedule = isInSchedule;
+	//	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#isInSchedule()
-	 * 
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:01
-	 * 
-	 */
-	@Override
-	public boolean isInSchedule()
-	{
-		return isInSchedule;
-	}
+	//	/** 
+	//	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#isInSchedule()
+	//	 * 
+	//	 * @return
+	//	 * @重写人: tanyaowu
+	//	 * @重写时间: 2016年11月15日 上午9:07:01
+	//	 * 
+	//	 */
+	//	@Override
+	//	public boolean isInSchedule()
+	//	{
+	//		return isInSchedule;
+	//	}
 
 	/**
 	 * The main method.
@@ -200,18 +207,34 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 
 	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#getCurrThreads()
-	 * 
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:01
-	 * 
+	//	/** 
+	//	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#getCurrThreadCount()
+	//	 * 
+	//	 * @return
+	//	 * @重写人: tanyaowu
+	//	 * @重写时间: 2016年11月15日 上午9:07:01
+	//	 * 
+	//	 */
+	//	@Override
+	//	public AtomicInteger getCurrThreadCount()
+	//	{
+	//		return currThreads;
+	//	}
+
+	/**
+	 * @return the executor
 	 */
-	@Override
-	public AtomicInteger getCurrThreads()
+	public Executor getExecutor()
 	{
-		return currThreads;
+		return executor;
+	}
+
+	/**
+	 * @param executor the executor to set
+	 */
+	public void setExecutor(Executor executor)
+	{
+		this.executor = executor;
 	}
 
 	//	public void setCurrThreads(Set<Thread> currThreads)

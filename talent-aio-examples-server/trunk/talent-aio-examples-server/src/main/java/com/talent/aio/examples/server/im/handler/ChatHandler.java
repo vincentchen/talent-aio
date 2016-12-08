@@ -58,7 +58,7 @@ public class ChatHandler implements ImBsAioHandlerIntf
 		{
 			log.info("{}收到chat包:{}", channelContext.toString(), bodyStr);
 		}
-
+		
 		ChatReqBody chatReqBody = Json.toBean(bodyStr, ChatReqBody.class);
 
 		Integer fromId = 111;
@@ -81,7 +81,7 @@ public class ChatHandler implements ImBsAioHandlerIntf
 			
 			if (Objects.equals(Const.ChatType.pub, chatReqBody.getType()))
 			{
-				Aio.sendToGroup(channelContext.getAioConfig(), toGroup, respPacket);
+				Aio.sendToGroup(channelContext.getGroupContext(), toGroup, respPacket);
 			} else if (chatReqBody.getType() == null || Objects.equals(Const.ChatType.pri, chatReqBody.getType()))
 			{
 //				MsgSendApi.deliverToUser(chatRespBody, fromId, Command.CHAT_RESP);

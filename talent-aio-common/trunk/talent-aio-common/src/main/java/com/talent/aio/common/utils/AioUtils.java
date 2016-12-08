@@ -55,10 +55,7 @@ public class AioUtils
 		if (!asynchronousSocketChannel.isOpen())
 		{
 			log.error("asynchronousSocketChannel is not open, {}", channelContext.toString());
-			if (!channelContext.isClosed())
-			{
-				Aio.close(channelContext, "asynchronousSocketChannel is not open");
-			}
+			Aio.close(channelContext, "asynchronousSocketChannel is not open");
 			return false;
 		}
 		return true;
@@ -75,7 +72,7 @@ public class AioUtils
 			return channelContext.getSendRunnableHighPrior();
 		} else
 		{
-			return channelContext.getSendRunnableLowPrior();
+			return channelContext.getSendRunnableNormPrior();
 		}
 	}
 
@@ -84,10 +81,10 @@ public class AioUtils
 		byte priority = packet.getPriority();
 		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
 		{
-			return channelContext.getAioConfig().getSendExecutorHighPrior();
+			return channelContext.getGroupContext().getSendExecutorHighPrior();
 		} else
 		{
-			return channelContext.getAioConfig().getSendExecutorLowPrior();
+			return channelContext.getGroupContext().getSendExecutorNormPrior();
 		}
 	}
 	
@@ -108,10 +105,10 @@ public class AioUtils
 		byte priority = packet.getPriority();
 		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
 		{
-			return channelContext.getAioConfig().getHandlerExecutorHighPrior();
+			return channelContext.getGroupContext().getHandlerExecutorHighPrior();
 		} else
 		{
-			return channelContext.getAioConfig().getHandlerExecutorLowPrior();
+			return channelContext.getGroupContext().getHandlerExecutorNormPrior();
 		}
 	}
 

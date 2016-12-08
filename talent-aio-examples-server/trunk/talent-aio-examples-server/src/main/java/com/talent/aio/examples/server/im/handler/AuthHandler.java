@@ -114,7 +114,7 @@ public class AuthHandler implements ImBsAioHandlerIntf
 		Byte type = authReqBody.getDeviceType();
 
 		ImPacket imRespPacket = ServerPackets.createAuthRespPacket(channelContext);
-		Aio.send(channelContext, packet);
+		Aio.send(channelContext, imRespPacket);
 		return null;
 	}
 

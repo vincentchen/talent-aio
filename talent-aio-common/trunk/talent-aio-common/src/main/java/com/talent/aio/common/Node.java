@@ -24,12 +24,12 @@ import java.util.concurrent.ConcurrentSkipListSet;
  *  (1) | 2016年11月15日 | tanyaowu | 新建类
  *
  */
-public class RemoteNode implements Comparable<RemoteNode>
+public class Node implements Comparable<Node>
 {
 	private String ip;
 	private int port;
 
-	public RemoteNode(String ip, int port)
+	public Node(String ip, int port)
 	{
 		super();
 
@@ -50,7 +50,7 @@ public class RemoteNode implements Comparable<RemoteNode>
 		{
 			return false;
 		}
-		RemoteNode other = (RemoteNode) obj;
+		Node other = (Node) obj;
 		return ip.equals(other.getIp()) && port == other.getPort();
 	}
 
@@ -84,31 +84,11 @@ public class RemoteNode implements Comparable<RemoteNode>
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		RemoteNode remoteNode1 = new RemoteNode("127.1.1.1", 80);
-		RemoteNode remoteNode2 = new RemoteNode("127.1.1.1", 80);
-
-		java.util.concurrent.ConcurrentSkipListSet<RemoteNode> set = new ConcurrentSkipListSet<>();
-		boolean b1 = set.add(remoteNode1);
-		boolean b2 = set.add(remoteNode2);
-		System.out.println(b1 + "---" + b2);
-
-		java.lang.Runtime.getRuntime().addShutdownHook(new Thread()
-		{
-			@Override
-			public void run()
-			{
-				// 在退出JVM时要做的事
-				System.out.println("在退出JVM时要做的事");
-
-			}
-		});
-		System.exit(0);
-		Thread.sleep(1000000);
-
+		
 	}
 
 	@Override
-	public int compareTo(RemoteNode other)
+	public int compareTo(Node other)
 	{
 		if (other == null)
 		{

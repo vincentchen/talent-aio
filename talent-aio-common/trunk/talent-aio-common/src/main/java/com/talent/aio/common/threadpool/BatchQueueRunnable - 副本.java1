@@ -6,12 +6,12 @@ package com.talent.aio.common.threadpool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.utils.SystemTimer;
-
 
 /**
  * The Class BatchQueueRunnable.
@@ -34,19 +34,19 @@ import com.talent.aio.common.utils.SystemTimer;
  */
 public abstract class BatchQueueRunnable<T> extends AbstractQueueRunnable<T>
 {
-	
+
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(BatchQueueRunnable.class);
-	
+
 	/** The Constant MAX_BATCH_COUNT. */
 	private static final int MAX_BATCH_COUNT = 100;
 
 	/**
 	 * Instantiates a new batch queue runnable.
 	 */
-	public BatchQueueRunnable()
+	public BatchQueueRunnable(Executor executor)
 	{
-
+		super(executor);
 	}
 
 	/**
@@ -78,10 +78,10 @@ public abstract class BatchQueueRunnable<T> extends AbstractQueueRunnable<T>
 		int allsize = 0;
 		while ((size = queue.size()) > 0)
 		{
-			if (waitingRunCount() > 0)
-			{
-				break;
-			}
+			//			if (waitingRunCount() > 0)
+			//			{
+			//				break;
+			//			}
 
 			if (size > maxBatchCount())
 			{
@@ -89,7 +89,7 @@ public abstract class BatchQueueRunnable<T> extends AbstractQueueRunnable<T>
 			}
 
 			starttime = SystemTimer.currentTimeMillis();
-//			T[] packets = (T[]) Array.newInstance(T.class, size);  
+			//			T[] packets = (T[]) Array.newInstance(T.class, size);  
 			List<T> packets = new ArrayList<>(size);
 			for (int i = 0; i < size; i++)
 			{
@@ -119,7 +119,7 @@ public abstract class BatchQueueRunnable<T> extends AbstractQueueRunnable<T>
 			}
 		}
 		long endtimeAll = SystemTimer.currentTimeMillis();
-		
+
 		long timecostAl = endtimeAll - starttimeAll;
 
 		if (timecostAl > 500L)

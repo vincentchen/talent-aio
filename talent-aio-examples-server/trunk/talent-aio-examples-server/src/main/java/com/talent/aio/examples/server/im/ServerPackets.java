@@ -59,7 +59,7 @@ public class ServerPackets
 	 */
 	public static ImBytePacket toByteOnlyPacket(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext)
 	{
-		ByteBuffer bs = channelContext.getAioConfig().getAioHandler().encode(packet, channelContext);
+		ByteBuffer bs = channelContext.getGroupContext().getAioHandler().encode(packet, channelContext);
 		ImBytePacket byteOnlyPacket = new ImBytePacket(bs);
 		byteOnlyPacket.setCommand(packet.getCommand());
 		byteOnlyPacket.setBodyLen(packet.getBodyLen());

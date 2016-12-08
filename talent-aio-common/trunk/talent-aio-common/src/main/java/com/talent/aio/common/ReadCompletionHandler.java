@@ -18,10 +18,10 @@ import java.nio.channels.CompletionHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.config.AioConfig;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.task.DecodeRunnable;
 import com.talent.aio.common.utils.AioUtils;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -76,9 +76,10 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 	@Override
 	public void completed(Integer result, ChannelContext<Ext, P, R> channelContext)
 	{
-		AioConfig<Ext, P, R> aioConfig = channelContext.getAioConfig();
+		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 		if (result > 0)
 		{
+			channelContext.getStat().setTimeLatestReceivedMsg(SystemTimer.currentTimeMillis());
 			byteBuffer.flip();
 			ByteBuffer byteBuffer1 = ByteBuffer.allocate(byteBuffer.limit());
 			byteBuffer1.put(byteBuffer);
@@ -87,7 +88,8 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 			//			byteBuffer1.flip();
 			DecodeRunnable<Ext, P, R> decodeRunnable = channelContext.getDecodeRunnable();
 			decodeRunnable.addMsg(byteBuffer1);
-			aioConfig.getDecodeExecutor().execute(decodeRunnable);
+			
+			groupContext.getDecodeExecutor().execute(decodeRunnable);
 
 		} else if (result == 0)
 		{

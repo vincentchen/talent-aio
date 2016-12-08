@@ -1,10 +1,10 @@
 package com.talent.aio.common.task;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
@@ -12,9 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.GroupContext;
+import com.talent.aio.common.WriteCompletionHandler;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.threadpool.BatchQueueRunnable;
+import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.stat.GroupStat;
+import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -22,7 +27,7 @@ import com.talent.aio.common.utils.AioUtils;
  * @date 2012-08-09
  * 
  */
-public class SendRunnable<Ext, P extends Packet, R> extends BatchQueueRunnable<P>
+public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnable<P>
 {
 
 	private static final Logger log = LoggerFactory.getLogger(SendRunnable.class);
@@ -40,10 +45,10 @@ public class SendRunnable<Ext, P extends Packet, R> extends BatchQueueRunnable<P
 	 * 
 	 * @param socketChannelId
 	 */
-	public SendRunnable(ChannelContext<Ext, P, R> channelContext)
+	public SendRunnable(ChannelContext<Ext, P, R> channelContext, Executor executor)
 	{
+		super(executor);
 		this.channelContext = channelContext;
-		super.setRunnableName(SendRunnable.class.getSimpleName() + " [" + channelContext.getId() + "]");
 	}
 
 	/**
@@ -65,22 +70,23 @@ public class SendRunnable<Ext, P extends Packet, R> extends BatchQueueRunnable<P
 		getMsgQueue().clear();
 	}
 
-	public void sendPackets(List<P> packets) throws IOException
-	{
-		if (packets == null || packets.size() == 0)
-		{
-			log.error("Packets is null，please check synchronize");
-			return;
-		}
+//	public void sendPackets(List<P> packets) throws IOException
+//	{
+//		if (packets == null || packets.size() == 0)
+//		{
+//			log.error("Packets is null，please check synchronize");
+//			return;
+//		}
+//
+//		for (P packet : packets)
+//		{
+//			
+//			sendPacket(packet);
+//		}
+//
+//	}
 
-		for (P packet : packets)
-		{
-			sendPacket(packet);
-		}
-
-	}
-
-	public void sendPacket(P packet) throws IOException
+	public void sendPacket(P packet)
 	{
 		if (packet == null)
 		{
@@ -92,42 +98,62 @@ public class SendRunnable<Ext, P extends Packet, R> extends BatchQueueRunnable<P
 		{
 			return;
 		}
-		
-
-		ByteBuffer byteBuffer = channelContext.getAioConfig().getAioHandler().encode(packet, channelContext);
+		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+		GroupStat groupStat = groupContext.getGroupStat();
+//		log.error("发送数据:{}", packet);
+		ByteBuffer byteBuffer = groupContext.getAioHandler().encode(packet, channelContext);
+//		int sentSize = byteBuffer.capacity();
 		byteBuffer.flip();
-		
+
 		AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
-		Future<Integer> future = asynchronousSocketChannel.write(byteBuffer);
-		Integer result = null;
+		
 		try
 		{
-			result = future.get();
+			channelContext.getSendSemaphore().acquire();
 		} catch (InterruptedException e)
 		{
 			log.error(e.toString(), e);
-		} catch (ExecutionException e)
-		{
-			log.error(e.toString(), e);
 		}
-
-		if (result != null)
-		{
-			log.debug("数据写完成:{}", result);
-			if (result > 0)
-			{
-
-			} else if (result == 0)
-			{
-
-			} else if (result < 0)
-			{
-				Aio.close(channelContext, "写数据返回" + result);
-			}
-		} else
-		{
-			Aio.close(channelContext, "写不了数据");
-		}
+		asynchronousSocketChannel.write(byteBuffer, channelContext, new WriteCompletionHandler<Ext, P, R>(packet));
+		
+//		Future<Integer> future = asynchronousSocketChannel.write(byteBuffer);
+//		Integer result = null;
+//		try
+//		{
+//			result = future.get();
+//		} catch (InterruptedException e)
+//		{
+//			log.error(e.toString(), e);
+//		} catch (ExecutionException e)
+//		{
+//			log.error(e.toString(), e);
+//		}
+//
+//		if (result != null)
+//		{
+//			if (result > 0)
+//			{
+//				SendListener<Ext, P, R> sendListener = groupContext.getSendListener();
+//				groupStat.getSentPacket().incrementAndGet();
+//				groupStat.getSentBytes().addAndGet(result);
+//				channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
+//				if (sendListener != null)
+//				{
+//					sendListener.onAfterSent(channelContext, packet, result);
+//				}
+//			} else if (result == 0)
+//			{
+//				log.error("发送长度为{}", result);
+//				Aio.close(channelContext, "写数据返回:" + result);
+//			} else if (result < 0)
+//			{
+//				log.error("发送长度为{}", result);
+//				Aio.close(channelContext, "写数据返回:" + result);
+//			}
+//		} else
+//		{
+//			Aio.close(channelContext, "写不了数据");
+//		}
 	}
 
 	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)
@@ -135,17 +161,17 @@ public class SendRunnable<Ext, P extends Packet, R> extends BatchQueueRunnable<P
 		this.channelContext = channelContext;
 	}
 
-	@Override
-	public void runBatch(List<P> t)
-	{
-		try
-		{
-			sendPackets(t);
-		} catch (IOException e)
-		{
-			Aio.close(channelContext, e, "发送消息包发生IO异常");
-		}
-	}
+//	@Override
+//	public void runBatch(List<P> t)
+//	{
+//		try
+//		{
+//			sendPackets(t);
+//		} catch (IOException e)
+//		{
+//			Aio.close(channelContext, e, "发送消息包发生IO异常");
+//		}
+//	}
 
 	@Override
 	public String toString()
@@ -154,5 +180,30 @@ public class SendRunnable<Ext, P extends Packet, R> extends BatchQueueRunnable<P
 		builder.append(this.getClass().getSimpleName()).append(":");
 		builder.append(channelContext.toString());
 		return builder.toString();
+	}
+
+	/** 
+	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#runTask()
+	 * 
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月5日 下午2:57:33
+	 * 
+	 */
+	@Override
+	public void runTask()
+	{
+		ConcurrentLinkedQueue<P> queue = getMsgQueue();
+		P packet = null;
+		while (true)
+		{
+			packet = queue.poll();
+			if (packet != null)
+			{
+				sendPacket(packet);
+			} else
+			{
+				break;
+			}
+		}
 	}
 }

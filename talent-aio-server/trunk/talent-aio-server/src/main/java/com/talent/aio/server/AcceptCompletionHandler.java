@@ -12,19 +12,16 @@
 package com.talent.aio.server;
 
 import java.net.StandardSocketOptions;
+import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.concurrent.Semaphore;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ReadCompletionHandler;
-import com.talent.aio.common.config.AioServerConfig;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -41,8 +38,6 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 
 	private static Logger log = LoggerFactory.getLogger(AioServer.class);
 
-	private AioServerConfig<Ext, P, R> aioServerConfig = null;
-
 	/**
 	 * 
 	 *
@@ -50,30 +45,11 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	 * @创建时间:　2016年11月15日 下午1:31:04
 	 * 
 	 */
-	public AcceptCompletionHandler(AioServerConfig<Ext, P, R> aioServerConfig)
+	public AcceptCompletionHandler()
 	{
-		this.aioServerConfig = aioServerConfig;
+		
 	}
 
-	//	private static AcceptCompletionHandler<?, ?> instance = null;
-	//
-	//	/**
-	//	 * @return
-	//	 */
-	//	public static AcceptCompletionHandler<?, ?> getInstance()
-	//	{
-	//		if (instance == null)
-	//		{
-	//			synchronized (AcceptCompletionHandler.class)
-	//			{
-	//				if (instance == null)
-	//				{
-	//					instance = new AcceptCompletionHandler<>();
-	//				}
-	//			}
-	//		}
-	//		return instance;
-	//	}
 
 	/**
 	 * @param args
@@ -99,47 +75,16 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	@Override
 	public void completed(AsynchronousSocketChannel result, AioServer<Ext, P, R> aioServer)
 	{
-		//		Semaphore semaphore = aioServerConfig.getAcceptSemaphore();
-		//		
-		//		try
-		//		{
-		//			long starttime = SystemTimer.currentTimeMillis();
-		//			semaphore.acquire();
-		//			long endtime = SystemTimer.currentTimeMillis();
-		//			long cost = (endtime - starttime);
-		//			if (cost > 100)
-		//			{
-		//				log.error("等接受权限耗时:{}ms", cost);
-		//			}
-		//			aioServer.getServerSocketChannel().accept(aioServer, this);
-		//		} catch (Exception e1)
-		//		{
-		//			log.error("监听出现异常，无法继续监控Tcp连接", e1);
-		//		} finally
-		//		{
-		//			semaphore.release();
-		//		}
-
-		Semaphore semaphore1 = aioServerConfig.getReadSemaphore();
 		try
 		{
-			long starttime = SystemTimer.currentTimeMillis();
-			semaphore1.acquire();
-			long endtime = SystemTimer.currentTimeMillis();
-			long cost = (endtime - starttime);
-			if (cost > 100)
-			{
-				log.error("等读权限耗时:{}ms", cost);
-			}
-
-			AioServerConfig<Ext, P, R> aioServerConfig = aioServer.getAioServerConfig();
+			ServerGroupContext<Ext, P, R> serverGroupContext = aioServer.getServerGroupContext();
 
 			result.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 			result.setOption(StandardSocketOptions.SO_RCVBUF, 32 * 1024);
 			result.setOption(StandardSocketOptions.SO_SNDBUF, 32 * 1024);
 			result.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
-			ChannelContext<Ext, P, R> channelContext = new ChannelContext<>(aioServerConfig, result);
+			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, result);
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			result.read(readCompletionHandler.getByteBuffer(), channelContext, readCompletionHandler);
@@ -148,7 +93,8 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			log.error("", e);
 		} finally
 		{
-			semaphore1.release();
+			AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
+			serverSocketChannel.accept(aioServer, this);
 		}
 	}
 
@@ -164,10 +110,15 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	@Override
 	public void failed(Throwable exc, AioServer<Ext, P, R> aioServer)
 	{
-		String ip = aioServer.getAioServerConfig().getIp();
+		AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
+		serverSocketChannel.accept(aioServer, this);
+		
+		String ip = aioServer.getServerGroupContext().getIp();
 		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		ipstr += ":" + aioServer.getAioServerConfig().getPort();
-		log.error("[" + ipstr + "]监听出现异常，无法继续监控Tcp连接", exc);
+		ipstr += ":" + aioServer.getServerGroupContext().getPort();
+		log.error("[" + ipstr + "]监听出现异常", exc);
+		
+		
 	}
 
 }

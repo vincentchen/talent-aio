@@ -12,12 +12,13 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
-
 
 /**
  * 同步任务调度器:<br>
@@ -31,22 +32,22 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 
 	/** The Constant CORE_POOL_NUM. */
 	public final static int CORE_POOL_NUM = 5;
-	
+
 	/** The Constant MAX_POOL_NUM. */
 	public final static int MAX_POOL_NUM = 40;
-	
+
 	/** The Constant KEEP_ALIVE_TIME. */
 	public final static int KEEP_ALIVE_TIME = 90;
-	
+
 	/** The Constant TIME_UNIT. */
 	public final static TimeUnit TIME_UNIT = TimeUnit.SECONDS;
-	
+
 	/** The Constant RUNNABLE_QUEUE. */
 	public final static SynchronousQueue<Runnable> RUNNABLE_QUEUE = new SynchronousQueue<Runnable>(); // 存放runnable的队列
-	
+
 	/** The task act submit count. */
 	private java.util.concurrent.atomic.AtomicLong taskActSubmitCount = new AtomicLong(0);
-	
+
 	/** The task submit count. */
 	private java.util.concurrent.atomic.AtomicLong taskSubmitCount = new AtomicLong(0);
 
@@ -65,7 +66,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	{
 		this(CORE_POOL_NUM, MAX_POOL_NUM, KEEP_ALIVE_TIME, (BlockingQueue<Runnable>) RUNNABLE_QUEUE, DefaultThreadFactory.getInstance(name, null), name);
 	}
-	
+
 	/**
 	 * Instantiates a new syn thread pool executor.
 	 *
@@ -102,8 +103,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	 * @param handler the handler
 	 * @param name the name
 	 */
-	public SynThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, BlockingQueue<Runnable> runnableQueue, RejectedExecutionHandler handler,
-			String name)
+	public SynThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, BlockingQueue<Runnable> runnableQueue, RejectedExecutionHandler handler, String name)
 	{
 		this(corePoolSize, maximumPoolSize, keepAliveTime, (BlockingQueue<Runnable>) runnableQueue, DefaultThreadFactory.getInstance(name, null), handler, name);
 	}
@@ -136,8 +136,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	 * @param threadFactory the thread factory
 	 * @param name the name
 	 */
-	public SynThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, BlockingQueue<Runnable> runnableQueue, ThreadFactory threadFactory,
-			String name)
+	public SynThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, BlockingQueue<Runnable> runnableQueue, ThreadFactory threadFactory, String name)
 	{
 		super(corePoolSize, maximumPoolSize, keepAliveTime, TIME_UNIT, (BlockingQueue<Runnable>) runnableQueue, threadFactory);
 		this.name = name;
@@ -246,16 +245,38 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 			log.debug("poolSize:{},largestPoolSize:{},completedTaskCount:{},activeCount:{},corePoolSize:{},maximumPoolSize:{},queue:{}",
 					new Object[] { getPoolSize(), getLargestPoolSize(), getCompletedTaskCount(), getActiveCount(), getCorePoolSize(), getMaximumPoolSize(), getQueue() });
 		}
-
-		//		synchronized (runnable)
-		//		{
-		if (runnable.isRunning())
+		ObjWithReadWriteLock<Boolean> runningLock = runnable.runningLock();
+		WriteLock writeLock = runningLock.getLock().writeLock();
+		boolean tryLock = false;
+		try
 		{
-			return false;
-		} else
+			
+			tryLock = writeLock.tryLock();
+//			log.error("tryLock:{}", tryLock);
+			return tryLock;
+		} finally
 		{
-			return true;
+			if (tryLock)
+			{
+				writeLock.unlock();
+			}
 		}
+
+		//		ObjWithReadWriteLock<Boolean> runningLock = runnable.runningLock();
+		//		ReadLock readLock = runningLock.getLock().readLock();
+		//		try
+		//		{
+		//			readLock.lock();
+		//			if (runningLock.getObj()) //正在运行
+		//			{
+		//				return false;
+		//			} else
+		//			{
+		//				return true;
+		//			}
+		//		} finally
+		//		{
+		//			readLock.unlock();
 		//		}
 
 	}
@@ -284,7 +305,6 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 			taskActSubmitCount.incrementAndGet();
 			//			}
 
-	
 		}
 	}
 
@@ -311,7 +331,6 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 			//			}
 
 			Future<R> ret = super.submit(runnable, result);
-
 
 			return ret;
 		} else

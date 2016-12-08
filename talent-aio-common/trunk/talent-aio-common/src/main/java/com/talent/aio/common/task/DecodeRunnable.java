@@ -5,6 +5,7 @@ package com.talent.aio.common.task;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,10 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	/**
 	 * 
 	 */
-	public DecodeRunnable(ChannelContext<Ext, P, R> channelContext)
+	public DecodeRunnable(ChannelContext<Ext, P, R> channelContext, Executor executor)
 	{
+		super(executor);
 		this.channelContext = channelContext;
-		setRunnableName(DecodeRunnable.class.getSimpleName() + "[" + channelContext.getRemoteNode() + "]");
 	}
 
 	/**
@@ -73,11 +74,6 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 		ByteBuffer byteBuffer = null;
 		label_1: while ((size = queue.size()) > 0)
 		{
-			if (waitingRunCount() > 0)
-			{
-				break;
-			}
-
 			byteBuffer = queue.poll();
 			if (byteBuffer != null)
 			{
@@ -110,7 +106,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 				byteBuffer.position(0);
 				byteBuffer.limit(byteBuffer.capacity());
 				
-				PacketMeta<P> packetMeta = channelContext.getAioConfig().getAioHandler().decode(byteBuffer, channelContext);
+				PacketMeta<P> packetMeta = channelContext.getGroupContext().getAioHandler().decode(byteBuffer, channelContext);
 				P packet = null;
 				if (packetMeta != null)
 				{
@@ -150,6 +146,8 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					}
 					needLength = -1;
 					submit(packet, len);
+					channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
+					channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
 				}
 
 			} catch (AioDecodeException e)
@@ -205,4 +203,6 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 		builder.append(channelContext.toString());
 		return builder.toString();
 	}
+
+	
 }

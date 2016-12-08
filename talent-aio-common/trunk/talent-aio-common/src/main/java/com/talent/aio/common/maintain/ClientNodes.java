@@ -17,7 +17,7 @@ import org.apache.commons.collections.bidimap.DualHashBidiMap;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
-import com.talent.aio.common.RemoteNode;
+import com.talent.aio.common.Node;
 import com.talent.aio.common.intf.Packet;
 
 /**
@@ -28,7 +28,7 @@ import com.talent.aio.common.intf.Packet;
  * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2016年11月17日 | tanyaowu | 新建类
  */
-public class Remotes <Ext, P extends Packet, R>
+public class ClientNodes <Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
@@ -45,7 +45,7 @@ public class Remotes <Ext, P extends Packet, R>
 	 */
 	public String getKey(ChannelContext<Ext, P, R> channelContext)
 	{
-		RemoteNode remotenode = channelContext.getRemoteNode();
+		Node remotenode = channelContext.getClientNode();
 		if (remotenode == null)
 		{
 			throw new RuntimeException("remotenode is null");
@@ -125,21 +125,19 @@ public class Remotes <Ext, P extends Packet, R>
 	}
 	
 	/**
-	 * 根据remoteip和port找ChannelContext.
+	 * 
+	 * @param ip
+	 * @param port
+	 * @return
 	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
-	 * @param remoteip the remoteip
-	 * @param port the port
-	 * @return the channel context
 	 * @author: tanyaowu
-	 * @创建时间:　2016年11月17日 下午2:25:21
+	 * @创建时间:　2016年12月6日 下午12:07:35
+	 *
 	 */
 	@SuppressWarnings("unchecked")
-	public ChannelContext<Ext, P, R> find(String remoteip, int port)
+	public ChannelContext<Ext, P, R> find(String ip, int port)
 	{
-		String key = getKey(remoteip, port);
+		String key = getKey(ip, port);
 		Lock lock = map.getLock().readLock();
 		DualHashBidiMap m = map.getObj();
 
@@ -162,7 +160,7 @@ public class Remotes <Ext, P extends Packet, R>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 下午1:12:56
 	 */
-	public Remotes()
+	public ClientNodes()
 	{
 
 	}
@@ -177,6 +175,14 @@ public class Remotes <Ext, P extends Packet, R>
 	public void main(String[] args)
 	{
 
+	}
+
+	/**
+	 * @return the map
+	 */
+	public ObjWithReadWriteLock<DualHashBidiMap> getMap()
+	{
+		return map;
 	}
 
 }

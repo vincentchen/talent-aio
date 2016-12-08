@@ -34,7 +34,7 @@ import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
  *  (1) | 2016年11月16日 | tanyaowu | 新建类
  *
  */
-public class AioConfig<Ext, P extends Packet, R>
+public class GroupContext<Ext, P extends Packet, R>
 {
 	/**
 	 * 同时接受请求的并发数
@@ -53,11 +53,11 @@ public class AioConfig<Ext, P extends Packet, R>
 	private Semaphore closeSemaphore = new Semaphore(closeConcurrentCount);
 	private Semaphore readSemaphore = new Semaphore(readConcurrentCount);
 
-	public static final int threadPoolInitNum = Runtime.getRuntime().availableProcessors() * 1;
+	public static final int corePoolSize = Runtime.getRuntime().availableProcessors() * 1;
 
-	public static final int threadPoolMaxNum = threadPoolInitNum * 4;
+	public static final int maximumPoolSize = corePoolSize * 4;
 
-	public static final long threadPoolKeepAliveTime = 90L;
+	public static final long keepAliveTime = 90L;
 
 	private AioHandler<Ext, P, R> aioHandler;
 
@@ -89,7 +89,7 @@ public class AioConfig<Ext, P extends Packet, R>
 	private Groups<Ext, P, R> groups = new Groups<>();
 	private Users<Ext, P, R> users = new Users<>();
 
-	protected AioConfig()
+	protected GroupContext()
 	{
 	}
 
@@ -102,32 +102,32 @@ public class AioConfig<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月16日 上午10:21:58
 	 * 
 	 */
-	public AioConfig(AioHandler<Ext, P, R> aioHandler)
+	public GroupContext(AioHandler<Ext, P, R> aioHandler)
 	{
 		super();
 		this.aioHandler = aioHandler;
 
 		SynchronousQueue<Runnable> decodePoolQueue = new SynchronousQueue<Runnable>();
-		decodeExecutor = new SynThreadPoolExecutor<SynRunnableIntf>(threadPoolInitNum, threadPoolMaxNum, threadPoolKeepAliveTime, decodePoolQueue, "t-aio-decode");
+		decodeExecutor = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, decodePoolQueue, "t-aio-decode");
 		decodeExecutor.prestartAllCoreThreads();
 
 		SynchronousQueue<Runnable> handlerPoolQueueHighPrior = new SynchronousQueue<Runnable>();
-		handlerExecutorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(threadPoolInitNum, threadPoolMaxNum, threadPoolKeepAliveTime, handlerPoolQueueHighPrior,
+		handlerExecutorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, handlerPoolQueueHighPrior,
 				DefaultThreadFactory.getInstance("t-aio-handler-high-prior", Thread.MAX_PRIORITY), "t-aio-handler-high-prior");
 		handlerExecutorHighPrior.prestartAllCoreThreads();
 
 		SynchronousQueue<Runnable> handlerPoolQueueLowPrior = new SynchronousQueue<Runnable>();
-		handlerExecutorLowPrior = new SynThreadPoolExecutor<SynRunnableIntf>(threadPoolInitNum, threadPoolMaxNum, threadPoolKeepAliveTime, handlerPoolQueueLowPrior,
+		handlerExecutorLowPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, handlerPoolQueueLowPrior,
 				"t-aio-handler-low-prior");
 		handlerExecutorLowPrior.prestartAllCoreThreads();
 
 		SynchronousQueue<Runnable> sendPoolQueueHighPrior = new SynchronousQueue<Runnable>();
-		sendExecutorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(threadPoolInitNum, threadPoolMaxNum, threadPoolKeepAliveTime, sendPoolQueueHighPrior,
+		sendExecutorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, sendPoolQueueHighPrior,
 				DefaultThreadFactory.getInstance("t-aio-send-high-prior", Thread.MAX_PRIORITY), "t-aio-send-high-prior");
 		sendExecutorHighPrior.prestartAllCoreThreads();
 
 		SynchronousQueue<Runnable> sendPoolQueueLowPrior = new SynchronousQueue<Runnable>();
-		sendExecutorLowPrior = new SynThreadPoolExecutor<SynRunnableIntf>(threadPoolInitNum, threadPoolMaxNum, threadPoolKeepAliveTime, sendPoolQueueLowPrior,
+		sendExecutorLowPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, sendPoolQueueLowPrior,
 				"t-aio-send-low-prior");
 		sendExecutorLowPrior.prestartAllCoreThreads();
 
@@ -147,7 +147,7 @@ public class AioConfig<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月16日 上午10:23:47
 	 * 
 	 */
-	public AioConfig(AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior,
+	public GroupContext(AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior,
 			SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorLowPrior, SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior,
 			SynThreadPoolExecutor<SynRunnableIntf> sendExecutorLowPrior)
 	{

@@ -4,7 +4,7 @@
 package com.talent.aio.common.threadpool;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Executor;
 
 import com.talent.aio.common.threadpool.intf.QueueRunnableIntf;
 
@@ -21,28 +21,18 @@ public abstract class AbstractQueueRunnable<T> extends AbstractSynRunnable imple
 	/**
 	 * Instantiates a new abstract queue runnable.
 	 */
-	public AbstractQueueRunnable()
+	public AbstractQueueRunnable(Executor executor)
 	{
-		runnableName = this.getClass().getSimpleName();
+		super(executor);
 	}
 
-	/** 本任务已经被提交的执行次数. */
-	private AtomicLong submitCount = new AtomicLong();
-
-	/** 本任务处理过的消息条数(单位：条). */
-	private AtomicLong processedPacketCount = new AtomicLong();
-
-	/** 本任务处理的消息量(单位：字节). */
-	private AtomicLong processedMsgByteCount = new AtomicLong();
-
-	/** The rejected count. */
-	private AtomicLong rejectedCount = new AtomicLong();
+	public boolean isNeededExecute()
+	{
+		return this.getMsgQueue().size() > 0;
+	}
 
 	/** The msg queue. */
 	private ConcurrentLinkedQueue<T> msgQueue = new ConcurrentLinkedQueue<T>();
-
-	/** 本任务名字. */
-	private String runnableName = null;
 
 	/**
 	 * The main method.
@@ -52,58 +42,6 @@ public abstract class AbstractQueueRunnable<T> extends AbstractSynRunnable imple
 	public static void main(String[] args)
 	{
 
-	}
-
-	
-
-	/**
-	 * Sets the runnable name.
-	 *
-	 * @param runnableName the new runnable name
-	 */
-	public void setRunnableName(String runnableName)
-	{
-		this.runnableName = runnableName;
-	}
-
-	/**
-	 * Sets the submit count.
-	 *
-	 * @param submitCount the new submit count
-	 */
-	public void setSubmitCount(AtomicLong submitCount)
-	{
-		this.submitCount = submitCount;
-	}
-
-	/**
-	 * Sets the processed packet count.
-	 *
-	 * @param processedPacketCount the new processed packet count
-	 */
-	public void setProcessedPacketCount(AtomicLong processedPacketCount)
-	{
-		this.processedPacketCount = processedPacketCount;
-	}
-
-	/**
-	 * Gets the processed msg byte count.
-	 *
-	 * @return the processed msg byte count
-	 */
-	public AtomicLong getProcessedMsgByteCount()
-	{
-		return processedMsgByteCount;
-	}
-
-	/**
-	 * Sets the processed msg byte count.
-	 *
-	 * @param processedMsgByteCount the new processed msg byte count
-	 */
-	public void setProcessedMsgByteCount(AtomicLong processedMsgByteCount)
-	{
-		this.processedMsgByteCount = processedMsgByteCount;
 	}
 
 	/** 
@@ -128,16 +66,6 @@ public abstract class AbstractQueueRunnable<T> extends AbstractSynRunnable imple
 	public void setMsgQueue(ConcurrentLinkedQueue<T> msgQueue)
 	{
 		this.msgQueue = msgQueue;
-	}
-
-	/**
-	 * Gets the rejected count.
-	 *
-	 * @return the rejected count
-	 */
-	public AtomicLong getRejectedCount()
-	{
-		return rejectedCount;
 	}
 
 }

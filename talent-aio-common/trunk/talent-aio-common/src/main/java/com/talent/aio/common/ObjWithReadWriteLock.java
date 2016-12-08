@@ -10,8 +10,6 @@
  * **************************************************************************
  */
 package com.talent.aio.common;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
@@ -43,7 +41,7 @@ public class ObjWithReadWriteLock <T>
 	 * @含义: 
 	 * @类型: ReentrantReadWriteLock
 	 */
-	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock(); 
+	private ReentrantReadWriteLock lock = null; 
 
 	/**
 	 * Instantiates a new obj with read write lock.
@@ -54,7 +52,7 @@ public class ObjWithReadWriteLock <T>
 	 */
 	public ObjWithReadWriteLock(T obj)
 	{
-		this.obj = obj;
+		this(obj, new ReentrantReadWriteLock());
 	}
 
 	/**
@@ -81,7 +79,7 @@ public class ObjWithReadWriteLock <T>
 	 */
 	public static void main(String[] args)
 	{
-		ObjWithReadWriteLock<Map> dd = new ObjWithReadWriteLock<>(new HashMap<>());
+		
 	}
 
 	/**
@@ -96,17 +94,17 @@ public class ObjWithReadWriteLock <T>
 		return lock;
 	}
 
-	/**
-	 * Sets the lock.
-	 *
-	 * @param lock the new lock
-	 * @author: tanyaowu
-	 * @创建时间:　2016年11月7日 上午10:17:31
-	 */
-	public void setLock(ReentrantReadWriteLock lock)
-	{
-		this.lock = lock;
-	}
+//	/**
+//	 * Sets the lock.
+//	 *
+//	 * @param lock the new lock
+//	 * @author: tanyaowu
+//	 * @创建时间:　2016年11月7日 上午10:17:31
+//	 */
+//	public void setLock(ReentrantReadWriteLock lock)
+//	{
+//		this.lock = lock;
+//	}
 
 	/**
 	 * Gets the obj.

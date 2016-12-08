@@ -16,18 +16,12 @@ import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
-import com.talent.aio.common.config.AioServerConfig;
 import com.talent.aio.common.intf.Packet;
 
 /**
@@ -44,9 +38,7 @@ public class AioServer<Ext, P extends Packet, R>
 {
 	private static Logger log = LoggerFactory.getLogger(AioServer.class);
 
-	private ObjWithReadWriteLock<Map<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>> remoteipMap;
-
-	private AioServerConfig<Ext, P, R> aioServerConfig;
+	private ServerGroupContext<Ext, P, R> serverGroupContext;
 	private AsynchronousChannelGroup channelGroup;
 	private AsynchronousServerSocketChannel serverSocketChannel;
 	private InetSocketAddress inetSocketAddress;
@@ -67,15 +59,6 @@ public class AioServer<Ext, P extends Packet, R>
 		return serverSocketChannel;
 	}
 
-	/**
-	 * @return the acceptCompletionHandler
-	 */
-	public AcceptCompletionHandler<Ext, P, R> getAcceptCompletionHandler()
-	{
-		return acceptCompletionHandler;
-	}
-
-	private AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler;
 
 	/**
 	 * @param ip 可以为空
@@ -88,28 +71,19 @@ public class AioServer<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月15日 下午1:09:28
 	 * 
 	 */
-	public AioServer(AioServerConfig<Ext, P, R> aioServerConfig)
+	public AioServer(ServerGroupContext<Ext, P, R> serverGroupContext)
 	{
 		super();
-		this.aioServerConfig = aioServerConfig;
+		this.serverGroupContext = serverGroupContext;
 	}
 
 	public void start() throws IOException
 	{
-		
-		
-		
-		String ip = aioServerConfig.getIp();
-		int port = aioServerConfig.getPort();
-		ExecutorService groupExecutor = aioServerConfig.getGroupExecutor();
-//		if (groupExecutor == null)
-//		{
-//			SynchronousQueue<Runnable> poolQueue = new SynchronousQueue<Runnable>();
-//			groupExecutor = new ThreadPoolExecutor(4, 500, 30, TimeUnit.SECONDS, poolQueue, DefaultThreadFactory.getInstance("t-aio-server-group"));
-//			aioServerConfig.setGroupExecutor(groupExecutor);
-//		}
+		String ip = serverGroupContext.getIp();
+		int port = serverGroupContext.getPort();
+		ExecutorService groupExecutor = serverGroupContext.getGroupExecutor();
 
-		channelGroup = AsynchronousChannelGroup.withCachedThreadPool(groupExecutor, 10);
+		channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
 		serverSocketChannel = AsynchronousServerSocketChannel.open(channelGroup);
 
 		serverSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
@@ -118,7 +92,6 @@ public class AioServer<Ext, P extends Packet, R>
 //		serverSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 		
 
-		acceptCompletionHandler = new AcceptCompletionHandler<>(aioServerConfig);
 
 		if (StringUtils.isBlank(ip))
 		{
@@ -130,39 +103,19 @@ public class AioServer<Ext, P extends Packet, R>
 
 		serverSocketChannel.bind(inetSocketAddress, 0);
 		
-		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		log.info("start listening on " + ipstr + ":" + port);
+		
+		
+		AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = serverGroupContext.getAcceptCompletionHandler();
+		serverSocketChannel.accept(this, acceptCompletionHandler);
 
+		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
+		log.error("start listening on " + ipstr + ":" + port);
 		
 		
-//		serverSocketChannel.accept(this, acceptCompletionHandler);
-		
-		ThreadPoolExecutor threadPoolExecutor = this.getAioServerConfig().getAcceptExecutor();
-//		int corePoolSize = threadPoolExecutor.getCorePoolSize();
-//		for (int i = 0; i < corePoolSize; i++)
-//		{
-//			
-//		}
-		AcceptRunnable<Ext, P, R> acceptRunnable = new AcceptRunnable<>(this);
-		threadPoolExecutor.execute(acceptRunnable);
-		
-		
-//		Thread thread = new Thread(new Runnable(){
-//			@Override
-//			public void run()
-//			{
-//				Future<AsynchronousSocketChannel> future = serverSocketChannel.accept();
-//				try
-//				{
-//					AsynchronousSocketChannel asynchronousSocketChannel = future.get();
-//					acceptCompletionHandler.completed(asynchronousSocketChannel, AioServer.this);
-//				} catch (Throwable e)
-//				{
-//					acceptCompletionHandler.failed(e, AioServer.this);
-//				}				
-//			}}, "t-aio-server");
-//		thread.start();
-		
+//		ThreadPoolExecutor threadPoolExecutor = this.getServerGroupContext().getAcceptExecutor();
+//		AcceptRunnable<Ext, P, R> acceptRunnable = new AcceptRunnable<>(this, threadPoolExecutor);
+//		threadPoolExecutor.execute(acceptRunnable);
+
 
 	}
 
@@ -178,27 +131,20 @@ public class AioServer<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * @return the aioServerConfig
+	 * @return the serverGroupContext
 	 */
-	public AioServerConfig<Ext, P, R> getAioServerConfig()
+	public ServerGroupContext<Ext, P, R> getServerGroupContext()
 	{
-		return aioServerConfig;
+		return serverGroupContext;
 	}
 
 	/**
-	 * @param aioServerConfig the aioServerConfig to set
+	 * @param serverGroupContext the serverGroupContext to set
 	 */
-	public void setAioServerConfig(AioServerConfig<Ext, P, R> aioServerConfig)
+	public void setServerGroupContext(ServerGroupContext<Ext, P, R> serverGroupContext)
 	{
-		this.aioServerConfig = aioServerConfig;
+		this.serverGroupContext = serverGroupContext;
 	}
 
-	/**
-	 * @param acceptCompletionHandler the acceptCompletionHandler to set
-	 */
-	public void setAcceptCompletionHandler(AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler)
-	{
-		this.acceptCompletionHandler = acceptCompletionHandler;
-	}
 
 }

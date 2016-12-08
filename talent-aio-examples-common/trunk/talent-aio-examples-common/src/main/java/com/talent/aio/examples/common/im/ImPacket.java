@@ -62,10 +62,6 @@ public class ImPacket extends Packet
 
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 5858715916379451629L;
 
 
 	/**

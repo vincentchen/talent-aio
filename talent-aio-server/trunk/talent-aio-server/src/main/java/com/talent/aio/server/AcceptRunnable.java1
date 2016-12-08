@@ -13,10 +13,10 @@ package com.talent.aio.server;
 
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.threadpool.AbstractSynRunnable;
 
 /**
  * 
@@ -28,7 +28,7 @@ import com.talent.aio.common.threadpool.AbstractSynRunnable;
  *  (1) | 2016年11月19日 | tanyaowu | 新建类
  *
  */
-public class AcceptRunnable <Ext, P extends Packet, R> extends AbstractSynRunnable
+public class AcceptRunnable <Ext, P extends Packet, R> implements Runnable
 {
 
 	private AioServer<Ext, P, R> aioServer;
@@ -40,10 +40,10 @@ public class AcceptRunnable <Ext, P extends Packet, R> extends AbstractSynRunnab
 	 * 
 	 */
 	@Override
-	public void runTask()
+	public void run()
 	{
 		AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
-		AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = aioServer.getAcceptCompletionHandler();
+		AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = aioServer.getServerGroupContext().getAcceptCompletionHandler();
 
 		Future<AsynchronousSocketChannel> future = serverSocketChannel.accept();
 		AsynchronousSocketChannel asynchronousSocketChannel = null;
@@ -56,10 +56,12 @@ public class AcceptRunnable <Ext, P extends Packet, R> extends AbstractSynRunnab
 		}
 		
 //		AcceptRunnable<Ext, P, R> acceptRunnable = new AcceptRunnable<>(aioServer);
-		aioServer.getAioServerConfig().getAcceptExecutor().execute(this);
+		aioServer.getServerGroupContext().getAcceptExecutor().execute(this);
 		
 		if (asynchronousSocketChannel != null)
 		{
+			ServerGroupStat serverGroupStat = (ServerGroupStat)aioServer.getServerGroupContext().getGroupStat();
+			serverGroupStat.getAccepted().incrementAndGet();
 			acceptCompletionHandler.completed(asynchronousSocketChannel, aioServer);
 		}
 	}
@@ -70,11 +72,24 @@ public class AcceptRunnable <Ext, P extends Packet, R> extends AbstractSynRunnab
 	 * @创建时间:　2016年11月19日 下午1:47:04
 	 * 
 	 */
-	public AcceptRunnable(AioServer<Ext, P, R> aioServer)
+	public AcceptRunnable(AioServer<Ext, P, R> aioServer, Executor executor)
 	{
-		super();
+//		super(executor);
 		this.aioServer = aioServer;
 	}
+//	/** 
+//	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#isNeededRun()
+//	 * 
+//	 * @return
+//	 * @重写人: tanyaowu
+//	 * @重写时间: 2016年12月3日 下午1:56:27
+//	 * 
+//	 */
+//	@Override
+//	public boolean isNeededRun()
+//	{
+//		return false;
+//	}
 
 
 }

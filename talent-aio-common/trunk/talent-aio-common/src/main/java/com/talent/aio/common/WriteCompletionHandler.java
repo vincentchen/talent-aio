@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.stat.GroupStat;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -28,12 +31,12 @@ import com.talent.aio.common.intf.Packet;
  *  (1) | 2016年11月15日 | tanyaowu | 新建类
  *
  */
-@Deprecated
-public class WriteCompletionHandler<Ext, T extends Packet, R> implements CompletionHandler<Integer, ChannelContext<Ext, T, R>>
+public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, ChannelContext<Ext, P, R>>
 {
 	
 	private static Logger log = LoggerFactory.getLogger(WriteCompletionHandler.class);
 	
+	private P packet;
 	
 	/**
 	 * 
@@ -42,9 +45,9 @@ public class WriteCompletionHandler<Ext, T extends Packet, R> implements Complet
 	 * @创建时间:　2016年11月15日 下午1:31:04
 	 * 
 	 */
-	public WriteCompletionHandler()
+	public WriteCompletionHandler(P packet)
 	{
-		
+		this.packet = packet;
 	}
 
 
@@ -71,18 +74,29 @@ public class WriteCompletionHandler<Ext, T extends Packet, R> implements Complet
 	 * 
 	 */
 	@Override
-	public void completed(Integer result, ChannelContext<Ext, T, R> channelContext)
+	public void completed(Integer result, ChannelContext<Ext, P, R> channelContext)
 	{
-		log.debug("数据写完成:{}", result);
+		channelContext.getSendSemaphore().release();
 		if (result > 0)
 		{
-			
+			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+			GroupStat groupStat = groupContext.getGroupStat();
+			SendListener<Ext, P, R> sendListener = groupContext.getSendListener();
+			groupStat.getSentPacket().incrementAndGet();
+			groupStat.getSentBytes().addAndGet(result);
+			channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
+			if (sendListener != null)
+			{
+				sendListener.onAfterSent(channelContext, packet, result);
+			}
 		} else if (result == 0)
 		{
-			
+			log.error("发送长度为{}", result);
+			Aio.close(channelContext, "写数据返回:" + result);
 		} else if (result < 0)
 		{
-			
+			log.error("发送长度为{}", result);
+			Aio.close(channelContext, "写数据返回:" + result);
 		}
 		
 		
@@ -99,10 +113,10 @@ public class WriteCompletionHandler<Ext, T extends Packet, R> implements Complet
 	 * 
 	 */
 	@Override
-	public void failed(Throwable exc, ChannelContext<Ext, T, R> attachment)
+	public void failed(Throwable exc, ChannelContext<Ext, P, R> channelContext)
 	{
-		Aio.close(attachment, exc, "写数据时发生异常");
-		
+		channelContext.getSendSemaphore().release();
+		Aio.close(channelContext, exc, "写数据时发生异常");
 	}
 
 }
