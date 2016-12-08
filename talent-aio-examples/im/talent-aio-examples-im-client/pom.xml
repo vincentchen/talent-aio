@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>talent-aio-examples-client</artifactId>
-	<name>talent-aio-examples-client</name>
+	<artifactId>talent-aio-examples-im-client</artifactId>
+	<name>talent-aio-examples-im-client</name>
 
 	<parent>
 		<groupId>com.talent</groupId>
@@ -19,7 +19,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.talent</groupId>
-			<artifactId>talent-aio-examples-common</artifactId>
+			<artifactId>talent-aio-examples-im-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

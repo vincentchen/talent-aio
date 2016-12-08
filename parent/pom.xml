@@ -18,9 +18,9 @@
 		<module>../talent-aio-client/trunk/talent-aio-client</module>
 		
 		
-		<module>../talent-aio-examples-common/trunk/talent-aio-examples-common</module>
-		<module>../talent-aio-examples-server/trunk/talent-aio-examples-server</module>
-		<module>../talent-aio-examples-client/trunk/talent-aio-examples-client</module>
+		<module>../talent-aio-examples/im/talent-aio-examples-im-common</module>
+		<module>../talent-aio-examples/im/talent-aio-examples-im-server</module>
+		<module>../talent-aio-examples/im/talent-aio-examples-im-client</module>
 	</modules>
 
 	<properties>
