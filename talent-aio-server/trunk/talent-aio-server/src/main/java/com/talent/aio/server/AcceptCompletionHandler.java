@@ -47,9 +47,8 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	 */
 	public AcceptCompletionHandler()
 	{
-		
-	}
 
+	}
 
 	/**
 	 * @param args
@@ -78,6 +77,8 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 		try
 		{
 			ServerGroupContext<Ext, P, R> serverGroupContext = aioServer.getServerGroupContext();
+			ServerGroupStat serverGroupStat = (ServerGroupStat) serverGroupContext.getGroupStat();
+			serverGroupStat.getAccepted().incrementAndGet();
 
 			result.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 			result.setOption(StandardSocketOptions.SO_RCVBUF, 32 * 1024);
@@ -112,13 +113,12 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	{
 		AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
 		serverSocketChannel.accept(aioServer, this);
-		
+
 		String ip = aioServer.getServerGroupContext().getIp();
 		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
 		ipstr += ":" + aioServer.getServerGroupContext().getPort();
 		log.error("[" + ipstr + "]监听出现异常", exc);
-		
-		
+
 	}
 
 }

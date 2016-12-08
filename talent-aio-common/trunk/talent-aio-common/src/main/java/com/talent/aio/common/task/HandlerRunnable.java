@@ -115,6 +115,7 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 	 */
 	public void addMsg(P packet)
 	{
+		//log.error("handler queue size:" + getMsgQueue().size());
 		getMsgQueue().add(packet);
 	}
 
