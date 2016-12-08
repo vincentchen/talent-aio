@@ -132,6 +132,7 @@ public class ImClientStarter
 									imReqPacket.setCommand(Command.CHAT_REQ);
 									imReqPacket.setBody(Json.toJson(chatReqBody).getBytes(ImPacket.CHARSET));
 									Aio.sendToGroup(clientGroupContext, groupid, imReqPacket);
+									Thread.sleep(1);
 								}
 							} catch (Throwable e)
 							{

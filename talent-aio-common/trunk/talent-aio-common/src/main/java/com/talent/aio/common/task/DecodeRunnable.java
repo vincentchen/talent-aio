@@ -138,7 +138,10 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					if (byteBuffer.capacity() - len > 0)//组包后，还剩有数据，留到下一次解码。
 					{
 						lastByteBuffer = ByteBufferUtils.copy(byteBuffer, len, byteBuffer.capacity());
-						log.debug("组包后，还剩一点数据:{}, {}", byteBuffer.capacity() - len, lastByteBuffer);
+						if (log.isDebugEnabled())
+						{
+							log.debug("组包后，还剩一点数据:{}, {}", byteBuffer.capacity() - len, lastByteBuffer);
+						}
 					} else
 					{
 						lastByteBuffer = null;
