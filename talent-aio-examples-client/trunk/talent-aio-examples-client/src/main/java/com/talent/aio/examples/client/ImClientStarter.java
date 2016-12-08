@@ -73,7 +73,7 @@ public class ImClientStarter
 
 	static AioClient<Object, ImPacket, Object> aioClient;
 
-	static int clientCount = 100;
+	static int clientCount = 500;
 
 	static java.util.concurrent.atomic.AtomicLong SEQ = new AtomicLong();
 
@@ -114,6 +114,8 @@ public class ImClientStarter
 				{
 					try
 					{
+						Thread.sleep(10000);
+
 						ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> objWithReadWriteLock = clientGroupContext.getGroups().clients(groupid);
 						if (objWithReadWriteLock != null)
 						{
@@ -131,8 +133,8 @@ public class ImClientStarter
 									ImPacket imReqPacket = new ImPacket();
 									imReqPacket.setCommand(Command.CHAT_REQ);
 									imReqPacket.setBody(Json.toJson(chatReqBody).getBytes(ImPacket.CHARSET));
-									Aio.sendToGroup(clientGroupContext, groupid, imReqPacket);
-									Thread.sleep(1);
+									Aio.send(entry, imReqPacket);//.sendToGroup(clientGroupContext, groupid, imReqPacket);
+
 								}
 							} catch (Throwable e)
 							{
@@ -155,7 +157,6 @@ public class ImClientStarter
 							log.error("command stat:{}", Json.toJson(CommandStat.commandAndCount));
 						}
 
-						Thread.sleep(10000);
 					} catch (Throwable e)
 					{
 						log.error("", e);
