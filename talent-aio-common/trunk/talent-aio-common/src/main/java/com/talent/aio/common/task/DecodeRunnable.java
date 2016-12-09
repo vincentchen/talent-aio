@@ -133,6 +133,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						{
 							lastByteBuffer = null;
 							log.debug("组包后，数据刚好用完");
+							continue label_1;
 						}
 
 					}

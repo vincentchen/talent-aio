@@ -73,7 +73,7 @@ public class ImClientStarter
 
 	static AioClient<Object, ImPacket, Object> aioClient;
 
-	static int clientCount = 500;
+	static int clientCount = 1500;
 
 	static java.util.concurrent.atomic.AtomicLong SEQ = new AtomicLong();
 
@@ -125,7 +125,7 @@ public class ImClientStarter
 								readLock.lock();
 								Set<ChannelContext<Object, ImPacket, Object>> set = objWithReadWriteLock.getObj();
 								int i = 1;
-								log.error("send msg to group {}", groupid);
+								//log.error("send msg to group {}", groupid);
 								for (ChannelContext<Object, ImPacket, Object> entry : set)
 								{
 									String msg = "hello-" + i++;

@@ -56,9 +56,9 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 
 	/** The group executor. */
 	private ThreadPoolExecutor groupExecutor = null;
-	
+
 	private AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = null;
-	
+
 	protected ServerGroupStat serverGroupStat = new ServerGroupStat();
 
 	/** The accept executor. */
@@ -116,10 +116,10 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 						{
 							readLock.lock();
 							Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
-							
+
 							for (ChannelContext<Ext, P, R> entry : set)
 							{
-								
+
 								ChannelContext<Ext, P, R> channelContext = entry;
 								Stat stat = channelContext.getStat();
 								long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
@@ -132,8 +132,10 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 									Aio.close(channelContext, "定时任务检查，" + channelContext.toString() + "隔了" + interval + "ms没有发送消息");
 								}
 							}
-							log.error("[{}]: curr:{}, accepted:{}, closed:{}, received:{}, handled:{}, sent:({}p)({}b)", id, set.size(), serverGroupStat.getAccepted().get(),
-									serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(), serverGroupStat.getSentBytes().get());
+							log.error("[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(),
+									serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
+									serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
+									serverGroupStat.getSentBytes().get());
 						} catch (Throwable e)
 						{
 							log.error("", e);
@@ -151,28 +153,28 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		}, "t-aio-timer-checkheartbeat-" + id).start();
 	}
 
-//	/**
-//	 * Instantiates a new server group context.
-//	 *
-//	 * @param ip the ip
-//	 * @param port the port
-//	 * @param aioHandler the aio handler
-//	 * @param decodeExecutor the decode executor
-//	 * @param closeExecutor the close executor
-//	 * @param handlerExecutorHighPrior the handler executor high prior
-//	 * @param handlerExecutorNormPrior the handler executor norm prior
-//	 * @param sendExecutorHighPrior the send executor high prior
-//	 * @param sendExecutorNormPrior the send executor norm prior
-//	 */
-//	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor,
-//			SynThreadPoolExecutor<SynRunnableIntf> closeExecutor, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior,
-//			SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorNormPrior, SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior,
-//			SynThreadPoolExecutor<SynRunnableIntf> sendExecutorNormPrior)
-//	{
-//		super(aioHandler, decodeExecutor, closeExecutor, handlerExecutorHighPrior, handlerExecutorNormPrior, sendExecutorHighPrior, sendExecutorNormPrior);
-//		this.ip = ip;
-//		this.port = port;
-//	}
+	//	/**
+	//	 * Instantiates a new server group context.
+	//	 *
+	//	 * @param ip the ip
+	//	 * @param port the port
+	//	 * @param aioHandler the aio handler
+	//	 * @param decodeExecutor the decode executor
+	//	 * @param closeExecutor the close executor
+	//	 * @param handlerExecutorHighPrior the handler executor high prior
+	//	 * @param handlerExecutorNormPrior the handler executor norm prior
+	//	 * @param sendExecutorHighPrior the send executor high prior
+	//	 * @param sendExecutorNormPrior the send executor norm prior
+	//	 */
+	//	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor,
+	//			SynThreadPoolExecutor<SynRunnableIntf> closeExecutor, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior,
+	//			SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorNormPrior, SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior,
+	//			SynThreadPoolExecutor<SynRunnableIntf> sendExecutorNormPrior)
+	//	{
+	//		super(aioHandler, decodeExecutor, closeExecutor, handlerExecutorHighPrior, handlerExecutorNormPrior, sendExecutorHighPrior, sendExecutorNormPrior);
+	//		this.ip = ip;
+	//		this.port = port;
+	//	}
 
 	/**
 	 * The main method.
@@ -266,21 +268,21 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		this.acceptExecutor = acceptExecutor;
 	}
 
-//	/**
-//	 * @return the serverGroupStat
-//	 */
-//	public ServerGroupStat getServerGroupStat()
-//	{
-//		return serverGroupStat;
-//	}
+	//	/**
+	//	 * @return the serverGroupStat
+	//	 */
+	//	public ServerGroupStat getServerGroupStat()
+	//	{
+	//		return serverGroupStat;
+	//	}
 
-//	/**
-//	 * @param serverGroupStat the serverGroupStat to set
-//	 */
-//	public void setServerGroupStat(ServerGroupStat serverGroupStat)
-//	{
-//		this.serverGroupStat = serverGroupStat;
-//	}
+	//	/**
+	//	 * @param serverGroupStat the serverGroupStat to set
+	//	 */
+	//	public void setServerGroupStat(ServerGroupStat serverGroupStat)
+	//	{
+	//		this.serverGroupStat = serverGroupStat;
+	//	}
 
 	/** 
 	 * @see com.talent.aio.common.GroupContext#getGroupStat()
