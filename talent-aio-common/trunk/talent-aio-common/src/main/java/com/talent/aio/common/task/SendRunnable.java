@@ -3,23 +3,18 @@ package com.talent.aio.common.task;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.WriteCompletionHandler;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.SendListener;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
-import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -194,16 +189,25 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 	{
 		ConcurrentLinkedQueue<P> queue = getMsgQueue();
 		P packet = null;
-		while (true)
+		while ((packet = queue.poll()) != null)
 		{
-			packet = queue.poll();
-			if (packet != null)
-			{
-				sendPacket(packet);
-			} else
-			{
-				break;
-			}
+			sendPacket(packet);
 		}
+		
+		
+		
+//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
+//		P packet = null;
+//		while (true)
+//		{
+//			packet = queue.poll();
+//			if (packet != null)
+//			{
+//				sendPacket(packet);
+//			} else
+//			{
+//				break;
+//			}
+//		}
 	}
 }

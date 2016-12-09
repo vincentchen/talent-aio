@@ -172,32 +172,32 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 	@Override
 	public void runTask()
 	{
-//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
-//		P packet = null;
-//		while ((packet = queue.poll()) != null)
-//		{
-//			doPacket(packet);
-//		}
-		
-		
-		
-		
-		
-		
-		
 		ConcurrentLinkedQueue<P> queue = getMsgQueue();
 		P packet = null;
-		while (true)
+		while ((packet = queue.poll()) != null)
 		{
-			packet = queue.poll();
-			if (packet != null)
-			{
-				doPacket(packet);
-			} else
-			{
-				break;
-			}
+			doPacket(packet);
 		}
+		
+		
+		
+		
+		
+		
+		
+//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
+//		P packet = null;
+//		while (true)
+//		{
+//			packet = queue.poll();
+//			if (packet != null)
+//			{
+//				doPacket(packet);
+//			} else
+//			{
+//				break;
+//			}
+//		}
 		
 		
 		

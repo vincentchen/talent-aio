@@ -31,7 +31,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	private ChannelContext<Ext, P, R> channelContext = null;
 
 	/**
-	 * 上一次解码，剩下的数据
+	 * 当前的字节数据
 	 */
 	private ByteBuffer lastByteBuffer = null;
 
@@ -63,7 +63,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 		lastByteBuffer = null;
 	}
 
-//	private int needLength = -1;
+	private int needLength = -1;
 
 	@Override
 	public void runTask()
@@ -79,12 +79,22 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			{
 				if (lastByteBuffer != null)
 				{
-//					lastByteBuffer.position(0);
-//					lastByteBuffer.limit(lastByteBuffer.capacity());
+					lastByteBuffer.position(0);
+					lastByteBuffer.limit(lastByteBuffer.capacity());
 					byteBuffer.position(0);
 					byteBuffer.limit(byteBuffer.capacity());
 					byteBuffer = ByteBufferUtils.composite(lastByteBuffer, byteBuffer);
 					lastByteBuffer = null;
+				}
+
+				int limit = byteBuffer.limit();
+				if (needLength != -1) // 已经解析出消息所需要的总长度
+				{
+					if (limit < needLength) // 收到的数据还不够长
+					{
+						lastByteBuffer = byteBuffer;
+						continue label_1;
+					}
 				}
 			} else
 			{
@@ -95,47 +105,52 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			{
 				byteBuffer.position(0);
 				byteBuffer.limit(byteBuffer.capacity());
-
-				label_2: while (true)
+				
+				PacketMeta<P> packetMeta = channelContext.getGroupContext().getAioHandler().decode(byteBuffer, channelContext);
+				P packet = null;
+				if (packetMeta != null)
 				{
-					int initPosition = byteBuffer.position();
-					P packet = channelContext.getGroupContext().getAioHandler().decode(byteBuffer, channelContext);
+					packet = packetMeta.getPacket();
+				} else
+				{
+					// 数据不够，组不了包，
+					byteBuffer.position(0);
+					byteBuffer.limit(byteBuffer.capacity());
+					
+					lastByteBuffer = byteBuffer;
+					needLength = -1;
+					continue label_1;
+				}
+				
 
-					if (packet == null)
+				if (packet == null)
+				{
+					// 数据不够，组不了包，
+					byteBuffer.position(0);
+					byteBuffer.limit(byteBuffer.capacity());
+					
+					lastByteBuffer = byteBuffer;
+					needLength = packetMeta.getNeedLength();
+					continue label_1;
+				} else //组包成功
+				{
+					int len = packetMeta.getPacketLenght();
+					if (byteBuffer.capacity() - len > 0)//组包后，还剩有数据，留到下一次解码。
 					{
-						// 数据不够，组不了包，
-						byteBuffer.position(initPosition);
-//						byteBuffer.limit(byteBuffer.capacity());
-
-						lastByteBuffer = byteBuffer;
-//						needLength = packetMeta.getNeededLength();
-						continue label_1;
-					} else //组包成功
-					{
-						int afterDecodePosition = byteBuffer.position();
-						int len = afterDecodePosition - initPosition;
-//						needLength = -1;
-						submit(packet, len);
-						channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
-						channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
-
-						if (byteBuffer.hasRemaining())//组包后，还剩有数据，留到下一次解码。
+						lastByteBuffer = ByteBufferUtils.copy(byteBuffer, len, byteBuffer.capacity());
+						if (log.isDebugEnabled())
 						{
-							if (log.isDebugEnabled())
-							{
-								log.debug("组包后，还剩一点数据:{}", byteBuffer.capacity() - byteBuffer.position());
-							}
-							
-//							lastByteBuffer = ByteBufferUtils.copy(byteBuffer, len, byteBuffer.capacity());
-							
-							continue label_2;
-						} else
-						{
-							lastByteBuffer = null;
-							log.debug("组包后，数据刚好用完");
+							log.debug("组包后，还剩一点数据:{}, {}", byteBuffer.capacity() - len, lastByteBuffer);
 						}
-
+					} else
+					{
+						lastByteBuffer = null;
+						log.debug("组包后，数据刚好用完");
 					}
+					needLength = -1;
+					submit(packet, len);
+					channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
+					channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
 				}
 
 			} catch (AioDecodeException e)

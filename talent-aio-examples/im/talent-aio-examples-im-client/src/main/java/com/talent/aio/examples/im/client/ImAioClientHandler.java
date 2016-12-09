@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.client.AioClientHandler;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
-import com.talent.aio.common.task.PacketMeta;
 import com.talent.aio.examples.im.client.handler.AuthRespHandler;
 import com.talent.aio.examples.im.client.handler.ChatRespHandler;
 import com.talent.aio.examples.im.client.handler.ImBsAioHandlerIntf;
@@ -154,11 +153,9 @@ public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Ob
 	 * 
 	 */
 	@Override
-	public PacketMeta<ImPacket> decode(ByteBuffer buffer, ChannelContext<Object, ImPacket, Object> channelContext) throws AioDecodeException
+	public ImPacket decode(ByteBuffer buffer, ChannelContext<Object, ImPacket, Object> channelContext) throws AioDecodeException
 	{
-		int needBufferLength = -1;
-
-		int readableLength = buffer.limit();
+		int readableLength = buffer.limit() - buffer.position();
 		if (readableLength < ImPacket.HEADER_LENGHT)
 		{
 			return null;
@@ -194,13 +191,13 @@ public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Ob
 			log.error("command:{}, bodylength:{}", command, bodyLength);
 		}
 
-		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
-		needBufferLength = ImPacket.HEADER_LENGHT + bodyLength;
-		int test = buffer.limit() - (needBufferLength);
+//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
+		int neededLength = ImPacket.HEADER_LENGHT + bodyLength;
+		int test = readableLength - neededLength;
 		if (test < 0) // 不够消息体长度(剩下的buffe组不了消息体)
 		{
-			packetMeta.setNeedLength(needBufferLength);
-			return packetMeta;
+//			packetMeta.setNeededLength(neededLength);
+			return null;
 		} else
 		{
 			imPacket = new ImPacket();
@@ -218,9 +215,8 @@ public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Ob
 				imPacket.setBody(dst);
 			}
 
-			packetMeta.setPacketLenght(buffer.position());
-			packetMeta.setPacket(imPacket);
-			return packetMeta;
+//			packetMeta.setPacket(imPacket);
+			return imPacket;
 
 		}
 

@@ -15,7 +15,6 @@ import java.nio.ByteBuffer;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
-import com.talent.aio.common.task.PacketMeta;
 
 
 /**
@@ -55,7 +54,7 @@ public interface AioHandler <Ext, P extends Packet, R>
 	 * @return the t
 	 * @throws AioDecodeException the aio decode exception
 	 */
-	PacketMeta<P> decode(ByteBuffer buffer, ChannelContext<Ext, P, R> channelContext) throws AioDecodeException;
+	P decode(ByteBuffer buffer, ChannelContext<Ext, P, R> channelContext) throws AioDecodeException;
 	
 	/**
 	 * 连接关闭时触发本方法，业务层作一些释放资源等操作，记录日志等.

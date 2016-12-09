@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.common.intf.AioHandler;
-import com.talent.aio.common.task.PacketMeta;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.server.handler.AuthHandler;
@@ -154,11 +153,9 @@ public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
 	 * 
 	 */
 	@Override
-	public PacketMeta<ImPacket> decode(ByteBuffer buffer, ChannelContext<Object, ImPacket, Object> channelContext) throws AioDecodeException
+	public ImPacket decode(ByteBuffer buffer, ChannelContext<Object, ImPacket, Object> channelContext) throws AioDecodeException
 	{
-		int needBufferLength = -1;
-
-		int readableLength = buffer.limit();
+		int readableLength = buffer.limit() - buffer.position();
 		if (readableLength < ImPacket.HEADER_LENGHT)
 		{
 			return null;
@@ -194,13 +191,13 @@ public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
 			log.error("command:{}, bodylength:{}", command, bodyLength);
 		}
 
-		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
-		needBufferLength = ImPacket.HEADER_LENGHT + bodyLength;
-		int test = buffer.limit() - (needBufferLength);
+//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
+		int neededLength = ImPacket.HEADER_LENGHT + bodyLength;
+		int test = readableLength - neededLength;
 		if (test < 0) // 不够消息体长度(剩下的buffe组不了消息体)
 		{
-			packetMeta.setNeedLength(needBufferLength);
-			return packetMeta;
+//			packetMeta.setNeededLength(neededLength);
+			return null;
 		} else
 		{
 			imPacket = new ImPacket();
@@ -218,9 +215,8 @@ public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
 				imPacket.setBody(dst);
 			}
 
-			packetMeta.setPacketLenght(buffer.position());
-			packetMeta.setPacket(imPacket);
-			return packetMeta;
+//			packetMeta.setPacket(imPacket);
+			return imPacket;
 
 		}
 
