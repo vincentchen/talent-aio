@@ -78,7 +78,7 @@ public class ImClientStarter
 
 	static java.util.concurrent.atomic.AtomicLong SEQ = new AtomicLong();
 
-	public static String groupid = "89889";
+	public static String groupid = "89889_1";
 
 	/**
 	 * @param args
@@ -129,7 +129,7 @@ public class ImClientStarter
 								//log.error("send msg to group {}", groupid);
 								label_2: for (ChannelContext<Object, ImPacket, Object> entry : set)
 								{
-									if (i >= 2)
+									if (i >= 1)
 									{
 										break label_2;
 									}
