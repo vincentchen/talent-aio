@@ -27,6 +27,7 @@ import com.talent.aio.client.ClientGroupStat;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
+import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
@@ -148,7 +149,7 @@ public class ImClientStarter
 						ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> connections = clientGroupContext.getConnections().getSet();
 						Set<ChannelContext<Object, ImPacket, Object>> set = connections.getObj();
 						ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
-						log.error("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
+						log.error("[{}]:[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(), clientGroupStat.getClosed().get(),
 								clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
 								clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
 

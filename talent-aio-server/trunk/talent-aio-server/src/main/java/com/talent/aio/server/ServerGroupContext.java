@@ -132,7 +132,7 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 									Aio.close(channelContext, "定时任务检查，" + channelContext.toString() + "隔了" + interval + "ms没有发送消息");
 								}
 							}
-							log.error("[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(),
+							log.error("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
 									serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
 									serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
 									serverGroupStat.getSentBytes().get());

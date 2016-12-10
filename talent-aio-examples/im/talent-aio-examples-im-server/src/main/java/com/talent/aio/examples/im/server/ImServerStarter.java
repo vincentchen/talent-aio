@@ -21,10 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.AioHandler;
-import com.talent.aio.common.task.CloseRunnable;
-import com.talent.aio.common.task.DecodeRunnable;
-import com.talent.aio.common.task.HandlerRunnable;
-import com.talent.aio.common.task.SendRunnable;
+import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.common.ImSendListener;
@@ -95,7 +92,7 @@ public class ImServerStarter
 					{
 						synchronized (CommandStat.commandAndCount)
 						{
-							log.error("command stat:{}", Json.toJson(CommandStat.commandAndCount));
+							log.error("[{}]:command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
 						}
 
 						try
