@@ -38,7 +38,7 @@
 		<mariadb-client.version>1.5.5</mariadb-client.version>
 		<asm.version>5.1</asm.version>
 		<ant.version>1.9.7</ant.version>
-		<logback.version>1.1.7</logback.version>
+		<logback.version>1.1.8</logback.version>
 		<slf4j.version>1.7.21</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 
@@ -64,7 +64,7 @@
 		<activiti.version>6.0.0.Beta4</activiti.version>
 		<activiti-spring.version>6.0.0.Beta4</activiti-spring.version>
 		<smack.version>3.2.1</smack.version>
-		<activemq.version>5.14.1</activemq.version>
+		<activemq.version>5.14.2</activemq.version>
 		<mysql.driver.version>5.1.40</mysql.driver.version>
 		<hsqldb.version>2.3.4</hsqldb.version>
 		<mongo.driver.version>3.4.0</mongo.driver.version>
@@ -129,11 +129,11 @@
 		<commons-logging.version>1.2</commons-logging.version>
 		<jackson-mapper-lgpl.version>1.9.13</jackson-mapper-lgpl.version>
 		<ognl.version>3.1.12</ognl.version>
-		<pagehelper.version>4.1.6</pagehelper.version>
+		<pagehelper.version>4.2.1</pagehelper.version>
 		<jsqlparser.version>0.9.6</jsqlparser.version>
 		<javax.websocket-client-api.version>1.1</javax.websocket-client-api.version>
 		<dom4j.version>1.6.1</dom4j.version>
-		<proguard-base.version>5.3.1</proguard-base.version>
+		<proguard-base.version>5.3.2</proguard-base.version>
 		<jmxtools.version>1.2.1</jmxtools.version>
 		<mail.version>1.5.0-b01</mail.version>
 		<activation.version>1.1.1</activation.version>
@@ -145,14 +145,14 @@
 		<mybatis-generator.version>1.3.5</mybatis-generator.version> <!-- 1.3.5-SNAPSHOT -->
 		<jedis.version>2.9.0</jedis.version>
 		<json-lib.version>2.4</json-lib.version>
-		<fastjson.version>1.2.21</fastjson.version>
+		<fastjson.version>1.2.22</fastjson.version>
 		<druid.version>1.0.27</druid.version>
 		<jcaptcha.version>1.0</jcaptcha.version>
 		<javax.websocket-api.version>1.1</javax.websocket-api.version>
 		<docx4j.version>3.3.1</docx4j.version>
 		<drools-compiler.version>7.0.0.Beta2</drools-compiler.version>
 		<jug.version>2.0.0</jug.version>
-		<testng.version>6.9.13.8</testng.version>
+		<testng.version>6.10</testng.version>
 		<svnkit.version>1.8.14</svnkit.version>
 		<plexus-utils.version>3.0.24</plexus-utils.version>
 		<sisu-inject-plexus.version>2.6.0</sisu-inject-plexus.version>
@@ -181,7 +181,7 @@
 		<okio.version>1.11.0</okio.version>
 
 
-		<lombok.version>1.16.10</lombok.version><!-- getter,setter -->
+		<lombok.version>1.16.12</lombok.version><!-- getter,setter -->
 		<nutz-qrcode.version>1.b.53</nutz-qrcode.version>
 
 		<qiniu-java-sdk.version>7.2.2</qiniu-java-sdk.version>
