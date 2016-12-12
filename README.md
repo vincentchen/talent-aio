@@ -15,6 +15,6 @@
 1、文档，目前可以用例子学习，例子也是很简单的
 2、性能细节方面还有些待优化，但由于总体架构包括线程模型很优秀(这是不是有点在自夸？)，所以目前的性能已经非常非常好(以前有个大企业的架构师跟我说 **netty的c10k** ，目前talent-aio已经支持到 **c75k** 了，后续这个数字肯定还要增加，预计增到了 **c200k** 问题不大)
 
- **用talent-aio实现的简单的im例子:** 
+ **用talent-aio实现的简单的im例子(先启动服务器再启动客户端，然后控制台会打印相当性能数据):** 
 1、运行server examples: com.talent.aio.examples.im.server.ImServerStarter
 2、运行client examples: com.talent.aio.examples.im.client.ImClientStarter
