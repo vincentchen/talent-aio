@@ -74,7 +74,7 @@ public class ImClientStarter
 
 	static AioClient<Object, ImPacket, Object> aioClient;
 
-	static int clientCount = 15000;
+	static int clientCount = 16000;
 
 	static java.util.concurrent.atomic.AtomicLong SEQ = new AtomicLong();
 
