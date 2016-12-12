@@ -1,8 +1,9 @@
  **#talent-aio** 
 高性能、易用、灵活的java aio框架，可方便用于创建tcp长连接服务器。
 
- **talent-aio的一些测试数据：** 
-1、用talent-aio-server实现的tcp长连接服务器，目前简单测试后，可以支持75000个TCP长连接(这个数值后面会继续增加，因为已有的测试还没达到服务器权限，只是用完了5个客户端的权限)
+ **talent-aio的一些测试数据(测试环境见图)：** 
+![测试机器](https://git.oschina.net/tywo45/talent-aio/raw/master/ddd.png?dir=0&filepath=ddd.png&oid=2c5667ac59cc61884cd96830dc00ced481b9dc16&sha=c6fe97a4e175a3393ab0d4b9dec2ce04148039eb "在这里输入图片标题")
+1、用talent-aio-server实现的tcp长连接服务器，目前简单测试后，可以支持75000个TCP长连接(这个数值后面会继续增加，因为已有的测试还没达到服务器极限，只是用完了5个客户端的极限)
 2、用talent-aio-server实现的tcp长连接服务器，客户机与服务器是同一台的话，服务器可以接收、处理、发送18万条完整的业务消息包/每秒，客户端可以同时处理与之对应的数据量
 
  **talent-aio的一些特点：** 
