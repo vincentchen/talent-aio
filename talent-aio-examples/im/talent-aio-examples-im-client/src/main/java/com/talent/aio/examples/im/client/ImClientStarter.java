@@ -27,12 +27,13 @@ import com.talent.aio.client.ClientGroupStat;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
-import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.ImSendListener;
 import com.talent.aio.examples.im.common.Const.ChatType;
+import com.talent.aio.examples.im.common.ImAioListener;
+import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.common.bs.AuthReqBody;
 import com.talent.aio.examples.im.common.bs.ChatReqBody;
 import com.talent.aio.examples.im.common.json.Json;
@@ -67,6 +68,8 @@ public class ImClientStarter
 	static ClientGroupContext<Object, ImPacket, Object> clientGroupContext = null;
 
 	static AioClientHandler<Object, ImPacket, Object> aioClientHandler = null;
+	
+	static AioListener<Object, ImPacket, Object> aioListener = null;
 
 	static String ip = "127.0.0.1";
 
@@ -91,8 +94,8 @@ public class ImClientStarter
 	public static void main(String[] args) throws Exception
 	{
 		aioClientHandler = new ImAioClientHandler();
-		ImSendListener imSendListener = new ImSendListener();
-		clientGroupContext = new ClientGroupContext<>(ip, port, aioClientHandler, imSendListener);
+		aioListener = new ImAioListener();
+		clientGroupContext = new ClientGroupContext<>(ip, port, aioClientHandler, aioListener);
 		aioClient = new AioClient<>(clientGroupContext);
 
 		for (int i = 0; i < clientCount; i++)
@@ -129,7 +132,7 @@ public class ImClientStarter
 								//log.error("send msg to group {}", groupid);
 								label_2: for (ChannelContext<Object, ImPacket, Object> entry : set)
 								{
-									if (i >= 1)
+									if (i >= 5)
 									{
 										break label_2;
 									}
@@ -157,9 +160,12 @@ public class ImClientStarter
 								clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
 								clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
 
-						synchronized (CommandStat.commandAndCount)
+						try
 						{
-							log.error("command stat:{}", Json.toJson(CommandStat.commandAndCount));
+							log.error("[{}]: command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
+						} catch (Exception e1)
+						{
+							// may be ConcurrentModificationException,  skip it
 						}
 
 					} catch (Throwable e)

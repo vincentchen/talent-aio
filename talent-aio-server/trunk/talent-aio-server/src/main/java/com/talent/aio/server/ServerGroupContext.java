@@ -28,7 +28,7 @@ import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.DefaultThreadFactory;
 import com.talent.aio.common.utils.SystemTimer;
@@ -77,9 +77,9 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param port the port
 	 * @param aioHandler the aio handler
 	 */
-	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, SendListener<Ext, P, R> sendListener)
+	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener)
 	{
-		this(ip, port, aioHandler, sendListener, new ThreadPoolExecutor(corePoolSize, corePoolSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+		this(ip, port, aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-server-group")));
 	}
 
@@ -91,9 +91,9 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param aioHandler the aio handler
 	 * @param groupExecutor the group executor
 	 */
-	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, SendListener<Ext, P, R> sendListener, ThreadPoolExecutor groupExecutor)
+	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener, ThreadPoolExecutor groupExecutor)
 	{
-		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port, aioHandler, sendListener);
+		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port, aioHandler, aioListener);
 		this.ip = ip;
 		this.port = port;
 		this.groupExecutor = groupExecutor;

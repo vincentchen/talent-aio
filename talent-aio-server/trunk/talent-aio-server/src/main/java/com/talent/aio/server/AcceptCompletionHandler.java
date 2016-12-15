@@ -12,6 +12,7 @@
 package com.talent.aio.server;
 
 import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
@@ -88,7 +89,8 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, result);
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-			result.read(readCompletionHandler.getByteBuffer(), channelContext, readCompletionHandler);
+			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
+			result.read(newByteBuffer, newByteBuffer, readCompletionHandler);
 		} catch (Exception e)
 		{
 			log.error("", e);

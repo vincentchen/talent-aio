@@ -28,7 +28,7 @@ import com.talent.aio.common.ChannelContext.Stat;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.DefaultThreadFactory;
 import com.talent.aio.common.utils.SystemTimer;
@@ -66,11 +66,11 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param ip the ip
 	 * @param port the port
 	 * @param aioHandler the aio handler
-	 * @param sendListener the send listener
+	 * @param aioListener the send listener
 	 */
-	public ClientGroupContext(String ip, int port, AioClientHandler<Ext, P, R> aioHandler, SendListener<Ext, P, R> sendListener)
+	public ClientGroupContext(String ip, int port, AioClientHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener)
 	{
-		this(ip, port, aioHandler, sendListener, new ThreadPoolExecutor(corePoolSize, corePoolSize, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+		this(ip, port, aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-client-group")));
 	}
 
@@ -80,12 +80,12 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param ip the ip
 	 * @param port the port
 	 * @param aioHandler the aio handler
-	 * @param sendListener the send listener
+	 * @param aioListener the send listener
 	 * @param groupExecutor the group executor
 	 */
-	public ClientGroupContext(String ip, int port, AioClientHandler<Ext, P, R> aioHandler, SendListener<Ext, P, R> sendListener, ExecutorService groupExecutor)
+	public ClientGroupContext(String ip, int port, AioClientHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener, ExecutorService groupExecutor)
 	{
-		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port, aioHandler, sendListener);
+		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port, aioHandler, aioListener);
 		this.ip = ip;
 		this.port = port;
 		this.groupExecutor = groupExecutor;

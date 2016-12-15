@@ -22,6 +22,7 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.examples.im.common.Command;
+import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.server.handler.AuthHandler;
 import com.talent.aio.examples.im.server.handler.ChatHandler;
@@ -85,14 +86,19 @@ public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
 		Short command = packet.getCommand();
-		com.talent.aio.examples.im.common.CommandStat.getCount(command).incrementAndGet();
 		ImBsAioHandlerIntf handler = handlerMap.get(command);
 		if (handler != null)
 		{
-			return handler.handler(packet, channelContext);
+			Object obj = handler.handler(packet, channelContext);
+			CommandStat.getCount(command).handled.incrementAndGet();
+			return obj;
+		} else
+		{
+			CommandStat.getCount(command).handled.incrementAndGet();
+			log.warn("找不到对应的命令码[{}]处理类", command);
+			return null;
 		}
-		log.warn("找不到对应的命令码[{}]处理类", command);
-		return null;
+
 	}
 
 	/** 

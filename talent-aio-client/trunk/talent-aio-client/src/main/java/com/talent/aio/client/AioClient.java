@@ -14,6 +14,7 @@ package com.talent.aio.client;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.ExecutionException;
@@ -89,7 +90,8 @@ public class AioClient<Ext, P extends Packet, R>
 			log.info("connected to {}:{}", ip, port);
 			ClientChannelContext<Ext, P, R> channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-			asynchronousSocketChannel.read(readCompletionHandler.getByteBuffer(), channelContext, readCompletionHandler);
+			ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
+			asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
 			return channelContext;
 		} catch (InterruptedException | ExecutionException | TimeoutException e)
 		{

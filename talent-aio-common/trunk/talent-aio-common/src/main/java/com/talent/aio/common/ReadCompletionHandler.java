@@ -33,12 +33,13 @@ import com.talent.aio.common.utils.SystemTimer;
  *  (1) | 2016年11月15日 | tanyaowu | 新建类
  *
  */
-public class ReadCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, ChannelContext<Ext, P, R>>
+public class ReadCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, ByteBuffer>
 {
 
 	private static Logger log = LoggerFactory.getLogger(ReadCompletionHandler.class);
+	private ChannelContext<Ext, P, R> channelContext = null;
 
-	private ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+//	private ByteBuffer byteBuffer = ByteBuffer.allocate(ChannelContext.READ_BUFFER_SIZE);
 
 	/**
 	 * 
@@ -47,9 +48,9 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 	 * @创建时间:　2016年11月15日 下午1:31:04
 	 * 
 	 */
-	public ReadCompletionHandler()
+	public ReadCompletionHandler(ChannelContext<Ext, P, R> channelContext)
 	{
-
+		this.setChannelContext(channelContext);
 	}
 
 	/**
@@ -74,20 +75,21 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 	 * 
 	 */
 	@Override
-	public void completed(Integer result, ChannelContext<Ext, P, R> channelContext)
+	public void completed(Integer result, ByteBuffer byteBuffer)
 	{
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 		if (result > 0)
 		{
 			channelContext.getStat().setTimeLatestReceivedMsg(SystemTimer.currentTimeMillis());
-			byteBuffer.flip();
-			ByteBuffer byteBuffer1 = ByteBuffer.allocate(byteBuffer.limit());
-			byteBuffer1.put(byteBuffer);
-			byteBuffer.clear();
+			byteBuffer.limit(byteBuffer.position());
+			byteBuffer.position(0);
+//			byteBuffer.flip();
+//			ByteBuffer byteBuffer1 = ByteBuffer.allocate(byteBuffer.limit());
+//			byteBuffer1.put(byteBuffer);
+//			byteBuffer.clear();
 
-			//			byteBuffer1.flip();
 			DecodeRunnable<Ext, P, R> decodeRunnable = channelContext.getDecodeRunnable();
-			decodeRunnable.addMsg(byteBuffer1);
+			decodeRunnable.addMsg(byteBuffer);
 			
 			groupContext.getDecodeExecutor().execute(decodeRunnable);
 
@@ -102,7 +104,8 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 		if (AioUtils.checkBeforeIO(channelContext))
 		{
 			AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
-			asynchronousSocketChannel.read(this.getByteBuffer(), channelContext, this);
+			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
+			asynchronousSocketChannel.read(newByteBuffer, newByteBuffer, this);
 		}
 
 	}
@@ -117,26 +120,42 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 	 * 
 	 */
 	@Override
-	public void failed(Throwable exc, ChannelContext<Ext, P, R> attachment)
+	public void failed(Throwable exc, ByteBuffer byteBuffer)
 	{
-		Aio.close(attachment, exc, "读数据时发生异常");
+		Aio.close(channelContext, exc, "读数据时发生异常");
 
 	}
 
+//	/**
+//	 * @return the byteBuffer
+//	 */
+//	public ByteBuffer getByteBuffer()
+//	{
+//		return byteBuffer;
+//	}
+//
+//	/**
+//	 * @param byteBuffer the byteBuffer to set
+//	 */
+//	public void setByteBuffer(ByteBuffer byteBuffer)
+//	{
+//		this.byteBuffer = byteBuffer;
+//	}
+
 	/**
-	 * @return the byteBuffer
+	 * @return the channelContext
 	 */
-	public ByteBuffer getByteBuffer()
+	public ChannelContext<Ext, P, R> getChannelContext()
 	{
-		return byteBuffer;
+		return channelContext;
 	}
 
 	/**
-	 * @param byteBuffer the byteBuffer to set
+	 * @param channelContext the channelContext to set
 	 */
-	public void setByteBuffer(ByteBuffer byteBuffer)
+	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)
 	{
-		this.byteBuffer = byteBuffer;
+		this.channelContext = channelContext;
 	}
 
 }

@@ -3,8 +3,6 @@ package com.talent.aio.common;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -31,7 +29,9 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 	private static java.util.concurrent.atomic.AtomicLong idAtomicLong = new AtomicLong();
 	
-	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
+	
+	
+//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
 
 	private GroupContext<Ext, P, R> groupContext = null;
 
@@ -44,7 +44,9 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private SendRunnable<Ext, P, R> sendRunnableHighPrior = null;
 	private SendRunnable<Ext, P, R> sendRunnableNormPrior = null;
 
-	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>();
+	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
+	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>(this);
+	
 
 	//	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>();
 
@@ -384,12 +386,28 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		this.stat = stat;
 	}
 
+//	/**
+//	 * @return the sendSemaphore
+//	 */
+//	public java.util.concurrent.Semaphore getSendSemaphore()
+//	{
+//		return sendSemaphore;
+//	}
+
 	/**
-	 * @return the sendSemaphore
+	 * @return the writeCompletionHandler
 	 */
-	public java.util.concurrent.Semaphore getSendSemaphore()
+	public WriteCompletionHandler<Ext, P, R> getWriteCompletionHandler()
 	{
-		return sendSemaphore;
+		return writeCompletionHandler;
+	}
+
+	/**
+	 * @param writeCompletionHandler the writeCompletionHandler to set
+	 */
+	public void setWriteCompletionHandler(WriteCompletionHandler<Ext, P, R> writeCompletionHandler)
+	{
+		this.writeCompletionHandler = writeCompletionHandler;
 	}
 
 	public static class Stat

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.ByteBufferUtils;
@@ -63,7 +64,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 		lastByteBuffer = null;
 	}
 
-//	private int needLength = -1;
+	//	private int needLength = -1;
 
 	@Override
 	public void runTask()
@@ -79,10 +80,10 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			{
 				if (lastByteBuffer != null)
 				{
-//					lastByteBuffer.position(0);
-//					lastByteBuffer.limit(lastByteBuffer.capacity());
+					//					lastByteBuffer.position(0);
+					//					lastByteBuffer.limit(lastByteBuffer.capacity());
 					byteBuffer.position(0);
-					byteBuffer.limit(byteBuffer.capacity());
+//					byteBuffer.limit(byteBuffer.capacity());
 					byteBuffer = ByteBufferUtils.composite(lastByteBuffer, byteBuffer);
 					lastByteBuffer = null;
 				}
@@ -94,7 +95,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			try
 			{
 				byteBuffer.position(0);
-				byteBuffer.limit(byteBuffer.capacity());
+//				byteBuffer.limit(byteBuffer.capacity());
 
 				label_2: while (true)
 				{
@@ -105,16 +106,22 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					{
 						// 数据不够，组不了包，
 						byteBuffer.position(initPosition);
-//						byteBuffer.limit(byteBuffer.capacity());
+						//						byteBuffer.limit(byteBuffer.capacity());
 
 						lastByteBuffer = byteBuffer;
-//						needLength = packetMeta.getNeededLength();
+						//						needLength = packetMeta.getNeededLength();
 						continue label_1;
 					} else //组包成功
 					{
+
 						int afterDecodePosition = byteBuffer.position();
 						int len = afterDecodePosition - initPosition;
-//						needLength = -1;
+						AioListener<Ext, P, R> aioListener = channelContext.getGroupContext().getAioListener();
+						if (aioListener != null)
+						{
+							aioListener.onAfterDecoded(channelContext, packet, len);
+						}
+						//						needLength = -1;
 						submit(packet, len);
 						channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
 						channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
@@ -123,11 +130,11 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						{
 							if (log.isDebugEnabled())
 							{
-								log.debug("组包后，还剩一点数据:{}", byteBuffer.capacity() - byteBuffer.position());
+								log.debug("组包后，还剩一点数据:{}", byteBuffer.limit() - byteBuffer.position());
 							}
-							
-//							lastByteBuffer = ByteBufferUtils.copy(byteBuffer, len, byteBuffer.capacity());
-							
+
+							//							lastByteBuffer = ByteBufferUtils.copy(byteBuffer, len, byteBuffer.capacity());
+
 							continue label_2;
 						} else
 						{
@@ -193,5 +200,4 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 		return builder.toString();
 	}
 
-	
 }

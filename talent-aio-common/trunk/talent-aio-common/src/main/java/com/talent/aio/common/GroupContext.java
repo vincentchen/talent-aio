@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.common.maintain.Connections;
 import com.talent.aio.common.maintain.Groups;
@@ -42,45 +42,38 @@ import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 public abstract class GroupContext<Ext, P extends Packet, R>
 {
 	static Logger log = LoggerFactory.getLogger(GroupContext.class);
-	//	/**
-	//	 * 同时接受请求的并发数
-	//	 */
-	//	private int acceptConcurrentCount = 100;
-	//	/**
-	//	 * 同时关闭连接的并发数
-	//	 */
-	//	private int closeConcurrentCount = 100;
-	//	/**
-	//	 * 同时读的并发数
-	//	 */
-	//	private int readConcurrentCount = 100;
 
-	//	private Semaphore acceptSemaphore = new Semaphore(acceptConcurrentCount);
-	//	private Semaphore closeSemaphore = new Semaphore(closeConcurrentCount);
-	//	private Semaphore readSemaphore = new Semaphore(readConcurrentCount);
-
-	public static final int corePoolSize = Runtime.getRuntime().availableProcessors() * 1;
+	public static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 1;
 
 	/**
 	 * 心跳超时时间(单位: 毫秒)
 	 */
 	public static final long HEARTBEAT_TIMEOUT = 1000 * 60;
 
-	public static final int maximumPoolSize = corePoolSize * 4;
+	/** 
+	 * 默认的接收数据的buffer size
+	 */
+	public static final int READ_BUFFER_SIZE = 128;
 
-	public static final long keepAliveTime = 90L;
+	public static final int MAXIMUM_POOL_SIZE = CORE_POOL_SIZE * 4;
 
-	private AioHandler<Ext, P, R> aioHandler;
-	
-	private SendListener<Ext, P, R> sendListener;
+	public static final long KEEP_ALIVE_TIME = 90L;
 
 	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-	
 
 	/**
 	 * 心跳超时时间(单位: 毫秒)
 	 */
 	protected long heartbeatTimeout = HEARTBEAT_TIMEOUT;
+
+	/**
+	 * 接收数据的buffer size
+	 */
+	protected int readBufferSize = READ_BUFFER_SIZE;
+
+	private AioHandler<Ext, P, R> aioHandler;
+
+	private AioListener<Ext, P, R> aioListener;
 	/**
 	 * 解码线程池
 	 */
@@ -113,8 +106,6 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	protected Connections<Ext, P, R> connections = new Connections<>();
 	protected Groups<Ext, P, R> groups = new Groups<>();
 	protected Users<Ext, P, R> users = new Users<>();
-	
-	
 
 	protected String id;
 
@@ -131,12 +122,12 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月16日 上午10:21:58
 	 * 
 	 */
-	public GroupContext(String id, AioHandler<Ext, P, R> aioHandler, SendListener<Ext, P, R> sendListener)
+	public GroupContext(String id, AioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener)
 	{
 		super();
 		this.id = id;
 		this.aioHandler = aioHandler;
-		this.sendListener = sendListener;
+		this.aioListener = aioListener;
 		//		SynchronousQueue<Runnable> decodePoolQueue = new SynchronousQueue<Runnable>();
 		//		decodeExecutor = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, decodePoolQueue, "t-aio-decode");
 		//		decodeExecutor.prestartAllCoreThreads();
@@ -162,12 +153,12 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		//		sendExecutorNormPrior.prestartAllCoreThreads();
 
 		LinkedBlockingQueue<Runnable> poolQueueHighPrior = new LinkedBlockingQueue<Runnable>();
-		SynThreadPoolExecutor<SynRunnableIntf> executorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, corePoolSize, keepAliveTime, poolQueueHighPrior,
+		SynThreadPoolExecutor<SynRunnableIntf> executorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(CORE_POOL_SIZE, CORE_POOL_SIZE, KEEP_ALIVE_TIME, poolQueueHighPrior,
 				DefaultThreadFactory.getInstance("t-aio-high-prior", Thread.MAX_PRIORITY), "t-aio-high-prior");
 		executorHighPrior.prestartAllCoreThreads();
 
 		LinkedBlockingQueue<Runnable> poolQueueNormPrior = new LinkedBlockingQueue<Runnable>();
-		SynThreadPoolExecutor<SynRunnableIntf> executorNormPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, corePoolSize, keepAliveTime, poolQueueNormPrior,
+		SynThreadPoolExecutor<SynRunnableIntf> executorNormPrior = new SynThreadPoolExecutor<SynRunnableIntf>(CORE_POOL_SIZE, CORE_POOL_SIZE, KEEP_ALIVE_TIME, poolQueueNormPrior,
 				DefaultThreadFactory.getInstance("t-aio-low-prior", Thread.NORM_PRIORITY), "t-aio-low-prior");
 		executorNormPrior.prestartAllCoreThreads();
 
@@ -178,36 +169,35 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		sendExecutorHighPrior = executorHighPrior;
 		sendExecutorNormPrior = executorNormPrior;
 
-		
 	}
 
-//	/**
-//	 * @param ip
-//	 * @param port
-//	 * @param aioHandler
-//	 * @param decodeExecutor
-//	 * @param handlerExecutorHighPrior
-//	 * @param handlerExecutorNormPrior
-//	 * @param sendExecutorHighPrior
-//	 * @param sendExecutorNormPrior
-//	 *
-//	 * @author: tanyaowu
-//	 * @创建时间:　2016年11月16日 上午10:23:47
-//	 * 
-//	 */
-//	public GroupContext(AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor, SynThreadPoolExecutor<SynRunnableIntf> closeExecutor,
-//			SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorNormPrior,
-//			SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior, SynThreadPoolExecutor<SynRunnableIntf> sendExecutorNormPrior)
-//	{
-//		super();
-//		this.aioHandler = aioHandler;
-//		this.decodeExecutor = decodeExecutor;
-//		this.closeExecutor = closeExecutor;
-//		this.handlerExecutorHighPrior = handlerExecutorHighPrior;
-//		this.handlerExecutorNormPrior = handlerExecutorNormPrior;
-//		this.sendExecutorHighPrior = sendExecutorHighPrior;
-//		this.sendExecutorNormPrior = sendExecutorNormPrior;
-//	}
+	//	/**
+	//	 * @param ip
+	//	 * @param port
+	//	 * @param aioHandler
+	//	 * @param decodeExecutor
+	//	 * @param handlerExecutorHighPrior
+	//	 * @param handlerExecutorNormPrior
+	//	 * @param sendExecutorHighPrior
+	//	 * @param sendExecutorNormPrior
+	//	 *
+	//	 * @author: tanyaowu
+	//	 * @创建时间:　2016年11月16日 上午10:23:47
+	//	 * 
+	//	 */
+	//	public GroupContext(AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor, SynThreadPoolExecutor<SynRunnableIntf> closeExecutor,
+	//			SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorNormPrior,
+	//			SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior, SynThreadPoolExecutor<SynRunnableIntf> sendExecutorNormPrior)
+	//	{
+	//		super();
+	//		this.aioHandler = aioHandler;
+	//		this.decodeExecutor = decodeExecutor;
+	//		this.closeExecutor = closeExecutor;
+	//		this.handlerExecutorHighPrior = handlerExecutorHighPrior;
+	//		this.handlerExecutorNormPrior = handlerExecutorNormPrior;
+	//		this.sendExecutorHighPrior = sendExecutorHighPrior;
+	//		this.sendExecutorNormPrior = sendExecutorNormPrior;
+	//	}
 
 	/**
 	 * @param args
@@ -381,7 +371,6 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		this.users = users;
 	}
 
-
 	/**
 	 * @return the id
 	 */
@@ -452,20 +441,35 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	public abstract GroupStat getGroupStat();
 
 	/**
-	 * @return the sendListener
+	 * @return the aioListener
 	 */
-	public SendListener<Ext, P, R> getSendListener()
+	public AioListener<Ext, P, R> getAioListener()
 	{
-		return sendListener;
+		return aioListener;
 	}
 
 	/**
-	 * @param sendListener the sendListener to set
+	 * @param aioListener the aioListener to set
 	 */
-	public void setSendListener(SendListener<Ext, P, R> sendListener)
+	public void setSendListener(AioListener<Ext, P, R> aioListener)
 	{
-		this.sendListener = sendListener;
+		this.aioListener = aioListener;
 	}
 
+	/**
+	 * @return the readBufferSize
+	 */
+	public int getReadBufferSize()
+	{
+		return readBufferSize;
+	}
+
+	/**
+	 * @param readBufferSize the readBufferSize to set
+	 */
+	public void setReadBufferSize(int readBufferSize)
+	{
+		this.readBufferSize = readBufferSize;
+	}
 
 }

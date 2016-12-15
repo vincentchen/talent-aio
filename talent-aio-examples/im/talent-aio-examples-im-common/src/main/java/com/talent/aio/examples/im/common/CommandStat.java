@@ -28,11 +28,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CommandStat
 {
 
-	public final static Map<Short, AtomicLong> commandAndCount = new ConcurrentHashMap<>();
+	public final static Map<Short, CommandStat> commandAndCount = new ConcurrentHashMap<>();
+	
+	public final AtomicLong received = new AtomicLong();
+	public final AtomicLong handled = new AtomicLong();
+	public final AtomicLong sent = new AtomicLong();
 
-	public static AtomicLong getCount(Short command)
+	public static CommandStat getCount(Short command)
 	{
-		AtomicLong ret = commandAndCount.get(command);
+		CommandStat ret = commandAndCount.get(command);
 		if (ret != null)
 		{
 			return ret;
@@ -45,11 +49,12 @@ public class CommandStat
 			{
 				return ret;
 			}
-			ret = new AtomicLong();
+			ret = new CommandStat();
 			commandAndCount.put(command, ret);
 		}
 		return ret;
 	}
+	
 
 	/**
 	 * 
@@ -71,6 +76,33 @@ public class CommandStat
 	 */
 	public static void main(String[] args)
 	{
+	}
+
+
+	/**
+	 * @return the receivedCount
+	 */
+	public AtomicLong getReceived()
+	{
+		return received;
+	}
+
+
+	/**
+	 * @return the handledCount
+	 */
+	public AtomicLong getHandled()
+	{
+		return handled;
+	}
+
+
+	/**
+	 * @return the sentCount
+	 */
+	public AtomicLong getSent()
+	{
+		return sent;
 	}
 
 }

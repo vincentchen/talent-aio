@@ -12,12 +12,13 @@
 package com.talent.aio.common;
 
 import java.nio.channels.CompletionHandler;
+import java.util.concurrent.Semaphore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.utils.SystemTimer;
 
@@ -31,12 +32,15 @@ import com.talent.aio.common.utils.SystemTimer;
  *  (1) | 2016年11月15日 | tanyaowu | 新建类
  *
  */
-public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, ChannelContext<Ext, P, R>>
+public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, P>
 {
 	
 	private static Logger log = LoggerFactory.getLogger(WriteCompletionHandler.class);
 	
-	private P packet;
+	private ChannelContext<Ext, P, R> channelContext = null;
+	
+	private java.util.concurrent.Semaphore writeSemaphore = new Semaphore(1);
+//	private P packet;
 	
 	/**
 	 * 
@@ -45,9 +49,9 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	 * @创建时间:　2016年11月15日 下午1:31:04
 	 * 
 	 */
-	public WriteCompletionHandler(P packet)
+	public WriteCompletionHandler(ChannelContext<Ext, P, R> channelContext)
 	{
-		this.packet = packet;
+		this.channelContext = channelContext;		
 	}
 
 
@@ -74,20 +78,20 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	 * 
 	 */
 	@Override
-	public void completed(Integer result, ChannelContext<Ext, P, R> channelContext)
+	public void completed(Integer result, P packet)
 	{
-		channelContext.getSendSemaphore().release();
+		this.writeSemaphore.release();
 		if (result > 0)
 		{
 			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 			GroupStat groupStat = groupContext.getGroupStat();
-			SendListener<Ext, P, R> sendListener = groupContext.getSendListener();
+			AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
 			groupStat.getSentPacket().incrementAndGet();
 			groupStat.getSentBytes().addAndGet(result);
 			channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
-			if (sendListener != null)
+			if (aioListener != null)
 			{
-				sendListener.onAfterSent(channelContext, packet, result);
+				aioListener.onAfterSent(channelContext, packet, result);
 			}
 		} else if (result == 0)
 		{
@@ -113,10 +117,63 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	 * 
 	 */
 	@Override
-	public void failed(Throwable exc, ChannelContext<Ext, P, R> channelContext)
+	public void failed(Throwable exc, P packet)
 	{
-		channelContext.getSendSemaphore().release();
-		Aio.close(channelContext, exc, "写数据时发生异常");
+		try
+		{
+			this.writeSemaphore.release();
+		} finally
+		{
+			Aio.close(channelContext, exc, "写数据时发生异常");
+		}
+		
 	}
+
+
+//	/**
+//	 * @return the packet
+//	 */
+//	public P getPacket()
+//	{
+//		return packet;
+//	}
+//
+//
+//	/**
+//	 * @param packet the packet to set
+//	 */
+//	public void setPacket(P packet)
+//	{
+//		this.packet = packet;
+//	}
+
+
+	/**
+	 * @return the channelContext
+	 */
+	public ChannelContext<Ext, P, R> getChannelContext()
+	{
+		return channelContext;
+	}
+
+//
+//	/**
+//	 * @param channelContext the channelContext to set
+//	 */
+//	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)
+//	{
+//		this.channelContext = channelContext;
+//	}
+
+
+	/**
+	 * @return the writeSemaphore
+	 */
+	public java.util.concurrent.Semaphore getWriteSemaphore()
+	{
+		return writeSemaphore;
+	}
+
+
 
 }

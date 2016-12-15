@@ -21,10 +21,11 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.AioHandler;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.ImSendListener;
+import com.talent.aio.examples.im.common.ImAioListener;
 import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.server.AioServer;
 import com.talent.aio.server.ServerGroupContext;
@@ -61,6 +62,8 @@ public class ImServerStarter
 
 	static AioHandler<Object, ImPacket, Object> aioHandler = null;
 
+	static AioListener<Object, ImPacket, Object> aioListener = null;
+
 	static String ip = null;
 
 	static int port = 9321;
@@ -76,8 +79,8 @@ public class ImServerStarter
 	public static void main(String[] args) throws IOException
 	{
 		aioHandler = new ImServerAioHandler();
-		ImSendListener imSendListener = new ImSendListener();
-		serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, imSendListener);
+		aioListener = new ImAioListener();
+		serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
 		aioServer = new AioServer<>(serverGroupContext);
 		aioServer.start();
 
@@ -90,9 +93,12 @@ public class ImServerStarter
 				{
 					try
 					{
-						synchronized (CommandStat.commandAndCount)
+						try
 						{
-							log.error("[{}]:command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
+							log.error("[{}]: command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
+						} catch (Exception e1)
+						{
+							// may be ConcurrentModificationException,  skip it
 						}
 
 						try
@@ -107,65 +113,65 @@ public class ImServerStarter
 								for (ChannelContext<Object, ImPacket, Object> entry : set)
 								{
 
-//									ChannelContext<Object, ImPacket, Object> channelContext = entry;
-//									CloseRunnable<Object, ImPacket, Object> closeRunnable = channelContext.getCloseRunnable();
-//									DecodeRunnable<Object, ImPacket, Object> decodeRunnable = channelContext.getDecodeRunnable();
-//									HandlerRunnable<Object, ImPacket, Object> handlerRunnableHighPrior = channelContext.getHandlerRunnableHighPrior();
-//									HandlerRunnable<Object, ImPacket, Object> handlerRunnableNormPrior = channelContext.getHandlerRunnableNormPrior();
-//									SendRunnable<Object, ImPacket, Object> sendRunnableHighPrior = channelContext.getSendRunnableHighPrior();
-//									SendRunnable<Object, ImPacket, Object> sendRunnableNormPrior = channelContext.getSendRunnableNormPrior();
+									//									ChannelContext<Object, ImPacket, Object> channelContext = entry;
+									//									CloseRunnable<Object, ImPacket, Object> closeRunnable = channelContext.getCloseRunnable();
+									//									DecodeRunnable<Object, ImPacket, Object> decodeRunnable = channelContext.getDecodeRunnable();
+									//									HandlerRunnable<Object, ImPacket, Object> handlerRunnableHighPrior = channelContext.getHandlerRunnableHighPrior();
+									//									HandlerRunnable<Object, ImPacket, Object> handlerRunnableNormPrior = channelContext.getHandlerRunnableNormPrior();
+									//									SendRunnable<Object, ImPacket, Object> sendRunnableHighPrior = channelContext.getSendRunnableHighPrior();
+									//									SendRunnable<Object, ImPacket, Object> sendRunnableNormPrior = channelContext.getSendRunnableNormPrior();
 
-//									StringBuilder sb = new StringBuilder();
-//									if (decodeRunnable.getMsgQueue().size() > 0)
-//									{
-//										sb.append("decodeRunnable queue:").append(decodeRunnable.getMsgQueue().size()).append(",isrunning:")
-//												.append(decodeRunnable.runningLock().getObj()).append(",isneedrun:").append(decodeRunnable.isNeededExecute()).append(" | ");
-//										
-//										if (decodeRunnable.isNeededExecute() && !decodeRunnable.runningLock().getObj())
-//										{
-////											decodeRunnable.getExecutor().execute(decodeRunnable);
-//										}
-//									}
-//									if (handlerRunnableHighPrior.getMsgQueue().size() > 0)
-//									{
-//										sb.append("handlerRunnableHighPrior queue:").append(handlerRunnableHighPrior.getMsgQueue().size()).append(",isrunning:")
-//												.append(handlerRunnableHighPrior.runningLock().getObj()).append(",isneedrun:").append(handlerRunnableHighPrior.isNeededExecute()).append(" | ");
-//										if (handlerRunnableHighPrior.isNeededExecute() && !handlerRunnableHighPrior.runningLock().getObj())
-//										{
-////											handlerRunnableHighPrior.getExecutor().execute(handlerRunnableHighPrior);
-//										}
-//									}
-//									if (handlerRunnableNormPrior.getMsgQueue().size() > 0)
-//									{
-//										sb.append("handlerRunnableNormPrior queue:").append(handlerRunnableNormPrior.getMsgQueue().size()).append(",isrunning:")
-//												.append(handlerRunnableNormPrior.runningLock().getObj()).append(",isneedrun:").append(handlerRunnableNormPrior.isNeededExecute()).append(" | ");
-//										if (handlerRunnableNormPrior.isNeededExecute() && !handlerRunnableNormPrior.runningLock().getObj())
-//										{
-////											handlerRunnableNormPrior.getExecutor().execute(handlerRunnableNormPrior);
-//										}
-//									}
-//									if (sendRunnableHighPrior.getMsgQueue().size() > 0)
-//									{
-//										sb.append("sendRunnableHighPrior queue:").append(sendRunnableHighPrior.getMsgQueue().size()).append(",isrunning:")
-//												.append(sendRunnableHighPrior.runningLock().getObj()).append(",isneedrun:").append(sendRunnableHighPrior.isNeededExecute()).append(" | ");
-//										if (sendRunnableHighPrior.isNeededExecute() && !sendRunnableHighPrior.runningLock().getObj())
-//										{
-////											sendRunnableHighPrior.getExecutor().execute(sendRunnableHighPrior);
-//										}
-//									}
-//									if (sendRunnableNormPrior.getMsgQueue().size() > 0)
-//									{
-//										sb.append("sendRunnableNormPrior queue:").append(sendRunnableNormPrior.getMsgQueue().size()).append(",isrunning:")
-//												.append(sendRunnableNormPrior.runningLock().getObj()).append(",isneedrun:").append(sendRunnableNormPrior.isNeededExecute()).append(" | ");
-//										if (sendRunnableNormPrior.isNeededExecute() && !sendRunnableNormPrior.runningLock().getObj())
-//										{
-////											sendRunnableNormPrior.getExecutor().execute(sendRunnableNormPrior);
-//										}
-//									}
-////									if (sb.length() > 0)
-////									{
-////										log.error(channelContext.toString() + " : " + sb.toString());
-////									}
+									//									StringBuilder sb = new StringBuilder();
+									//									if (decodeRunnable.getMsgQueue().size() > 0)
+									//									{
+									//										sb.append("decodeRunnable queue:").append(decodeRunnable.getMsgQueue().size()).append(",isrunning:")
+									//												.append(decodeRunnable.runningLock().getObj()).append(",isneedrun:").append(decodeRunnable.isNeededExecute()).append(" | ");
+									//										
+									//										if (decodeRunnable.isNeededExecute() && !decodeRunnable.runningLock().getObj())
+									//										{
+									////											decodeRunnable.getExecutor().execute(decodeRunnable);
+									//										}
+									//									}
+									//									if (handlerRunnableHighPrior.getMsgQueue().size() > 0)
+									//									{
+									//										sb.append("handlerRunnableHighPrior queue:").append(handlerRunnableHighPrior.getMsgQueue().size()).append(",isrunning:")
+									//												.append(handlerRunnableHighPrior.runningLock().getObj()).append(",isneedrun:").append(handlerRunnableHighPrior.isNeededExecute()).append(" | ");
+									//										if (handlerRunnableHighPrior.isNeededExecute() && !handlerRunnableHighPrior.runningLock().getObj())
+									//										{
+									////											handlerRunnableHighPrior.getExecutor().execute(handlerRunnableHighPrior);
+									//										}
+									//									}
+									//									if (handlerRunnableNormPrior.getMsgQueue().size() > 0)
+									//									{
+									//										sb.append("handlerRunnableNormPrior queue:").append(handlerRunnableNormPrior.getMsgQueue().size()).append(",isrunning:")
+									//												.append(handlerRunnableNormPrior.runningLock().getObj()).append(",isneedrun:").append(handlerRunnableNormPrior.isNeededExecute()).append(" | ");
+									//										if (handlerRunnableNormPrior.isNeededExecute() && !handlerRunnableNormPrior.runningLock().getObj())
+									//										{
+									////											handlerRunnableNormPrior.getExecutor().execute(handlerRunnableNormPrior);
+									//										}
+									//									}
+									//									if (sendRunnableHighPrior.getMsgQueue().size() > 0)
+									//									{
+									//										sb.append("sendRunnableHighPrior queue:").append(sendRunnableHighPrior.getMsgQueue().size()).append(",isrunning:")
+									//												.append(sendRunnableHighPrior.runningLock().getObj()).append(",isneedrun:").append(sendRunnableHighPrior.isNeededExecute()).append(" | ");
+									//										if (sendRunnableHighPrior.isNeededExecute() && !sendRunnableHighPrior.runningLock().getObj())
+									//										{
+									////											sendRunnableHighPrior.getExecutor().execute(sendRunnableHighPrior);
+									//										}
+									//									}
+									//									if (sendRunnableNormPrior.getMsgQueue().size() > 0)
+									//									{
+									//										sb.append("sendRunnableNormPrior queue:").append(sendRunnableNormPrior.getMsgQueue().size()).append(",isrunning:")
+									//												.append(sendRunnableNormPrior.runningLock().getObj()).append(",isneedrun:").append(sendRunnableNormPrior.isNeededExecute()).append(" | ");
+									//										if (sendRunnableNormPrior.isNeededExecute() && !sendRunnableNormPrior.runningLock().getObj())
+									//										{
+									////											sendRunnableNormPrior.getExecutor().execute(sendRunnableNormPrior);
+									//										}
+									//									}
+									////									if (sb.length() > 0)
+									////									{
+									////										log.error(channelContext.toString() + " : " + sb.toString());
+									////									}
 								}
 							} catch (Throwable e)
 							{

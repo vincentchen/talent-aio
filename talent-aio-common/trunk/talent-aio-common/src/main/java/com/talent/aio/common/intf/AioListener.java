@@ -23,17 +23,29 @@ import com.talent.aio.common.ChannelContext;
  *  (1) | 2016年12月8日 | tanyaowu | 新建类
  *
  */
-public interface SendListener <Ext, P extends Packet, R>
+public interface AioListener <Ext, P extends Packet, R>
 {
 	/**
 	 * 消息包发送出去后
 	 * @param channelContext
 	 * @param packet
-	 * @param sentSize
+	 * @param packetSize
 	 *
 	 * @author: tanyaowu
 	 * @创建时间:　2016年12月8日 下午1:14:03
 	 *
 	 */
-	void onAfterSent(ChannelContext<Ext, P, R> channelContext, P packet, int sentSize);
+	void onAfterSent(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize);
+	
+	/**
+	 * 解码成功后
+	 * @param channelContext
+	 * @param packet
+	 * @param sentSize
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月15日 上午10:22:49
+	 *
+	 */
+	void onAfterDecoded(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize);
 }

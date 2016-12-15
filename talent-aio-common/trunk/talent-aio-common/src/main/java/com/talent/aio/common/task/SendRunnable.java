@@ -12,7 +12,6 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.WriteCompletionHandler;
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
 
@@ -94,22 +93,24 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			return;
 		}
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-		GroupStat groupStat = groupContext.getGroupStat();
+//		GroupStat groupStat = groupContext.getGroupStat();
 //		log.error("发送数据:{}", packet);
 		ByteBuffer byteBuffer = groupContext.getAioHandler().encode(packet, channelContext);
 //		int sentSize = byteBuffer.capacity();
 		byteBuffer.flip();
 
 		AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
-		
+		WriteCompletionHandler<Ext, P, R> writeCompletionHandler = channelContext.getWriteCompletionHandler();
 		try
 		{
-			channelContext.getSendSemaphore().acquire();
+			writeCompletionHandler.getWriteSemaphore().acquire();
 		} catch (InterruptedException e)
 		{
 			log.error(e.toString(), e);
 		}
-		asynchronousSocketChannel.write(byteBuffer, channelContext, new WriteCompletionHandler<Ext, P, R>(packet));
+		
+//		writeCompletionHandler.setPacket(packet);
+		asynchronousSocketChannel.write(byteBuffer, packet, writeCompletionHandler);
 		
 //		Future<Integer> future = asynchronousSocketChannel.write(byteBuffer);
 //		Integer result = null;
@@ -128,13 +129,13 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 //		{
 //			if (result > 0)
 //			{
-//				SendListener<Ext, P, R> sendListener = groupContext.getSendListener();
+//				SendListener<Ext, P, R> aioListener = groupContext.getSendListener();
 //				groupStat.getSentPacket().incrementAndGet();
 //				groupStat.getSentBytes().addAndGet(result);
 //				channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
-//				if (sendListener != null)
+//				if (aioListener != null)
 //				{
-//					sendListener.onAfterSent(channelContext, packet, result);
+//					aioListener.onAfterSent(channelContext, packet, result);
 //				}
 //			} else if (result == 0)
 //			{

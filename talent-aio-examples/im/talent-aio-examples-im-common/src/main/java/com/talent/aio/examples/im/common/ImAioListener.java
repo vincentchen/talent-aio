@@ -12,8 +12,7 @@
 package com.talent.aio.examples.im.common;
 
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.SendListener;
+import com.talent.aio.common.intf.AioListener;
 
 /**
  * 
@@ -25,7 +24,7 @@ import com.talent.aio.common.intf.SendListener;
  *  (1) | 2016年12月8日 | tanyaowu | 新建类
  *
  */
-public class ImSendListener implements SendListener<Object, ImPacket, Object>
+public class ImAioListener implements AioListener<Object, ImPacket, Object>
 {
 
 	/**
@@ -35,7 +34,7 @@ public class ImSendListener implements SendListener<Object, ImPacket, Object>
 	 * @创建时间:　2016年12月8日 下午1:22:27
 	 * 
 	 */
-	public ImSendListener()
+	public ImAioListener()
 	{}
 
 	/**
@@ -51,19 +50,36 @@ public class ImSendListener implements SendListener<Object, ImPacket, Object>
 
 
 	/** 
-	 * @see com.talent.aio.common.intf.SendListener#onAfterSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * @see com.talent.aio.common.intf.AioListener#onAfterSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
 	 * 
 	 * @param channelContext
 	 * @param packet
-	 * @param sentSize
+	 * @param packetSize
 	 * @重写人: tanyaowu
 	 * @重写时间: 2016年12月8日 下午1:23:18
 	 * 
 	 */
 	@Override
-	public void onAfterSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int sentSize)
+	public void onAfterSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
-		com.talent.aio.examples.im.common.CommandStat.getCount(packet.getCommand()).incrementAndGet();
+		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
+	}
+
+	/** 
+	 * @see com.talent.aio.common.intf.AioListener#onAfterDecoded(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * 
+	 * @param channelContext
+	 * @param packet
+	 * @param packetSize
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月15日 上午10:23:42
+	 * 
+	 */
+	@Override
+	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
+	{
+		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
+		
 	}
 
 }
