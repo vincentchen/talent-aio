@@ -65,23 +65,29 @@ public class ImClientStarter
 
 	}
 
-	static ClientGroupContext<Object, ImPacket, Object> clientGroupContext = null;
+	static String ip = "127.0.0.1"; //服务器的IP地址
 
-	static AioClientHandler<Object, ImPacket, Object> aioClientHandler = null;
+	static int clientCount = 16000; //与服务器建立多少个TCP长连接
 	
-	static AioListener<Object, ImPacket, Object> aioListener = null;
+	/**
+	 * 每秒向组发送多少条消息(如果是测试服务器可以建立多少个TCP长连接，此值设为0，因为客户端会定时发心跳)
+	 * 当此值设为10，clientCount设为10000时，本客户端每10秒就会发送一条群消息，但是服务器收到这10条消息后会分发10*10000条消息到本客户端。如果有很多个客户端，消息量还要成倍增加
+	 */
+	static int sendCountPerSecond = 0; //
 
-	static String ip = "127.0.0.1";
+	static int port = 9321; //服务器的PORT
 
-	static int port = 9321;
+	static AtomicLong SEQ = new AtomicLong();
+
+	public static String groupid = "89889_1"; //消息群组id
 
 	static AioClient<Object, ImPacket, Object> aioClient;
 
-	static int clientCount = 16000;
+	static ClientGroupContext<Object, ImPacket, Object> clientGroupContext = null;
 
-	static java.util.concurrent.atomic.AtomicLong SEQ = new AtomicLong();
+	static AioClientHandler<Object, ImPacket, Object> aioClientHandler = null;
 
-	public static String groupid = "89889_1";
+	static AioListener<Object, ImPacket, Object> aioListener = null;
 
 	/**
 	 * @param args
@@ -128,11 +134,11 @@ public class ImClientStarter
 							{
 								readLock.lock();
 								Set<ChannelContext<Object, ImPacket, Object>> set = objWithReadWriteLock.getObj();
-								int i = 1;
+								int i = 0;
 								//log.error("send msg to group {}", groupid);
 								label_2: for (ChannelContext<Object, ImPacket, Object> entry : set)
 								{
-									if (i >= 5)
+									if (i >= sendCountPerSecond)
 									{
 										break label_2;
 									}
@@ -156,9 +162,9 @@ public class ImClientStarter
 						ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> connections = clientGroupContext.getConnections().getSet();
 						Set<ChannelContext<Object, ImPacket, Object>> set = connections.getObj();
 						ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
-						log.error("[{}]:[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(), clientGroupStat.getClosed().get(),
-								clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
-								clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
+						log.error("[{}]:[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
+								clientGroupStat.getClosed().get(), clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(),
+								clientGroupStat.getHandledPacket().get(), clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
 
 						try
 						{
