@@ -4,6 +4,9 @@
 package com.talent.aio.common.threadpool;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.slf4j.Logger;
@@ -36,7 +39,7 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(AbstractSynRunnable.class);
 
-	private ObjWithReadWriteLock<Boolean> runningLock = new ObjWithReadWriteLock<>(false);
+	private ReadWriteLock runningLock = new ReentrantReadWriteLock();
 
 	//	/** 正在运行该任务的线程数. */
 	//	private java.util.concurrent.atomic.AtomicInteger currThreads = new java.util.concurrent.atomic.AtomicInteger();
@@ -60,7 +63,7 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 	 * 
 	 */
 	@Override
-	public ObjWithReadWriteLock<Boolean> runningLock()
+	public ReadWriteLock runningLock()
 	{
 		return runningLock;
 	}
@@ -95,14 +98,13 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 			return;
 		}
 		
-		ObjWithReadWriteLock<Boolean> runningLock = runningLock();
-		WriteLock writeLock = runningLock.getLock().writeLock();
+		ReadWriteLock runningLock = runningLock();
+		Lock writeLock = runningLock.writeLock();
 		boolean trylock = writeLock.tryLock();
 		if (!trylock)
 		{
 			return;
 		}
-		runningLock.setObj(true);
 		
 		try
 		{
@@ -112,19 +114,12 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 			log.error(e.toString(), e);
 		} finally
 		{
-			try
+			writeLock.unlock();
+			if (isNeededExecute())
 			{
-				runningLock().setObj(false);
-			} finally
-			{
-				writeLock.unlock();
-				if (isNeededExecute())
-				{
-//					log.error(this + "-----------------------------------------------------------------------------------------需要运行");
-					getExecutor().execute(this);
-				}
+//				log.error(this + "-----------------------------------------------------------------------------------------需要运行");
+				getExecutor().execute(this);
 			}
-
 		}
 
 	}

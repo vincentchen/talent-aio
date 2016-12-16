@@ -3,9 +3,7 @@
  */
 package com.talent.aio.common.threadpool.intf;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.talent.aio.common.ObjWithReadWriteLock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 
 /**
@@ -43,7 +41,7 @@ public interface SynRunnableIntf extends Runnable
 //	 */
 //	public boolean isRunning();
 	
-	public ObjWithReadWriteLock<Boolean> runningLock();
+	public ReadWriteLock runningLock();
 	
 	public boolean isNeededExecute();
 	

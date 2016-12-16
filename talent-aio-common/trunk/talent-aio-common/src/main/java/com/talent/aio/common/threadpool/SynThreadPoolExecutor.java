@@ -11,12 +11,12 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 
 /**
@@ -239,8 +239,8 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	 */
 	private boolean checkBeforeExecute(T runnable)
 	{
-		ObjWithReadWriteLock<Boolean> runningLock = runnable.runningLock();
-		WriteLock writeLock = runningLock.getLock().writeLock();
+		ReadWriteLock runningLock = runnable.runningLock();
+		Lock writeLock = runningLock.writeLock();
 		boolean tryLock = false;
 		try
 		{
