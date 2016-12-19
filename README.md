@@ -19,6 +19,4 @@
  **用talent-aio实现的简单的im例子(先启动服务器再启动客户端，然后控制台会打印相当性能数据，性能数据的解释见图):** 
 1、先运行parent/install.bat，用来安装本项目所有代码
 2、运行server examples: com.talent.aio.examples.im.server.ImServerStarter
-3、修改com.talent.aio.examples.im.client.ImClientStarter.serverIp的值，使之为服务器的ip
-4、运行client examples: com.talent.aio.examples.im.client.ImClientStarter
-![性能数据解释](https://git.oschina.net/tywo45/talent-aio/raw/master/1111.png?dir=0&filepath=1111.png&oid=1826c193f2d9b26ff503c5976b32eaa9eddc0592&sha=19c2f6d571eb48d3a671c491d4aaaf6d150bcb9c "在这里输入图片标题")
+3、运行client examples: com.talent.aio.examples.im.client.ImClientStarter
