@@ -12,29 +12,18 @@
 package com.talent.aio.examples.im.client;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.client.AioClient;
 import com.talent.aio.client.ClientAioHandler;
-import com.talent.aio.client.ClientChannelContext;
 import com.talent.aio.client.ClientGroupContext;
-import com.talent.aio.client.ClientGroupStat;
-import com.talent.aio.common.Aio;
-import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.AioListener;
-import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.Command;
-import com.talent.aio.examples.im.common.CommandStat;
-import com.talent.aio.examples.im.common.Const.ChatType;
 import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.common.bs.AuthReqBody;
-import com.talent.aio.examples.im.common.bs.ChatReqBody;
 import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.examples.im.common.utils.Md5;
 
@@ -91,7 +80,7 @@ public class ImClientStarter
 	
 	public static AtomicLong SEQ = new AtomicLong();
 
-	public static String groupid = "89889_1"; //消息群组id
+//	public static String groupid = "89889_1"; //消息群组id
 	
 //	private static int clientCount = 16000; //与服务器建立多少个TCP长连接
 //

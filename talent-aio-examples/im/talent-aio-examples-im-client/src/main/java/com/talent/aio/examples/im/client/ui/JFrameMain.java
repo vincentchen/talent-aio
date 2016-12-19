@@ -32,15 +32,11 @@ import com.talent.aio.examples.im.common.bs.ChatReqBody;
 import com.talent.aio.examples.im.common.bs.JoinReqBody;
 import com.talent.aio.examples.im.common.json.Json;
 
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  *
  * @author Administrator
  */
-@Setter
-@Getter
 public class JFrameMain extends javax.swing.JFrame
 {
 
@@ -636,5 +632,357 @@ ChatRespHandler.count.set(0);
 	public static void setImClientStarter(ImClientStarter imClientStarter)
 	{
 		JFrameMain.imClientStarter = imClientStarter;
+	}
+
+	/**
+	 * @return the listModel
+	 */
+	public DefaultListModel getListModel()
+	{
+		return listModel;
+	}
+
+	/**
+	 * @param listModel the listModel to set
+	 */
+	public void setListModel(DefaultListModel listModel)
+	{
+		this.listModel = listModel;
+	}
+
+	/**
+	 * @return the cleanBtn
+	 */
+	public javax.swing.JButton getCleanBtn()
+	{
+		return cleanBtn;
+	}
+
+	/**
+	 * @param cleanBtn the cleanBtn to set
+	 */
+	public void setCleanBtn(javax.swing.JButton cleanBtn)
+	{
+		this.cleanBtn = cleanBtn;
+	}
+
+	/**
+	 * @return the printBtn
+	 */
+	public javax.swing.JButton getPrintBtn()
+	{
+		return printBtn;
+	}
+
+	/**
+	 * @param printBtn the printBtn to set
+	 */
+	public void setPrintBtn(javax.swing.JButton printBtn)
+	{
+		this.printBtn = printBtn;
+	}
+
+	/**
+	 * @return the deleteBtn
+	 */
+	public javax.swing.JButton getDeleteBtn()
+	{
+		return deleteBtn;
+	}
+
+	/**
+	 * @param deleteBtn the deleteBtn to set
+	 */
+	public void setDeleteBtn(javax.swing.JButton deleteBtn)
+	{
+		this.deleteBtn = deleteBtn;
+	}
+
+	/**
+	 * @return the groupField
+	 */
+	public javax.swing.JTextField getGroupField()
+	{
+		return groupField;
+	}
+
+	/**
+	 * @param groupField the groupField to set
+	 */
+	public void setGroupField(javax.swing.JTextField groupField)
+	{
+		this.groupField = groupField;
+	}
+
+	/**
+	 * @return the jLabel1
+	 */
+	public javax.swing.JLabel getjLabel1()
+	{
+		return jLabel1;
+	}
+
+	/**
+	 * @param jLabel1 the jLabel1 to set
+	 */
+	public void setjLabel1(javax.swing.JLabel jLabel1)
+	{
+		this.jLabel1 = jLabel1;
+	}
+
+	/**
+	 * @return the jLabel2
+	 */
+	public javax.swing.JLabel getjLabel2()
+	{
+		return jLabel2;
+	}
+
+	/**
+	 * @param jLabel2 the jLabel2 to set
+	 */
+	public void setjLabel2(javax.swing.JLabel jLabel2)
+	{
+		this.jLabel2 = jLabel2;
+	}
+
+	/**
+	 * @return the jLabel3
+	 */
+	public javax.swing.JLabel getjLabel3()
+	{
+		return jLabel3;
+	}
+
+	/**
+	 * @param jLabel3 the jLabel3 to set
+	 */
+	public void setjLabel3(javax.swing.JLabel jLabel3)
+	{
+		this.jLabel3 = jLabel3;
+	}
+
+	/**
+	 * @return the jLabel6
+	 */
+	public javax.swing.JLabel getjLabel6()
+	{
+		return jLabel6;
+	}
+
+	/**
+	 * @param jLabel6 the jLabel6 to set
+	 */
+	public void setjLabel6(javax.swing.JLabel jLabel6)
+	{
+		this.jLabel6 = jLabel6;
+	}
+
+	/**
+	 * @return the jScrollPane1
+	 */
+	public javax.swing.JScrollPane getjScrollPane1()
+	{
+		return jScrollPane1;
+	}
+
+	/**
+	 * @param jScrollPane1 the jScrollPane1 to set
+	 */
+	public void setjScrollPane1(javax.swing.JScrollPane jScrollPane1)
+	{
+		this.jScrollPane1 = jScrollPane1;
+	}
+
+	/**
+	 * @return the jScrollPane2
+	 */
+	public javax.swing.JScrollPane getjScrollPane2()
+	{
+		return jScrollPane2;
+	}
+
+	/**
+	 * @param jScrollPane2 the jScrollPane2 to set
+	 */
+	public void setjScrollPane2(javax.swing.JScrollPane jScrollPane2)
+	{
+		this.jScrollPane2 = jScrollPane2;
+	}
+
+	/**
+	 * @return the jScrollPane3
+	 */
+	public javax.swing.JScrollPane getjScrollPane3()
+	{
+		return jScrollPane3;
+	}
+
+	/**
+	 * @param jScrollPane3 the jScrollPane3 to set
+	 */
+	public void setjScrollPane3(javax.swing.JScrollPane jScrollPane3)
+	{
+		this.jScrollPane3 = jScrollPane3;
+	}
+
+	/**
+	 * @return the joinBtn
+	 */
+	public javax.swing.JButton getJoinBtn()
+	{
+		return joinBtn;
+	}
+
+	/**
+	 * @param joinBtn the joinBtn to set
+	 */
+	public void setJoinBtn(javax.swing.JButton joinBtn)
+	{
+		this.joinBtn = joinBtn;
+	}
+
+	/**
+	 * @return the lianjie
+	 */
+	public javax.swing.JButton getLianjie()
+	{
+		return lianjie;
+	}
+
+	/**
+	 * @param lianjie the lianjie to set
+	 */
+	public void setLianjie(javax.swing.JButton lianjie)
+	{
+		this.lianjie = lianjie;
+	}
+
+	/**
+	 * @return the loginnameSufEndField
+	 */
+	public javax.swing.JTextField getLoginnameSufEndField()
+	{
+		return loginnameSufEndField;
+	}
+
+	/**
+	 * @param loginnameSufEndField the loginnameSufEndField to set
+	 */
+	public void setLoginnameSufEndField(javax.swing.JTextField loginnameSufEndField)
+	{
+		this.loginnameSufEndField = loginnameSufEndField;
+	}
+
+	/**
+	 * @return the loopcountField
+	 */
+	public javax.swing.JTextField getLoopcountField()
+	{
+		return loopcountField;
+	}
+
+	/**
+	 * @param loopcountField the loopcountField to set
+	 */
+	public void setLoopcountField(javax.swing.JTextField loopcountField)
+	{
+		this.loopcountField = loopcountField;
+	}
+
+	/**
+	 * @return the msgField
+	 */
+	public javax.swing.JTextField getMsgField()
+	{
+		return msgField;
+	}
+
+	/**
+	 * @param msgField the msgField to set
+	 */
+	public void setMsgField(javax.swing.JTextField msgField)
+	{
+		this.msgField = msgField;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public javax.swing.JTextField getPort()
+	{
+		return port;
+	}
+
+	/**
+	 * @param port the port to set
+	 */
+	public void setPort(javax.swing.JTextField port)
+	{
+		this.port = port;
+	}
+
+	/**
+	 * @return the sendBtn
+	 */
+	public javax.swing.JButton getSendBtn()
+	{
+		return sendBtn;
+	}
+
+	/**
+	 * @param sendBtn the sendBtn to set
+	 */
+	public void setSendBtn(javax.swing.JButton sendBtn)
+	{
+		this.sendBtn = sendBtn;
+	}
+
+	/**
+	 * @return the serverip
+	 */
+	public javax.swing.JTextField getServerip()
+	{
+		return serverip;
+	}
+
+	/**
+	 * @param serverip the serverip to set
+	 */
+	public void setServerip(javax.swing.JTextField serverip)
+	{
+		this.serverip = serverip;
+	}
+
+	/**
+	 * @param clientCountLabel the clientCountLabel to set
+	 */
+	public void setClientCountLabel(javax.swing.JLabel clientCountLabel)
+	{
+		this.clientCountLabel = clientCountLabel;
+	}
+
+	/**
+	 * @param clients the clients to set
+	 */
+	public void setClients(javax.swing.JList<String> clients)
+	{
+		this.clients = clients;
+	}
+
+	/**
+	 * @param logtext the logtext to set
+	 */
+	public void setLogtext(javax.swing.JTextArea logtext)
+	{
+		this.logtext = logtext;
+	}
+
+	/**
+	 * @param msgTextArea the msgTextArea to set
+	 */
+	public void setMsgTextArea(javax.swing.JTextArea msgTextArea)
+	{
+		this.msgTextArea = msgTextArea;
 	}
 }
