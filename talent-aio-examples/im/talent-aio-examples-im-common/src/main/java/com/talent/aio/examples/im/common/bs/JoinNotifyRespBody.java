@@ -3,9 +3,6 @@
  */
 package com.talent.aio.examples.im.common.bs;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * 
  * @author tanyaowu 
@@ -15,9 +12,7 @@ import lombok.Setter;
  *  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2013年8月10日 | tanyaowu | 新建类
  */
-@Getter
-@Setter
-@lombok.AllArgsConstructor
+
 public class JoinNotifyRespBody extends com.talent.aio.examples.im.common.bs.BaseRespBody
 {
 	private String group;
