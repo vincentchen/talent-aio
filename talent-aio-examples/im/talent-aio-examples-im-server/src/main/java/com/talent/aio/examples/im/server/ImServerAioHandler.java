@@ -229,21 +229,4 @@ public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
 
 	}
 
-	/** 
-	 * @see com.talent.aio.common.intf.AioHandler#onClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
-	 * 
-	 * @param channelContext
-	 * @param throwable
-	 * @param remark
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月18日 上午9:37:44
-	 * 
-	 */
-	@Override
-	public void onClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
-	{
-		// TODO Auto-generated method stub
-		
-	}
-
 }

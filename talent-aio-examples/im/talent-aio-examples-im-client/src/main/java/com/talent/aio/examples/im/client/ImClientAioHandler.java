@@ -18,7 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.client.AioClientHandler;
+import com.talent.aio.client.ClientAioHandler;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.examples.im.client.handler.AuthRespHandler;
@@ -39,9 +39,9 @@ import com.talent.aio.examples.im.common.ImPacket;
  *  (1) | 2016年11月18日 | tanyaowu | 新建类
  *
  */
-public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Object>
+public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Object>
 {
-	private static Logger log = LoggerFactory.getLogger(ImAioClientHandler.class);
+	private static Logger log = LoggerFactory.getLogger(ImClientAioHandler.class);
 
 	private static Map<Short, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
 	static
@@ -58,7 +58,7 @@ public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Ob
 	 * @创建时间:　2016年11月18日 上午9:13:15
 	 * 
 	 */
-	public ImAioClientHandler()
+	public ImClientAioHandler()
 	{
 	}
 
@@ -228,26 +228,10 @@ public class ImAioClientHandler implements AioClientHandler<Object, ImPacket, Ob
 
 	}
 
-	/** 
-	 * @see com.talent.aio.common.intf.AioHandler#onClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
-	 * 
-	 * @param channelContext
-	 * @param throwable
-	 * @param remark
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月18日 上午9:37:44
-	 * 
-	 */
-	@Override
-	public void onClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
-	{
-
-	}
-
 	private static ImPacket heartbeatPacket = new ImPacket(Command.HEARTBEAT_REQ);
 
 	/** 
-	 * @see com.talent.aio.client.AioClientHandler#heartbeatPacket()
+	 * @see com.talent.aio.client.ClientAioHandler#heartbeatPacket()
 	 * 
 	 * @return
 	 * @重写人: tanyaowu

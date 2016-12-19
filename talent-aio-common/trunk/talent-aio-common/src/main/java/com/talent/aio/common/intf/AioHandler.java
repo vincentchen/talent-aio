@@ -28,7 +28,7 @@ public interface AioHandler <Ext, P extends Packet, R>
 {
 	
 	/**
-	 * Handler.
+	 * 处理消息包
 	 *
 	 * @param packet the packet
 	 * @return the r
@@ -38,7 +38,7 @@ public interface AioHandler <Ext, P extends Packet, R>
 	R handler(P packet, ChannelContext<Ext, P, R> channelContext) throws Exception;
 	
 	/**
-	 * Encode.
+	 * 编码
 	 *
 	 * @param packet the packet
 	 * @return the byte buffer
@@ -56,14 +56,4 @@ public interface AioHandler <Ext, P extends Packet, R>
 	 */
 	P decode(ByteBuffer buffer, ChannelContext<Ext, P, R> channelContext) throws AioDecodeException;
 	
-	/**
-	 * 连接关闭时触发本方法，业务层作一些释放资源等操作，记录日志等.
-	 *
-	 * @param channelContext the channelcontext
-	 * @param throwable the throwable 有可能为空
-	 * @param remark the remark 有可能为空
-	 * @author: tanyaowu
-	 * @创建时间:　2016年11月17日 上午9:17:55
-	 */
-	void onClose(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark);
 }

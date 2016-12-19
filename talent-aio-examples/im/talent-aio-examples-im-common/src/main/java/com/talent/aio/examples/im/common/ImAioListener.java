@@ -11,6 +11,10 @@
  */
 package com.talent.aio.examples.im.common;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.intf.AioListener;
 
@@ -26,7 +30,7 @@ import com.talent.aio.common.intf.AioListener;
  */
 public class ImAioListener implements AioListener<Object, ImPacket, Object>
 {
-
+	private static Logger log = LoggerFactory.getLogger(ImAioListener.class);
 	/**
 	 * 
 	 *
@@ -35,7 +39,8 @@ public class ImAioListener implements AioListener<Object, ImPacket, Object>
 	 * 
 	 */
 	public ImAioListener()
-	{}
+	{
+	}
 
 	/**
 	 * @param args
@@ -45,9 +50,8 @@ public class ImAioListener implements AioListener<Object, ImPacket, Object>
 	 * 
 	 */
 	public static void main(String[] args)
-	{}
-
-
+	{
+	}
 
 	/** 
 	 * @see com.talent.aio.common.intf.AioListener#onAfterSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
@@ -79,7 +83,45 @@ public class ImAioListener implements AioListener<Object, ImPacket, Object>
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
-		
+
+	}
+
+	/** 
+	 * @see com.talent.aio.common.intf.AioListener#onClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
+	 * 
+	 * @param channelContext
+	 * @param throwable
+	 * @param remark
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月16日 下午3:07:35
+	 * 
+	 */
+	@Override
+	public void onClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
+	{
+		log.info("连接关闭了:{}", channelContext);
+	}
+
+	/** 
+	 * @see com.talent.aio.common.intf.AioListener#onConnected(com.talent.aio.common.ChannelContext)
+	 * 
+	 * @param channelContext
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月16日 下午3:28:57
+	 * 
+	 */
+	@Override
+	public boolean onConnected(ChannelContext<Object, ImPacket, Object> channelContext)
+	{
+		log.info("连接建立了:{}", channelContext);
+		String blacklistip = "127.4.3.3";
+		String ip = channelContext.getClientNode().getIp();
+		if (StringUtils.equalsIgnoreCase(blacklistip, ip))
+		{
+			return false;
+		}
+		return true;
 	}
 
 }

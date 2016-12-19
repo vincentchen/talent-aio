@@ -24,10 +24,10 @@ import com.talent.aio.common.intf.Packet;
  *  (1) | 2016年12月6日 | tanyaowu | 新建类
  *
  */
-public interface AioClientHandler <Ext, P extends Packet, R> extends AioHandler<Ext, P, R>
+public interface ClientAioHandler <Ext, P extends Packet, R> extends AioHandler<Ext, P, R>
 {
 	/**
-	 * 心跳包
+	 * 创建心跳包
 	 * @return
 	 *
 	 * @author: tanyaowu

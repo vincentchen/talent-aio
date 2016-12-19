@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.Aio;
 import com.talent.aio.common.ReadCompletionHandler;
 import com.talent.aio.common.intf.Packet;
 
@@ -89,6 +90,13 @@ public class AioClient<Ext, P extends Packet, R>
 			future.get(5, TimeUnit.SECONDS);
 			log.info("connected to {}:{}", ip, port);
 			ClientChannelContext<Ext, P, R> channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+			boolean f = clientGroupContext.getAioListener().onConnected(channelContext);
+			if (!f)
+			{
+				log.warn("不允许连接:{}", channelContext);
+				Aio.close(channelContext, "不允许连接");
+				return null;
+			}
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
 			asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);

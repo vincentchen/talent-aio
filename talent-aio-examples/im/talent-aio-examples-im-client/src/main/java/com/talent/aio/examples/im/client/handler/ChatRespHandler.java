@@ -5,11 +5,16 @@ package com.talent.aio.examples.im.client.handler;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.utils.SystemTimer;
+import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.ImPacket;
+import com.talent.aio.examples.im.common.bs.ChatRespBody;
+import com.talent.aio.examples.im.common.json.Json;
 
 /**
  * 
@@ -99,6 +104,24 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 		if (packet.getBody() != null)
 		{
 			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+		}
+		
+		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
+		int c = count.incrementAndGet();
+		String xx = null;
+		long time = SystemTimer.currentTimeMillis();
+
+		if (c == 1 || c == 0 || c % 10000 == 0)
+		{
+			if (StringUtils.isBlank(body.getToNick()))
+			{
+				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
+			} else
+			{
+				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
+			}
+
+			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
 		}
 		return null;
 	}

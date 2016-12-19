@@ -16,8 +16,8 @@ import java.util.concurrent.locks.Lock;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
 
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.Node;
+import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.Packet;
 
 /**
@@ -43,7 +43,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 	 * @param channelContext the channel context
 	 * @return the key
 	 */
-	public String getKey(ChannelContext<Ext, P, R> channelContext)
+	public static <Ext, P extends Packet, R> String getKey(ChannelContext<Ext, P, R> channelContext)
 	{
 		Node remotenode = channelContext.getClientNode();
 		if (remotenode == null)
@@ -64,7 +64,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 	 * @param port the port
 	 * @return the key
 	 */
-	public String getKey(String ip, int port)
+	public static String getKey(String ip, int port)
 	{
 		String key = ip + ":" + port;
 		return key;
@@ -134,10 +134,15 @@ public class ClientNodes <Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月6日 下午12:07:35
 	 *
 	 */
-	@SuppressWarnings("unchecked")
 	public ChannelContext<Ext, P, R> find(String ip, int port)
 	{
 		String key = getKey(ip, port);
+		return find(key);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ChannelContext<Ext, P, R> find(String key)
+	{
 		Lock lock = map.getLock().readLock();
 		DualHashBidiMap m = map.getObj();
 

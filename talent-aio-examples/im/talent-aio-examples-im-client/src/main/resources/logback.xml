@@ -11,7 +11,7 @@
 		<encoder charset="UTF-8">
 			<pattern>${conversionPattern}</pattern>
 		</encoder>
-		<filter class="ch.qos.logback.classic.filter.LevelFilter">   
+		<filter class="com.talent.aio.examples.im.client.ui.LogbackFilter">   
 			<level>error</level>   
 			<onMatch>ACCEPT</onMatch>   
 			<onMismatch>DENY</onMismatch>   

@@ -67,11 +67,11 @@ public class AuthRespHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-		JoinReqBody joinReqBody = new JoinReqBody(com.talent.aio.examples.im.client.ImClientStarter.groupid);
-		ImPacket respPacket = new ImPacket();
-		respPacket.setCommand(Command.JOIN_GROUP_REQ);
-		respPacket.setBody(Json.toJson(joinReqBody).getBytes(ImPacket.CHARSET));
-		Aio.send(channelContext, respPacket);
+//		JoinReqBody joinReqBody = new JoinReqBody(com.talent.aio.examples.im.client.ImClientStarter.groupid);
+//		ImPacket respPacket = new ImPacket();
+//		respPacket.setCommand(Command.JOIN_GROUP_REQ);
+//		respPacket.setBody(Json.toJson(joinReqBody).getBytes(ImPacket.CHARSET));
+//		Aio.send(channelContext, respPacket);
 		return null;
 	}
 }

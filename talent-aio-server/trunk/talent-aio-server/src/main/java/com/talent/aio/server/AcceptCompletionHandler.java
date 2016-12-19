@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.Aio;
 import com.talent.aio.common.ReadCompletionHandler;
 import com.talent.aio.common.intf.Packet;
 
@@ -87,6 +88,14 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			result.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, result);
+			
+			boolean f = serverGroupContext.getAioListener().onConnected(channelContext);
+			if (!f)
+			{
+				log.warn("不允许连接:{}", channelContext);
+				Aio.close(channelContext, "不允许连接");
+				return;
+			}
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
