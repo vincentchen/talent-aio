@@ -16,7 +16,8 @@
 1、文档，目前可以用例子学习，例子也是很简单的
 2、性能细节方面还有些待优化，但由于总体架构包括线程模型很优秀，所以目前的性能已经非常好(以前有个大企业的架构师跟我说 **netty的c10k** ，目前talent-aio已经支持到 **c100k** 了，这不是极限，现在还差个极限数字)
 
- **用talent-aio实现的简单的im例子(先启动服务器再启动客户端，然后控制台会打印相当性能数据，性能数据的解释见图):** 
+ **用talent-aio实现的简单的im例子(先启动服务器再启动客户端，然后控制台会打印相当性能数据，使用方法见客户端界面):** 
 1、先运行parent/install.bat，用来安装本项目所有代码
 2、运行server examples: com.talent.aio.examples.im.server.ImServerStarter
 3、运行client examples: com.talent.aio.examples.im.client.ImClientStarter
+![im调试客户端](https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client.png?dir=0&filepath=docs%2Fclient.png&oid=edf5289619d5b760c67f599cacf6a0744cca656c&sha=a85d874cfb6e8b19f42a6dcd5796ac28484ad73d "在这里输入图片标题")
