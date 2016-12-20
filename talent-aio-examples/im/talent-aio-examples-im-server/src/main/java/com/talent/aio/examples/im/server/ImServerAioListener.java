@@ -9,17 +9,18 @@
  *
  * **************************************************************************
  */
-package com.talent.aio.examples.im.client;
+package com.talent.aio.examples.im.server;
+
+import java.nio.channels.AsynchronousSocketChannel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.maintain.ClientNodes;
-import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
+import com.talent.aio.server.AioServer;
+import com.talent.aio.server.intf.ServerAioListener;
 
 /**
  * 
@@ -31,10 +32,9 @@ import com.talent.aio.examples.im.common.ImPacket;
  *  (1) | 2016年12月16日 | tanyaowu | 新建类
  *
  */
-public class ImClientAioListener implements ClientAioListener<Object, ImPacket, Object>
+public class ImServerAioListener implements ServerAioListener<Object, ImPacket, Object>
 {
-	private static Logger log = LoggerFactory.getLogger(ImClientAioListener.class);
-
+private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	/**
 	 * 
 	 *
@@ -42,7 +42,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * @创建时间:　2016年12月16日 下午5:52:06
 	 * 
 	 */
-	public ImClientAioListener()
+	public ImServerAioListener()
 	{
 	}
 
@@ -71,35 +71,20 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
 	{
 		log.info("即将关闭连接:{}", channelContext);
-
-		JFrameMain jFrameMain = JFrameMain.getInstance();
-		synchronized (jFrameMain)
-		{
-			try
-			{
-				jFrameMain.getListModel().removeElement(ClientNodes.getKey(channelContext));
-				jFrameMain.getClients().setModel(jFrameMain.getListModel());
-			} catch (Exception e)
-			{
-
-			}
-
-			jFrameMain.updateClientCount();
-		}
-
 	}
 
 	/** 
-	 * @see com.talent.aio.client.intf.ClientAioListener#onAfterReconnected(com.talent.aio.common.ChannelContext)
+	 * @see com.talent.aio.server.intf.ServerAioListener#onAfterAccepted(java.nio.channels.AsynchronousSocketChannel, com.talent.aio.server.AioServer)
 	 * 
-	 * @param channelContext
+	 * @param asynchronousSocketChannel
+	 * @param aioServer
 	 * @return
 	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午10:17:53
+	 * @重写时间: 2016年12月20日 上午11:03:45
 	 * 
 	 */
 	@Override
-	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> channelContext)
+	public boolean onAfterAccepted(AsynchronousSocketChannel asynchronousSocketChannel, AioServer<Object, ImPacket, Object> aioServer)
 	{
 		return true;
 	}
@@ -110,7 +95,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * @param channelContext
 	 * @return
 	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午11:41:27
+	 * @重写时间: 2016年12月20日 上午11:08:44
 	 * 
 	 */
 	@Override
@@ -126,14 +111,14 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * @param packet
 	 * @param packetSize
 	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午11:41:27
+	 * @重写时间: 2016年12月20日 上午11:08:44
 	 * 
 	 */
 	@Override
 	public void onAfterSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
-
+		
 	}
 
 	/** 
@@ -143,14 +128,15 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * @param packet
 	 * @param packetSize
 	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午11:41:27
+	 * @重写时间: 2016年12月20日 上午11:08:44
 	 * 
 	 */
 	@Override
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
-
+		
 	}
+
 
 }

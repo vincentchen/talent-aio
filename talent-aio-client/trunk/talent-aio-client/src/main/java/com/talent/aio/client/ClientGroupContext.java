@@ -11,27 +11,23 @@
  */
 package com.talent.aio.client;
 
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.Aio;
-import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.ChannelContext.Stat;
+import com.talent.aio.client.intf.ClientAioHandler;
+import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.GroupContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
-import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.AioListener;
+import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.DefaultThreadFactory;
-import com.talent.aio.common.utils.SystemTimer;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -58,6 +54,10 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	/** The group executor. */
 	private ExecutorService groupExecutor = null;
 
+	private ClientAioHandler<Ext, P, R> clientAioHandler = null;
+
+	private ClientAioListener<Ext, P, R> clientAioListener = null;
+
 	private ClientGroupStat clientGroupStat = new ClientGroupStat();
 
 	/**
@@ -68,7 +68,7 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param aioHandler the aio handler
 	 * @param aioListener the send listener
 	 */
-	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener)
+	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener)
 	{
 		this(ip, port, aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-client-group")));
@@ -83,65 +83,17 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param aioListener the send listener
 	 * @param groupExecutor the group executor
 	 */
-	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener, ExecutorService groupExecutor)
+	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ExecutorService groupExecutor)
 	{
-		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port, aioHandler, aioListener);
+		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port);
+
+		this.setClientAioHandler(aioHandler);
+		this.setClientAioListener(aioListener);
+
 		this.ip = ip;
 		this.port = port;
 		this.groupExecutor = groupExecutor;
 
-		new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				while (true)
-				{
-					try
-					{
-						ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ClientGroupContext.this.getConnections().getSet();
-						ReadLock readLock = objWithReadWriteLock.getLock().readLock();
-						try
-						{
-							readLock.lock();
-							Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
-							long currtime = SystemTimer.currentTimeMillis();
-							for (ChannelContext<Ext, P, R> entry : set)
-							{
-								ChannelContext<Ext, P, R> channelContext = entry;
-								Stat stat = channelContext.getStat();
-								long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-								long timeLatestSentMsg = stat.getTimeLatestSentMsg();
-								long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
-								long interval = (currtime - compareTime);
-								if (interval >= heartbeatTimeout / 2)
-								{
-									P packet = aioHandler.heartbeatPacket();
-									if (packet != null)
-									{
-										log.error("{}发送心跳包", channelContext.toString());
-										Aio.send(channelContext, packet);
-									}
-								}
-							}
-							log.error("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
-									clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
-									clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
-						} catch (Throwable e)
-						{
-							log.error("", e);
-						} finally
-						{
-							readLock.unlock();
-							Thread.sleep(heartbeatTimeout / 4);
-						}
-					} catch (Throwable e)
-					{
-						log.error("", e);
-					}
-				}
-			}
-		}, "t-aio-timer-sendheartbeat-" + id).start();
 	}
 
 	//	/**
@@ -240,14 +192,6 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	}
 
 	/**
-	 * @return the clientGroupStat
-	 */
-	public ClientGroupStat getClientGroupStat()
-	{
-		return clientGroupStat;
-	}
-
-	/**
 	 * @param clientGroupStat the clientGroupStat to set
 	 */
 	public void setClientGroupStat(ClientGroupStat clientGroupStat)
@@ -255,18 +199,83 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		this.clientGroupStat = clientGroupStat;
 	}
 
+	public ClientGroupStat getClientGroupStat()
+	{
+		return clientGroupStat;
+	}
+
+	/**
+	 * @return the clientAioHandler
+	 */
+	public ClientAioHandler<Ext, P, R> getClientAioHandler()
+	{
+		return clientAioHandler;
+	}
+
+	/**
+	 * @param clientAioHandler the clientAioHandler to set
+	 */
+	public void setClientAioHandler(ClientAioHandler<Ext, P, R> clientAioHandler)
+	{
+		this.clientAioHandler = clientAioHandler;
+	}
+
+	/**
+	 * @return the clientAioListener
+	 */
+	public ClientAioListener<Ext, P, R> getClientAioListener()
+	{
+		return clientAioListener;
+	}
+
+	/**
+	 * @param clientAioListener the clientAioListener to set
+	 */
+	public void setClientAioListener(ClientAioListener<Ext, P, R> clientAioListener)
+	{
+		this.clientAioListener = clientAioListener;
+	}
+
+	/** 
+	 * @see com.talent.aio.common.GroupContext#getAioHandler()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月20日 上午11:33:46
+	 * 
+	 */
+	@Override
+	public AioHandler<Ext, P, R> getAioHandler()
+	{
+		return this.getClientAioHandler();
+	}
+
 	/** 
 	 * @see com.talent.aio.common.GroupContext#getGroupStat()
 	 * 
 	 * @return
 	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月6日 下午2:02:06
+	 * @重写时间: 2016年12月20日 上午11:33:46
 	 * 
 	 */
 	@Override
 	public GroupStat getGroupStat()
 	{
-		return clientGroupStat;
+		return this.getClientGroupStat();
+	}
+
+	/** 
+	 * @see com.talent.aio.common.GroupContext#getAioListener()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月20日 上午11:33:46
+	 * 
+	 */
+	@Override
+	public AioListener<Ext, P, R> getAioListener()
+	{
+		return this.getClientAioListener();
 	}
 
 }

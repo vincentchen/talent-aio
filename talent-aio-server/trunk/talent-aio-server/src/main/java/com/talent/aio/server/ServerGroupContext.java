@@ -27,11 +27,13 @@ import com.talent.aio.common.ChannelContext.Stat;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.AioHandler;
-import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.intf.AioListener;
+import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.DefaultThreadFactory;
 import com.talent.aio.common.utils.SystemTimer;
+import com.talent.aio.server.intf.ServerAioHandler;
+import com.talent.aio.server.intf.ServerAioListener;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -59,6 +61,10 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 
 	private AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = null;
 
+	private ServerAioHandler<Ext, P, R> serverAioHandler = null;
+	
+	private ServerAioListener<Ext, P, R> serverAioListener = null;
+	
 	protected ServerGroupStat serverGroupStat = new ServerGroupStat();
 
 	/** The accept executor. */
@@ -77,7 +83,7 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param port the port
 	 * @param aioHandler the aio handler
 	 */
-	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener)
+	public ServerGroupContext(String ip, int port, ServerAioHandler<Ext, P, R> aioHandler, ServerAioListener<Ext, P, R> aioListener)
 	{
 		this(ip, port, aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-server-group")));
@@ -91,13 +97,16 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @param aioHandler the aio handler
 	 * @param groupExecutor the group executor
 	 */
-	public ServerGroupContext(String ip, int port, AioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener, ThreadPoolExecutor groupExecutor)
+	public ServerGroupContext(String ip, int port, ServerAioHandler<Ext, P, R> serverAioHandler, ServerAioListener<Ext, P, R> serverAioListener, ThreadPoolExecutor groupExecutor)
 	{
-		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port, aioHandler, aioListener);
+		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port);
 		this.ip = ip;
 		this.port = port;
 		this.groupExecutor = groupExecutor;
 		this.acceptCompletionHandler = new AcceptCompletionHandler<>();
+		this.setServerAioHandler(serverAioHandler);
+		this.setServerAioListener(serverAioListener);
+		
 
 		this.acceptExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), DefaultThreadFactory.getInstance("t-aio-server-accept"));
 
@@ -284,16 +293,8 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	//		this.serverGroupStat = serverGroupStat;
 	//	}
 
-	/** 
-	 * @see com.talent.aio.common.GroupContext#getGroupStat()
-	 * 
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月6日 下午1:59:07
-	 * 
-	 */
-	@Override
-	public GroupStat getGroupStat()
+	
+	public ServerGroupStat getServerGroupStat()
 	{
 		return serverGroupStat;
 	}
@@ -312,5 +313,79 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public void setAcceptCompletionHandler(AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler)
 	{
 		this.acceptCompletionHandler = acceptCompletionHandler;
+	}
+
+	/**
+	 * @return the serverAioHandler
+	 */
+	public ServerAioHandler<Ext, P, R> getServerAioHandler()
+	{
+		return serverAioHandler;
+	}
+
+	/**
+	 * @param serverAioHandler the serverAioHandler to set
+	 */
+	public void setServerAioHandler(ServerAioHandler<Ext, P, R> serverAioHandler)
+	{
+		this.serverAioHandler = serverAioHandler;
+	}
+
+	/**
+	 * @return the serverAioListener
+	 */
+	public ServerAioListener<Ext, P, R> getServerAioListener()
+	{
+		return serverAioListener;
+	}
+
+	/**
+	 * @param serverAioListener the serverAioListener to set
+	 */
+	public void setServerAioListener(ServerAioListener<Ext, P, R> serverAioListener)
+	{
+		this.serverAioListener = serverAioListener;
+	}
+
+	/** 
+	 * @see com.talent.aio.common.GroupContext#getAioHandler()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月20日 上午11:34:37
+	 * 
+	 */
+	@Override
+	public AioHandler<Ext, P, R> getAioHandler()
+	{
+		return this.getServerAioHandler();
+	}
+
+	/** 
+	 * @see com.talent.aio.common.GroupContext#getGroupStat()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月20日 上午11:34:37
+	 * 
+	 */
+	@Override
+	public GroupStat getGroupStat()
+	{
+		return this.getServerGroupStat();
+	}
+
+	/** 
+	 * @see com.talent.aio.common.GroupContext#getAioListener()
+	 * 
+	 * @return
+	 * @重写人: tanyaowu
+	 * @重写时间: 2016年12月20日 上午11:34:37
+	 * 
+	 */
+	@Override
+	public AioListener<Ext, P, R> getAioListener()
+	{
+		return getServerAioListener();
 	}
 }

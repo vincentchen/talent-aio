@@ -87,7 +87,7 @@ public class ImAioListener implements AioListener<Object, ImPacket, Object>
 	}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
+	 * @see com.talent.aio.common.intf.AioListener#onBeforeClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
 	 * 
 	 * @param channelContext
 	 * @param throwable
@@ -97,13 +97,13 @@ public class ImAioListener implements AioListener<Object, ImPacket, Object>
 	 * 
 	 */
 	@Override
-	public void onClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
+	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
 	{
 		log.info("连接关闭了:{}", channelContext);
 	}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onConnected(com.talent.aio.common.ChannelContext)
+	 * @see com.talent.aio.common.intf.AioListener#onAfterConnected(com.talent.aio.common.ChannelContext)
 	 * 
 	 * @param channelContext
 	 * @return
@@ -112,7 +112,7 @@ public class ImAioListener implements AioListener<Object, ImPacket, Object>
 	 * 
 	 */
 	@Override
-	public boolean onConnected(ChannelContext<Object, ImPacket, Object> channelContext)
+	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext)
 	{
 		log.info("连接建立了:{}", channelContext);
 		String blacklistip = "127.4.3.3";

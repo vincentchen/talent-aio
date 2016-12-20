@@ -20,15 +20,14 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
-import com.talent.aio.common.intf.AioHandler;
-import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.ImAioListener;
 import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.server.AioServer;
 import com.talent.aio.server.ServerGroupContext;
+import com.talent.aio.server.intf.ServerAioHandler;
+import com.talent.aio.server.intf.ServerAioListener;
 
 /**
  * 
@@ -60,9 +59,9 @@ public class ImServerStarter
 
 	static AioServer<Object, ImPacket, Object> aioServer = null;
 
-	static AioHandler<Object, ImPacket, Object> aioHandler = null;
+	static ServerAioHandler<Object, ImPacket, Object> aioHandler = null;
 
-	static AioListener<Object, ImPacket, Object> aioListener = null;
+	static ServerAioListener<Object, ImPacket, Object> aioListener = null;
 
 	static String ip = null;
 
@@ -79,7 +78,7 @@ public class ImServerStarter
 	public static void main(String[] args) throws IOException
 	{
 		aioHandler = new ImServerAioHandler();
-		aioListener = new ImAioListener();
+		aioListener = new ImServerAioListener();
 		serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
 		aioServer = new AioServer<>(serverGroupContext);
 		aioServer.start();

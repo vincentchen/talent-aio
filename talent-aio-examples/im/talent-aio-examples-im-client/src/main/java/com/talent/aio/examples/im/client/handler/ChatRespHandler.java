@@ -111,17 +111,24 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 		String xx = null;
 		long time = SystemTimer.currentTimeMillis();
 
+		
+		JFrameMain frameMain = JFrameMain.getInstance();
 		if (c == 1 || c == 0 || c % 10000 == 0)
 		{
-			if (StringUtils.isBlank(body.getToNick()))
-			{
-				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
-			} else
-			{
-				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
-			}
+			long sendStartTime = frameMain.getSendStartTime();
+			long per = (c/(time - sendStartTime)) * 1000;
+			
+			xx = "[" + c + "] " + " [" + per + "条/秒] " + " [" + time + "]";
+			
+//			if (StringUtils.isBlank(body.getToNick()))
+//			{
+//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
+//			} else
+//			{
+//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
+//			}
 
-			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
+			frameMain.getMsgTextArea().append(xx + System.lineSeparator());
 		}
 		return null;
 	}

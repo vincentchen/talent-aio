@@ -18,8 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.AioHandler;
-import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.intf.AioListener;
+import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.common.maintain.Connections;
 import com.talent.aio.common.maintain.Groups;
@@ -71,9 +71,9 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 */
 	protected int readBufferSize = READ_BUFFER_SIZE;
 
-	private AioHandler<Ext, P, R> aioHandler;
-
-	private AioListener<Ext, P, R> aioListener;
+//	private AioHandler<Ext, P, R> aioHandler;
+//
+//	private AioListener<Ext, P, R> aioListener;
 	/**
 	 * 解码线程池
 	 */
@@ -122,12 +122,12 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月16日 上午10:21:58
 	 * 
 	 */
-	public GroupContext(String id, AioHandler<Ext, P, R> aioHandler, AioListener<Ext, P, R> aioListener)
+	public GroupContext(String id)
 	{
 		super();
 		this.id = id;
-		this.aioHandler = aioHandler;
-		this.aioListener = aioListener;
+//		this.aioHandler = aioHandler;
+//		this.aioListener = aioListener;
 		//		SynchronousQueue<Runnable> decodePoolQueue = new SynchronousQueue<Runnable>();
 		//		decodeExecutor = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, decodePoolQueue, "t-aio-decode");
 		//		decodeExecutor.prestartAllCoreThreads();
@@ -211,21 +211,21 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 
 	}
 
-	/**
-	 * @return the aioHandler
-	 */
-	public AioHandler<Ext, P, R> getAioHandler()
-	{
-		return aioHandler;
-	}
-
-	/**
-	 * @param aioHandler the aioHandler to set
-	 */
-	public void setAioHandler(AioHandler<Ext, P, R> aioHandler)
-	{
-		this.aioHandler = aioHandler;
-	}
+//	/**
+//	 * @return the aioHandler
+//	 */
+//	public AioHandler<Ext, P, R> getAioHandler()
+//	{
+//		return aioHandler;
+//	}
+//
+//	/**
+//	 * @param aioHandler the aioHandler to set
+//	 */
+//	public void setAioHandler(AioHandler<Ext, P, R> aioHandler)
+//	{
+//		this.aioHandler = aioHandler;
+//	}
 
 	/**
 	 * @return the decodeExecutor
@@ -435,26 +435,21 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		this.connections = connections;
 	}
 
-	/**
-	 * @return the groupStat
-	 */
-	public abstract GroupStat getGroupStat();
-
-	/**
-	 * @return the aioListener
-	 */
-	public AioListener<Ext, P, R> getAioListener()
-	{
-		return aioListener;
-	}
-
-	/**
-	 * @param aioListener the aioListener to set
-	 */
-	public void setSendListener(AioListener<Ext, P, R> aioListener)
-	{
-		this.aioListener = aioListener;
-	}
+//	/**
+//	 * @return the aioListener
+//	 */
+//	public AioListener<Ext, P, R> getAioListener()
+//	{
+//		return aioListener;
+//	}
+//
+//	/**
+//	 * @param aioListener the aioListener to set
+//	 */
+//	public void setSendListener(AioListener<Ext, P, R> aioListener)
+//	{
+//		this.aioListener = aioListener;
+//	}
 
 	/**
 	 * @return the readBufferSize
@@ -471,5 +466,32 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	{
 		this.readBufferSize = readBufferSize;
 	}
+
+	/**
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月20日 上午11:32:02
+	 * 
+	 */
+	public abstract AioHandler<Ext, P, R> getAioHandler();
+
+	/**
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月20日 上午11:33:02
+	 * 
+	 */
+	public abstract GroupStat getGroupStat();
+
+	/**
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月20日 上午11:33:28
+	 * 
+	 */
+	public abstract AioListener<Ext, P, R> getAioListener();
 
 }

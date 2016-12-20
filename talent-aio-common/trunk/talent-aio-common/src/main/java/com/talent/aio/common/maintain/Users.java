@@ -19,30 +19,27 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.Packet;
 
+
 /**
- * The Class Remotes.
+ * The Class Users.
  *
- * @author tanyaowu
- * @创建时间 2016年11月17日 下午1:12:56
- * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
- *  (1) | 2016年11月17日 | tanyaowu | 新建类
+ * @param <Ext> the generic type
+ * @param <P> the generic type
+ * @param <R> the generic type
  */
 public class Users <Ext, P extends Packet, R>
 {
 
-	/** remoteAndChannelContext 
-	 * key: "ip:port" 
-	 * value: ChannelContext. 
-	 **/
+	/**
+	 * key: userid
+	 * value: ChannelContext
+	 */
 	private ObjWithReadWriteLock<DualHashBidiMap> map = new ObjWithReadWriteLock<>(new DualHashBidiMap());
 
 
 	/**
 	 * Removes映射.
 	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
 	 * @param channelContext the channel context
 	 */
 	public void remove(ChannelContext<Ext, P, R> channelContext)
@@ -63,12 +60,11 @@ public class Users <Ext, P extends Packet, R>
 	}
 	
 	/**
-	 * 
-	 * @param userid
+	 * Removes the.
 	 *
+	 * @param userid the userid
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 下午2:43:28
-	 *
 	 */
 	public void remove(String userid)
 	{
@@ -90,9 +86,6 @@ public class Users <Ext, P extends Packet, R>
 	/**
 	 * 添加映射.
 	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
 	 * @param userid the userid
 	 * @param channelContext the channel context
 	 * @author: tanyaowu
@@ -122,9 +115,6 @@ public class Users <Ext, P extends Packet, R>
 	/**
 	 * Find.
 	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
 	 * @param userid the userid
 	 * @return the channel context
 	 */

@@ -7,7 +7,6 @@ import java.nio.ByteBuffer;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-import io.netty.buffer.ByteBuf;
 
 /**
  * 

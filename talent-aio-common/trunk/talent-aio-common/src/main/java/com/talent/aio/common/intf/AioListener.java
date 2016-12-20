@@ -26,7 +26,7 @@ import com.talent.aio.common.ChannelContext;
 public interface AioListener <Ext, P extends Packet, R>
 {
 	/**
-	 * 当连接建立时触发的方法，一般用于过滤黑名单
+	 * 连接建立后触发的方法
 	 * @param channelContext
 	 * @return true: 表示这个连接可以连接，false: 表示这个连接需要立即关闭
 	 *
@@ -34,7 +34,8 @@ public interface AioListener <Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月16日 下午3:28:24
 	 *
 	 */
-	boolean onConnected(ChannelContext<Ext, P, R> channelContext);
+	boolean onAfterConnected(ChannelContext<Ext, P, R> channelContext);
+	
 	
 	/**
 	 * 消息包发送出去后
@@ -62,7 +63,7 @@ public interface AioListener <Ext, P extends Packet, R>
 	
 
 	/**
-	 * 连接关闭时触发本方法，业务层作一些释放资源等操作，记录日志等.
+	 * 连接关闭前触发本方法，业务层作一些释放业务资源等操作，记录日志等.
 	 *
 	 * @param channelContext the channelcontext
 	 * @param throwable the throwable 有可能为空
@@ -70,5 +71,5 @@ public interface AioListener <Ext, P extends Packet, R>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 上午9:17:55
 	 */
-	void onClose(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark);
+	void onBeforeClose(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark);
 }

@@ -43,9 +43,9 @@
                       <Component id="deleteBtn" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" pref="50" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="loginnameSufEndField" min="-2" pref="38" max="-2" attributes="0"/>
@@ -63,25 +63,20 @@
                       <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="sendBtn" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="229" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
-                  <Group type="102" attributes="0">
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane3" min="-2" pref="240" max="-2" attributes="0"/>
-                          <Group type="102" alignment="0" attributes="0">
-                              <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
-                              <Component id="cleanBtn" min="-2" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jScrollPane3" min="-2" pref="363" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
-                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                              <Component id="jScrollPane2" max="32767" attributes="0"/>
-                          </Group>
-                          <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
                               <Component id="cleanBtn1" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace max="32767" attributes="0"/>
+                              <Component id="jScrollPane2" min="-2" pref="803" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -117,7 +112,6 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
                           <Component id="deleteBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cleanBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="cleanBtn1" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -201,7 +195,7 @@
           <Properties>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="&#x4f7f;&#x7528;&#x8bf4;&#x660e;&#xff1a;&#xa;1&#x3001;&#x8bbe;&#x7f6e;&#x597d;Server&#x548c;&#x7aef;&#x53e3;&#xa;2&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x8fde;&#x63a5;&#x6570;&#x91cf;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;3&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x7fa4;&#x7ec4;&#x540d;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;&#xa;4&#x3001;&#x70b9;&#x51fb;&#x201c;&#x8fde;&#x63a5;&#x201d;&#xa;5&#x3001;&#x9009;&#x4e2d;&#x8fde;&#x63a5;&#xff0c;&#x518d;&#x70b9;&#x51fb;&#x201c;&#x8fdb;&#x884c;&#x7fa4;&#x7ec4;&#x201d;&#x3002;&#xff08;&#x6ce8;&#x610f;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x548c;&#x540e;&#x9762;&#x7684;&#x53d1;&#x9001;&#x804a;&#x5929;&#xff0c;&#x90fd;&#x53ea;&#x9488;&#x5bf9;&#x9009;&#x4e2d;&#x7684;&#x5ba2;&#x6237;&#x7aef;&#x8fdb;&#x884c;&#x64cd;&#x4f5c;&#xff09;&#xa;&#xa;&#x7edf;&#x8ba1;&#x6d88;&#x606f;&#x53d1;&#x9001;&#x7684;&#x901f;&#x5ea6;&#xff1a;&#xa;&#x8b6c;&#x5982;&#xff1a;&#xa;[1][1482115287366]&#xa;[1000000][1482115295116]&#xa;&#x7b97;&#x6cd5;&#xff1a;&#xa;(1000000/(1482115295116-1482115287366))*1000=129032.25806451612903225806451613(&#x6bcf;&#x79d2;&#x53d1;&#x9001;&#x7684;&#x6d88;&#x606f;&#x91cf;)&#xa;&#xa;&#xa;"/>
+            <Property name="text" type="java.lang.String" value="&#x4f7f;&#x7528;&#x8bf4;&#x660e;&#xff1a;&#xa;1&#x3001;&#x8bbe;&#x7f6e;&#x597d;Server&#x548c;&#x7aef;&#x53e3;&#xa;2&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x8fde;&#x63a5;&#x6570;&#x91cf;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;3&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x7fa4;&#x7ec4;&#x540d;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;&#xa;4&#x3001;&#x70b9;&#x51fb;&#x201c;&#x8fde;&#x63a5;&#x201d;&#xa;5&#x3001;&#x9009;&#x4e2d;&#x8fde;&#x63a5;&#xff0c;&#x518d;&#x70b9;&#x51fb;&#x201c;&#x8fdb;&#x884c;&#x7fa4;&#x7ec4;&#x201d;&#x3002;&#xff08;&#x6ce8;&#x610f;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x548c;&#x540e;&#x9762;&#x7684;&#x53d1;&#x9001;&#x804a;&#x5929;&#xff0c;&#x90fd;&#x53ea;&#x9488;&#x5bf9;&#x9009;&#x4e2d;&#x7684;&#x5ba2;&#x6237;&#x7aef;&#x8fdb;&#x884c;&#x64cd;&#x4f5c;&#xff09;&#xa;&#xa;"/>
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new MyTextArea()"/>
@@ -279,14 +273,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&#x6b21;"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JButton" name="cleanBtn">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x8ba1;&#x6570;&#x6e05;&#x96f6;"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cleanBtnActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="clientCountLabel">
     </Component>

@@ -29,8 +29,7 @@ public class JsonFilterUtils
 	 * @param classes
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static boolean containClasses(Class clazz, Class[] classes)
+	public static boolean containClasses(Class<?> clazz, Class<?>[] classes)
 	{
 		if (classes == null || classes.length == 0)
 		{
@@ -43,7 +42,7 @@ public class JsonFilterUtils
 			return true;
 		}
 
-		Class[] interfaces = clazz.getInterfaces();
+		Class<?>[] interfaces = clazz.getInterfaces();
 		for (int i = 0; i < interfaces.length; i++)
 		{
 			isContain = ArrayUtils.contains(classes, interfaces[i]);
@@ -62,8 +61,7 @@ public class JsonFilterUtils
 	 * @param classes
 	 * @return true if classes contain value'class
 	 */
-	@SuppressWarnings("unchecked")
-	public static boolean containClasses(String name, Object value, Class[] classes)
+	public static boolean containClasses(String name, Object value, Class<?>[] classes)
 	{
 		if (value == null || (classes == null || classes.length == 0))
 		{
@@ -78,8 +76,7 @@ public class JsonFilterUtils
 	 * @param classes
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static boolean containClassesWithAscend(Class clazz, Class[] classes)
+	public static boolean containClassesWithAscend(Class<?> clazz, Class<?>[] classes)
 	{
 		if (clazz == null || (classes == null || classes.length == 0))
 		{
@@ -93,7 +90,7 @@ public class JsonFilterUtils
 		}
 
 		//追溯superclass
-		Class superClass = clazz.getSuperclass();
+		Class<?> superClass = clazz.getSuperclass();
 		while (superClass != null)
 		{
 			isContain = containClasses(superClass, classes);

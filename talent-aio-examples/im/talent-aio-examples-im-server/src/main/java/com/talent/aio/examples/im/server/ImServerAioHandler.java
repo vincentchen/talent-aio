@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
-import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
@@ -28,6 +27,7 @@ import com.talent.aio.examples.im.server.handler.AuthHandler;
 import com.talent.aio.examples.im.server.handler.ChatHandler;
 import com.talent.aio.examples.im.server.handler.ImBsAioHandlerIntf;
 import com.talent.aio.examples.im.server.handler.JoinHandler;
+import com.talent.aio.server.intf.ServerAioHandler;
 
 /**
  * 
@@ -39,7 +39,7 @@ import com.talent.aio.examples.im.server.handler.JoinHandler;
  *  (1) | 2016年11月18日 | tanyaowu | 新建类
  *
  */
-public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
+public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Object>
 {
 	private static Logger log = LoggerFactory.getLogger(ImServerAioHandler.class);
 	
@@ -121,7 +121,7 @@ public class ImServerAioHandler implements AioHandler<Object, ImPacket, Object>
 		}
 
 		int allLen = ImPacket.HEADER_LENGHT + bodyLen;
-		ByteBuffer buffer = ByteBuffer.allocate(allLen);//io.netty.buffer.Unpooled.buffer(initialCapacity);
+		ByteBuffer buffer = ByteBuffer.allocate(allLen);
 		buffer.order(channelContext.getGroupContext().getByteOrder());
 		
 

@@ -18,7 +18,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.client.ClientAioHandler;
+import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.examples.im.client.handler.AuthRespHandler;
@@ -122,7 +122,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		}
 
 		int allLen = ImPacket.HEADER_LENGHT + bodyLen;
-		ByteBuffer buffer = ByteBuffer.allocate(allLen);//io.netty.buffer.Unpooled.buffer(initialCapacity);
+		ByteBuffer buffer = ByteBuffer.allocate(allLen);
 		buffer.order(channelContext.getGroupContext().getByteOrder());
 
 		buffer.put(ImPacket.VERSION);
@@ -231,7 +231,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 	private static ImPacket heartbeatPacket = new ImPacket(Command.HEARTBEAT_REQ);
 
 	/** 
-	 * @see com.talent.aio.client.ClientAioHandler#heartbeatPacket()
+	 * @see com.talent.aio.client.intf.ClientAioHandler#heartbeatPacket()
 	 * 
 	 * @return
 	 * @重写人: tanyaowu

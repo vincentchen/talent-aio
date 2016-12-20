@@ -96,7 +96,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				//				}
 				try
 				{
-					groupContext.getAioListener().onClose(channelContext, t, remark);
+					groupContext.getAioListener().onBeforeClose(channelContext, t, remark);
 				} catch (Throwable e)
 				{
 					log.error(e.toString(), e);

@@ -9,7 +9,7 @@
  *
  * **************************************************************************
  */
-package com.talent.aio.client;
+package com.talent.aio.client.intf;
 
 import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.Packet;

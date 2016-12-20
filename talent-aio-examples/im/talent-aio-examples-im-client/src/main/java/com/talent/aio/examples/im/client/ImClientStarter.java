@@ -18,8 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.client.AioClient;
-import com.talent.aio.client.ClientAioHandler;
 import com.talent.aio.client.ClientGroupContext;
+import com.talent.aio.client.intf.ClientAioHandler;
+import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
@@ -70,7 +71,7 @@ public class ImClientStarter
 
 	private ClientAioHandler<Object, ImPacket, Object> aioClientHandler = null;
 
-	private AioListener<Object, ImPacket, Object> aioListener = null;
+	private ClientAioListener<Object, ImPacket, Object> aioListener = null;
 	
 	//--------------
 
@@ -315,7 +316,7 @@ public class ImClientStarter
 	/**
 	 * @param aioListener the aioListener to set
 	 */
-	public void setAioListener(AioListener<Object, ImPacket, Object> aioListener)
+	public void setAioListener(ClientAioListener<Object, ImPacket, Object> aioListener)
 	{
 		this.aioListener = aioListener;
 	}

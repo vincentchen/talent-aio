@@ -32,7 +32,6 @@ import com.talent.aio.examples.im.common.bs.ChatReqBody;
 import com.talent.aio.examples.im.common.bs.JoinReqBody;
 import com.talent.aio.examples.im.common.json.Json;
 
-
 /**
  *
  * @author Administrator
@@ -42,7 +41,7 @@ public class JFrameMain extends javax.swing.JFrame
 
 	private static Logger log = LoggerFactory.getLogger(JFrameMain.class);
 	private static JFrameMain instance = null;
-	
+
 	private static ImClientStarter imClientStarter = null;
 
 	/** 
@@ -51,7 +50,7 @@ public class JFrameMain extends javax.swing.JFrame
 	protected void setWindowIcon()
 	{
 		//javax.swing.ImageIcon imageIcon = new javax.swing.ImageIcon(getClass().getResource("/img/icon.png"));
-//		this.setIconImage(imageIcon.getImage());
+		//		this.setIconImage(imageIcon.getImage());
 	}
 
 	/**
@@ -107,11 +106,10 @@ public class JFrameMain extends javax.swing.JFrame
         joinBtn = new javax.swing.JButton();
         loopcountField = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        cleanBtn = new javax.swing.JButton();
         clientCountLabel = new javax.swing.JLabel();
         loginnameSufEndField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        printBtn = new javax.swing.JButton();
+        cleanBtn1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("talent-im-client");
@@ -146,7 +144,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         logtext.setColumns(20);
         logtext.setRows(5);
-        logtext.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”\n5、选中连接，再点击“进行群组”。（注意进入群组和后面的发送聊天，都只针对选中的客户端进行操作）\n\n统计消息发送的速度：\n譬如：\n[1][1482115287366]\n[1000000][1482115295116]\n算法：\n(1000000/(1482115295116-1482115287366))*1000=129032.25806451612903225806451613(每秒发送的消息量)\n\n\n");
+        logtext.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”\n5、选中连接，再点击“进行群组”。（注意进入群组和后面的发送聊天，都只针对选中的客户端进行操作）\n\n");
         jScrollPane2.setViewportView(logtext);
 
         deleteBtn.setText("删除选中的客户端");
@@ -197,13 +195,6 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel6.setText("次");
 
-        cleanBtn.setText("计数清零");
-        cleanBtn.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cleanBtnActionPerformed(evt);
-            }
-        });
-
         loginnameSufEndField.setText("1000");
         loginnameSufEndField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -213,10 +204,10 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel3.setText("连接数量");
 
-        printBtn.setText("打印统计信息");
-        printBtn.addActionListener(new java.awt.event.ActionListener() {
+        cleanBtn1.setText("打印统计信息");
+        cleanBtn1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                printBtnActionPerformed(evt);
+                cleanBtn1ActionPerformed(evt);
             }
         });
 
@@ -240,9 +231,9 @@ public class JFrameMain extends javax.swing.JFrame
                         .addComponent(clientCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(deleteBtn)))
-                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,21 +251,18 @@ public class JFrameMain extends javax.swing.JFrame
                         .addComponent(jLabel6)
                         .addGap(18, 18, 18)
                         .addComponent(sendBtn)
-                        .addContainerGap(229, Short.MAX_VALUE))
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
-                                .addComponent(cleanBtn)))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jScrollPane2))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(20, 20, 20)
-                                .addComponent(printBtn)
-                                .addGap(0, 0, Short.MAX_VALUE))))))
+                                .addComponent(cleanBtn1)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 803, javax.swing.GroupLayout.PREFERRED_SIZE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -302,8 +290,7 @@ public class JFrameMain extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(deleteBtn)
-                            .addComponent(cleanBtn)
-                            .addComponent(printBtn))))
+                            .addComponent(cleanBtn1))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 555, Short.MAX_VALUE)
@@ -325,11 +312,12 @@ public class JFrameMain extends javax.swing.JFrame
 			// TODO add your handling code here:
 	}//GEN-LAST:event_portActionPerformed
 
-	public void updateClientCount(){
+	public void updateClientCount()
+	{
 		int clientSize = imClientStarter.getAioClient().getClientGroupContext().getConnections().getSet().getObj().size();
 		clientCountLabel.setText(clientSize + "个客户端");
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private void lianjieActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_lianjieActionPerformed
@@ -343,8 +331,8 @@ public class JFrameMain extends javax.swing.JFrame
 			//                int count = end - start + 1;
 			for (int i = start; i < end; i++)
 			{
-				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect();
-				
+				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(null, null, true);
+
 				listModel.addElement(ClientNodes.getKey(channelContext));
 				clients.setModel(listModel);
 			}
@@ -369,10 +357,10 @@ public class JFrameMain extends javax.swing.JFrame
 				if (channelContext != null)
 				{
 					Aio.close(channelContext, "");
-					
+
 				}
 			}
-//			updateClientCount();
+			//			updateClientCount();
 			//			ListModel<String> listModel1 = clients.getModel();
 			//			String id = (String)listModel1.getElementAt(index);
 
@@ -391,10 +379,14 @@ public class JFrameMain extends javax.swing.JFrame
 		return id;
 	}
 
+	
+	private long sendStartTime;
 	private void sendBtnActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_sendBtnActionPerformed
-JFrameMain.getInstance().getMsgTextArea().setText("");
-ChatRespHandler.count.set(0);
+		
+		
+		JFrameMain.getInstance().getMsgTextArea().setText("");
+		ChatRespHandler.count.set(0);
 		List<String> ids = clients.getSelectedValuesList();
 		if (ids == null || ids.size() == 0)
 		{
@@ -406,6 +398,7 @@ ChatRespHandler.count.set(0);
 		String toGroup = groupField.getText();
 		ChatReqBody chatReqBody = new ChatReqBody(ChatType.pub, msg, toGroup, null, null);
 		int count = 0;
+		setSendStartTime(SystemTimer.currentTimeMillis());
 		for (String id : ids)
 		{
 			for (int i = 0; i < loopcount; i++)
@@ -419,23 +412,23 @@ ChatRespHandler.count.set(0);
 						ImPacket packet = new ImPacket(body, Command.CHAT_REQ);
 						Aio.send(channelContext, packet);
 					}
-					
+
 				} catch (Exception e1)
 				{
 					log.error(e1.toString(), e1);
 				}
-//				count++;
-//				if (count >= 1000)
-//				{
-//					try
-//					{
-//						count = 0;
-//						Thread.sleep(1000);
-//					} catch (InterruptedException e)
-//					{
-//						log.error(e.toString(), e);
-//					}
-//				}
+				//				count++;
+				//				if (count >= 1000)
+				//				{
+				//					try
+				//					{
+				//						count = 0;
+				//						Thread.sleep(1000);
+				//					} catch (InterruptedException e)
+				//					{
+				//						log.error(e.toString(), e);
+				//					}
+				//				}
 			}
 		}
 
@@ -466,8 +459,8 @@ ChatRespHandler.count.set(0);
 		{
 			try
 			{
-//				MsgSendApi.send(Command.JOIN_GROUP_REQ, joinReqBody, id);
-				
+				//				MsgSendApi.send(Command.JOIN_GROUP_REQ, joinReqBody, id);
+
 				ChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().getClientGroupContext().getClientNodes().find(id);
 				if (channelContext != null)
 				{
@@ -483,11 +476,6 @@ ChatRespHandler.count.set(0);
 
 	}//GEN-LAST:event_joinBtnActionPerformed
 
-	private void cleanBtnActionPerformed(java.awt.event.ActionEvent evt)
-	{//GEN-FIRST:event_cleanBtnActionPerformed
-		ChatRespHandler.count.set(0);
-	}//GEN-LAST:event_cleanBtnActionPerformed
-
 	private void loginnameSufEndFieldActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_loginnameSufEndFieldActionPerformed
 			// TODO add your handling code here:
@@ -502,19 +490,21 @@ ChatRespHandler.count.set(0);
 		}
 	}//GEN-LAST:event_msgTextAreaMouseClicked
 
-    private void loopcountFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loopcountFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_loopcountFieldActionPerformed
+	private void loopcountFieldActionPerformed(java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_loopcountFieldActionPerformed
+		// TODO add your handling code here:
+	}//GEN-LAST:event_loopcountFieldActionPerformed
 
-    private void printBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cleanBtn1ActionPerformed
-    	String id = imClientStarter.getClientGroupContext().getId();
+	private void cleanBtn1ActionPerformed(java.awt.event.ActionEvent evt)
+	{//GEN-FIRST:event_cleanBtn1ActionPerformed
+		String id = imClientStarter.getClientGroupContext().getId();
 		ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> connections = imClientStarter.getClientGroupContext().getConnections().getSet();
 		Set<ChannelContext<Object, ImPacket, Object>> set = connections.getObj();
 		ClientGroupStat clientGroupStat = imClientStarter.getClientGroupContext().getClientGroupStat();
 		log.error("[{}]:[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
-				clientGroupStat.getClosed().get(), clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(),
-				clientGroupStat.getHandledPacket().get(), clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
-    }//GEN-LAST:event_cleanBtn1ActionPerformed
+				clientGroupStat.getClosed().get(), clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
+				clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
+	}//GEN-LAST:event_cleanBtn1ActionPerformed
 
 	/**
 	 * @param args the command line arguments
@@ -528,14 +518,14 @@ ChatRespHandler.count.set(0);
 		 */
 		try
 		{
-//			try
-//			{
-//				com.talent.aio.examples.im.client.ImClientStarter.init();
-//			} catch (Exception e)
-//			{
-//				throw new RuntimeException(e);
-//			}
-			
+			//			try
+			//			{
+			//				com.talent.aio.examples.im.client.ImClientStarter.init();
+			//			} catch (Exception e)
+			//			{
+			//				throw new RuntimeException(e);
+			//			}
+
 			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels())
 			{
 				if ("Nimbus".equals(info.getName()))
@@ -573,8 +563,7 @@ ChatRespHandler.count.set(0);
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cleanBtn;
-    private javax.swing.JButton printBtn;
+    private javax.swing.JButton cleanBtn1;
     private javax.swing.JLabel clientCountLabel;
     private javax.swing.JList<String> clients;
     private javax.swing.JButton deleteBtn;
@@ -650,28 +639,28 @@ ChatRespHandler.count.set(0);
 		this.listModel = listModel;
 	}
 
-	/**
-	 * @return the cleanBtn
-	 */
-	public javax.swing.JButton getCleanBtn()
-	{
-		return cleanBtn;
-	}
-
-	/**
-	 * @param cleanBtn the cleanBtn to set
-	 */
-	public void setCleanBtn(javax.swing.JButton cleanBtn)
-	{
-		this.cleanBtn = cleanBtn;
-	}
+//	/**
+//	 * @return the cleanBtn
+//	 */
+//	public javax.swing.JButton getCleanBtn()
+//	{
+//		return cleanBtn;
+//	}
+//
+//	/**
+//	 * @param cleanBtn the cleanBtn to set
+//	 */
+//	public void setCleanBtn(javax.swing.JButton cleanBtn)
+//	{
+//		this.cleanBtn = cleanBtn;
+//	}
 
 	/**
 	 * @return the printBtn
 	 */
 	public javax.swing.JButton getPrintBtn()
 	{
-		return printBtn;
+		return cleanBtn1;
 	}
 
 	/**
@@ -679,7 +668,7 @@ ChatRespHandler.count.set(0);
 	 */
 	public void setPrintBtn(javax.swing.JButton printBtn)
 	{
-		this.printBtn = printBtn;
+		this.cleanBtn1 = printBtn;
 	}
 
 	/**
@@ -984,5 +973,21 @@ ChatRespHandler.count.set(0);
 	public void setMsgTextArea(javax.swing.JTextArea msgTextArea)
 	{
 		this.msgTextArea = msgTextArea;
+	}
+
+	/**
+	 * @return the sendStartTime
+	 */
+	public long getSendStartTime()
+	{
+		return sendStartTime;
+	}
+
+	/**
+	 * @param sendStartTime the sendStartTime to set
+	 */
+	public void setSendStartTime(long sendStartTime)
+	{
+		this.sendStartTime = sendStartTime;
 	}
 }

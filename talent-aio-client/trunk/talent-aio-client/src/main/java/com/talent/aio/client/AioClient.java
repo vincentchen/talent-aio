@@ -17,18 +17,26 @@ import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.common.Aio;
+import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.ReadCompletionHandler;
+import com.talent.aio.common.ChannelContext.Stat;
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -73,9 +81,121 @@ public class AioClient<Ext, P extends Packet, R>
 		this.clientGroupContext = clientGroupContext;
 		ExecutorService groupExecutor = clientGroupContext.getGroupExecutor();
 		this.channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
+
+		///////
+		ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
+		ClientAioHandler<Ext, P, R> aioHandler = (ClientAioHandler<Ext, P, R>) clientGroupContext.getClientAioHandler();
+		long heartbeatTimeout = clientGroupContext.getHeartbeatTimeout();
+		String id = clientGroupContext.getId();
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				while (true)
+				{
+					try
+					{
+						ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSet();
+						ReadLock readLock = objWithReadWriteLock.getLock().readLock();
+						try
+						{
+							readLock.lock();
+							Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+							long currtime = SystemTimer.currentTimeMillis();
+							for (ChannelContext<Ext, P, R> entry : set)
+							{
+								ClientChannelContext<Ext, P, R> channelContext = (ClientChannelContext<Ext, P, R>) entry;
+
+								if (channelContext.isClosed()) //已经关闭了
+								{
+									if (channelContext.isAutoReconnect())
+									{
+										AioClient.this.reconnect(channelContext);
+									}
+								} else
+								{
+									Stat stat = channelContext.getStat();
+									long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
+									long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+									long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
+									long interval = (currtime - compareTime);
+									if (interval >= heartbeatTimeout / 2)
+									{
+										P packet = aioHandler.heartbeatPacket();
+										if (packet != null)
+										{
+											log.info("{}发送心跳包", channelContext.toString());
+											Aio.send(channelContext, packet);
+										}
+									}
+								}
+							}
+							log.info("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
+									clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
+									clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
+						} catch (Throwable e)
+						{
+							log.error("", e);
+						} finally
+						{
+							readLock.unlock();
+							Thread.sleep(heartbeatTimeout / 4);
+						}
+					} catch (Throwable e)
+					{
+						log.error("", e);
+					}
+				}
+			}
+		}, "t-aio-timer-heartbeat & reconnect-" + id).start();
 	}
 
-	public ClientChannelContext<Ext, P, R> connect() throws Exception
+	/**
+	 * 重连
+	 * @param channelContext
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月19日 下午5:43:35
+	 *
+	 */
+	public void reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
+	{
+		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.isAutoReconnect(), channelContext);
+	}
+
+	/**
+	 * 
+	 * @param bindIp
+	 * @param bindPort
+	 * @param autoReconnect
+	 * @return
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月19日 下午5:49:05
+	 *
+	 */
+	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, boolean autoReconnect) throws Exception
+	{
+		return connect(bindIp, bindPort, autoReconnect, null);
+	}
+
+	/**
+	 * 
+	 * @param bindIp 绑定本地ip
+	 * @param bindPort 绑定本地port
+	 * @param autoReconnect 是否自动重连
+	 * @param channelContext
+	 * @return
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月19日 下午5:49:00
+	 *
+	 */
+	private ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, boolean autoReconnect, ClientChannelContext<Ext, P, R> channelContext) throws Exception
 	{
 		String ip = clientGroupContext.getIp();
 		int port = clientGroupContext.getPort();
@@ -84,13 +204,42 @@ public class AioClient<Ext, P extends Packet, R>
 		asynchronousSocketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
 		asynchronousSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 		asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+
+		InetSocketAddress bind = null;
+		if (bindPort != null && bindPort > 0)
+		{
+			if (StringUtils.isNotBlank(bindIp))
+			{
+				bind = new InetSocketAddress(bindIp, bindPort);
+			} else
+			{
+				bind = new InetSocketAddress(bindPort);
+			}
+		}
+
+		if (bind != null)
+		{
+			asynchronousSocketChannel.bind(bind);
+		}
+
 		Future<Void> future = asynchronousSocketChannel.connect(new InetSocketAddress(ip, port));
 		try
 		{
 			future.get(5, TimeUnit.SECONDS);
 			log.info("connected to {}:{}", ip, port);
-			ClientChannelContext<Ext, P, R> channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
-			boolean f = clientGroupContext.getAioListener().onConnected(channelContext);
+
+			if (channelContext == null)
+			{
+				channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+				channelContext.setBindIp(bindIp);
+				channelContext.setBindPort(bindPort);
+				channelContext.setAutoReconnect(autoReconnect);
+			} else
+			{
+				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
+			}
+
+			boolean f = clientGroupContext.getClientAioListener().onAfterConnected(channelContext);
 			if (!f)
 			{
 				log.warn("不允许连接:{}", channelContext);

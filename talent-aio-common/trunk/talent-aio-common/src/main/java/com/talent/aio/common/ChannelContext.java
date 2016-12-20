@@ -28,10 +28,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private static Logger log = LoggerFactory.getLogger(ChannelContext.class);
 
 	private static java.util.concurrent.atomic.AtomicLong idAtomicLong = new AtomicLong();
-	
-	
-	
-//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
+
+	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
 
 	private GroupContext<Ext, P, R> groupContext = null;
 
@@ -46,7 +44,6 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
 	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>(this);
-	
 
 	//	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>();
 
@@ -87,29 +84,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public ChannelContext(GroupContext<Ext, P, R> groupContext, AsynchronousSocketChannel asynchronousSocketChannel)
 	{
 		super();
-		this.setGroupContext(groupContext);
-
-		decodeRunnable = new DecodeRunnable<>(this, groupContext.getDecodeExecutor());
-		closeRunnable = new CloseRunnable<>(this, null, null, groupContext.getCloseExecutor());
-
-		handlerRunnableHighPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorHighPrior());
-		handlerRunnableNormPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorNormPrior());
-
-		sendRunnableHighPrior = new SendRunnable<>(this, groupContext.getSendExecutorHighPrior());
-		sendRunnableNormPrior = new SendRunnable<>(this, groupContext.getSendExecutorNormPrior());
-
 		this.setAsynchronousSocketChannel(asynchronousSocketChannel);
-
-		groupContext.getConnections().add(this);
-		try
-		{
-			clientNode = getClientNode(asynchronousSocketChannel);
-			groupContext.getClientNodes().put(this);
-		} catch (IOException e)
-		{
-			log.error(e.toString(), e);
-		}
-
+		this.setGroupContext(groupContext);
 	}
 
 	/**
@@ -168,6 +144,20 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setAsynchronousSocketChannel(AsynchronousSocketChannel asynchronousSocketChannel)
 	{
 		this.asynchronousSocketChannel = asynchronousSocketChannel;
+
+		if (asynchronousSocketChannel != null)
+		{
+			try
+			{
+				clientNode = getClientNode(asynchronousSocketChannel);
+			} catch (IOException e)
+			{
+				log.error(e.toString(), e);
+			}
+		} else
+		{
+			clientNode = null;
+		}
 	}
 
 	/**
@@ -208,6 +198,21 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setGroupContext(GroupContext<Ext, P, R> groupContext)
 	{
 		this.groupContext = groupContext;
+
+		if (groupContext != null)
+		{
+			decodeRunnable = new DecodeRunnable<>(this, groupContext.getDecodeExecutor());
+			closeRunnable = new CloseRunnable<>(this, null, null, groupContext.getCloseExecutor());
+
+			handlerRunnableHighPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorHighPrior());
+			handlerRunnableNormPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorNormPrior());
+
+			sendRunnableHighPrior = new SendRunnable<>(this, groupContext.getSendExecutorHighPrior());
+			sendRunnableNormPrior = new SendRunnable<>(this, groupContext.getSendExecutorNormPrior());
+			
+			groupContext.getConnections().add(this);
+			groupContext.getClientNodes().put(this);
+		}
 	}
 
 	/**
@@ -386,13 +391,13 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		this.stat = stat;
 	}
 
-//	/**
-//	 * @return the sendSemaphore
-//	 */
-//	public java.util.concurrent.Semaphore getSendSemaphore()
-//	{
-//		return sendSemaphore;
-//	}
+	//	/**
+	//	 * @return the sendSemaphore
+	//	 */
+	//	public java.util.concurrent.Semaphore getSendSemaphore()
+	//	{
+	//		return sendSemaphore;
+	//	}
 
 	/**
 	 * @return the writeCompletionHandler

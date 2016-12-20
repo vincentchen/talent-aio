@@ -67,29 +67,29 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	/** 
 	 * @see java.nio.channels.CompletionHandler#completed(java.lang.Object, java.lang.Object)
 	 * 
-	 * @param result
+	 * @param asynchronousSocketChannel
 	 * @param attachment
 	 * @重写人: tanyaowu
 	 * @重写时间: 2016年11月16日 下午1:28:05
 	 * 
 	 */
 	@Override
-	public void completed(AsynchronousSocketChannel result, AioServer<Ext, P, R> aioServer)
+	public void completed(AsynchronousSocketChannel asynchronousSocketChannel, AioServer<Ext, P, R> aioServer)
 	{
 		try
 		{
 			ServerGroupContext<Ext, P, R> serverGroupContext = aioServer.getServerGroupContext();
-			ServerGroupStat serverGroupStat = (ServerGroupStat) serverGroupContext.getGroupStat();
+			ServerGroupStat serverGroupStat = serverGroupContext.getServerGroupStat();
 			serverGroupStat.getAccepted().incrementAndGet();
 
-			result.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-			result.setOption(StandardSocketOptions.SO_RCVBUF, 32 * 1024);
-			result.setOption(StandardSocketOptions.SO_SNDBUF, 32 * 1024);
-			result.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_RCVBUF, 32 * 1024);
+			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_SNDBUF, 32 * 1024);
+			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
-			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, result);
+			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, asynchronousSocketChannel);
 			
-			boolean f = serverGroupContext.getAioListener().onConnected(channelContext);
+			boolean f = serverGroupContext.getServerAioListener().onAfterConnected(channelContext);
 			if (!f)
 			{
 				log.warn("不允许连接:{}", channelContext);
@@ -99,7 +99,7 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
-			result.read(newByteBuffer, newByteBuffer, readCompletionHandler);
+			asynchronousSocketChannel.read(newByteBuffer, newByteBuffer, readCompletionHandler);
 		} catch (Exception e)
 		{
 			log.error("", e);
