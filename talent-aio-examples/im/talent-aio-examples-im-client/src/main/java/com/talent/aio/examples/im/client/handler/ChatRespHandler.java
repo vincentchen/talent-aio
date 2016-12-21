@@ -116,9 +116,14 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 		if (c == 1 || c == 0 || c % 10000 == 0)
 		{
 			long sendStartTime = frameMain.getSendStartTime();
-			long per = (c/(time - sendStartTime)) * 1000;
+			long in = time - sendStartTime;
+			if (in <= 0)
+			{
+				in = 1;
+			}
+			long per = (c/in) * 1000;
 			
-			xx = "[" + c + "] " + " [" + per + "条/秒] " + " [" + time + "]";
+			xx = "已收 " + c + " 条消息" + ", 均速 " + per + " 条/秒, " + "当前时间 " + time + " ";
 			
 //			if (StringUtils.isBlank(body.getToNick()))
 //			{
