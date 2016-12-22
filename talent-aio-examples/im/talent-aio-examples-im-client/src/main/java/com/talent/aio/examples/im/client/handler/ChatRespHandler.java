@@ -121,7 +121,7 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 			{
 				in = 1;
 			}
-			long per = (c/in) * 1000;
+			double per = Math.ceil(((double)c/(double)in) * (double)1000);
 			
 			xx = "已收 " + c + " 条消息" + ", 均速 " + per + " 条/秒, " + "当前时间 " + time + " ";
 			

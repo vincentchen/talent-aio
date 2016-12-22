@@ -144,7 +144,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         logtext.setColumns(20);
         logtext.setRows(5);
-        logtext.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”\n5、选中连接，再点击“进行群组”。（注意进入群组和后面的发送聊天，都只针对选中的客户端进行操作）\n\n");
+        logtext.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”\n5、选中连接，再点击“进入群组”。（注意进入群组和后面的发送聊天，都只针对选中的客户端进行操作）\n\n");
         jScrollPane2.setViewportView(logtext);
 
         deleteBtn.setText("删除选中的客户端");
