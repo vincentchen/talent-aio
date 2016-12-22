@@ -20,4 +20,4 @@
 1、先运行parent/install.bat，用来安装本项目所有代码
 2、运行server examples: com.talent.aio.examples.im.server.ImServerStarter
 3、运行client examples: com.talent.aio.examples.im.client.ImClientStarter
-![im调试客户端](https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client.png?dir=0&filepath=docs%2Fclient.png&oid=edf5289619d5b760c67f599cacf6a0744cca656c&sha=a85d874cfb6e8b19f42a6dcd5796ac28484ad73d "基于talent-aio的im调试客户端")
+![im调试客户端](https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client.png?dir=0&filepath=docs%2Fclient.png&oid=d2fcdb759d2042f978db22ff7dfc30889a19416f&sha=db9a6eb501a111cc2522e06f6409d36c379986f6 "基于talent-aio的im调试客户端")
