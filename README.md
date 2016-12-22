@@ -18,4 +18,5 @@
 4、代码精简，包含提供的一个im例子，代码行数也不到5000行，非常便于学习。
 5、可以通过本框架学习到非常丰富的多线程知识及运用技巧。 
 
-最后，喜欢的可以点下这个按钮：<div class="ui green donate button"><a class='ui button donate' id='project-donate' title='您懂的'>您懂的:)</a></div>
+最后，喜欢的可以点下这个按钮：<div class="ui green donate button"><a href="/tywo45/talent-aio/star" class="ui button star" data-method="post" data-remote="true" rel="nofollow">谢谢！
+</a></div>
