@@ -113,7 +113,7 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 
 		
 		JFrameMain frameMain = JFrameMain.getInstance();
-		if (c == 1 || c == 0 || c % 10000 == 0)
+		if (c == 1 || c == 0 || c % 100000 == 0)
 		{
 			long sendStartTime = frameMain.getSendStartTime();
 			long in = time - sendStartTime;

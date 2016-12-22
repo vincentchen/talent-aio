@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
-import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.utils.SystemTimer;
 
@@ -32,16 +31,16 @@ import com.talent.aio.common.utils.SystemTimer;
  *  (1) | 2016年11月15日 | tanyaowu | 新建类
  *
  */
-public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, P>
+public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, Integer>
 {
-	
+
 	private static Logger log = LoggerFactory.getLogger(WriteCompletionHandler.class);
-	
+
 	private ChannelContext<Ext, P, R> channelContext = null;
-	
+
 	private java.util.concurrent.Semaphore writeSemaphore = new Semaphore(1);
-//	private P packet;
-	
+	//	private P packet;
+
 	/**
 	 * 
 	 *
@@ -51,9 +50,8 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	 */
 	public WriteCompletionHandler(ChannelContext<Ext, P, R> channelContext)
 	{
-		this.channelContext = channelContext;		
+		this.channelContext = channelContext;
 	}
-
 
 	/**
 	 * @param args
@@ -67,32 +65,27 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 
 	}
 
-
 	/** 
 	 * @see java.nio.channels.CompletionHandler#completed(java.lang.Object, java.lang.Object)
 	 * 
 	 * @param result
-	 * @param attachment
+	 * @param packetCount
 	 * @重写人: tanyaowu
 	 * @重写时间: 2016年11月16日 下午1:40:59
 	 * 
 	 */
 	@Override
-	public void completed(Integer result, P packet)
+	public void completed(Integer result, Integer packetCount)
 	{
 		this.writeSemaphore.release();
 		if (result > 0)
 		{
 			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 			GroupStat groupStat = groupContext.getGroupStat();
-			AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
-			groupStat.getSentPacket().incrementAndGet();
+
+			groupStat.getSentPacket().addAndGet(packetCount);//.incrementAndGet();
 			groupStat.getSentBytes().addAndGet(result);
 			channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
-			if (aioListener != null)
-			{
-				aioListener.onAfterSent(channelContext, packet, result);
-			}
 		} else if (result == 0)
 		{
 			log.error("发送长度为{}", result);
@@ -102,10 +95,8 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 			log.error("发送长度为{}", result);
 			Aio.close(channelContext, "写数据返回:" + result);
 		}
-		
-		
-	}
 
+	}
 
 	/** 
 	 * @see java.nio.channels.CompletionHandler#failed(java.lang.Throwable, java.lang.Object)
@@ -117,7 +108,7 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	 * 
 	 */
 	@Override
-	public void failed(Throwable exc, P packet)
+	public void failed(Throwable exc, Integer packetCount)
 	{
 		try
 		{
@@ -126,27 +117,25 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 		{
 			Aio.close(channelContext, exc, "写数据时发生异常");
 		}
-		
+
 	}
 
-
-//	/**
-//	 * @return the packet
-//	 */
-//	public P getPacket()
-//	{
-//		return packet;
-//	}
-//
-//
-//	/**
-//	 * @param packet the packet to set
-//	 */
-//	public void setPacket(P packet)
-//	{
-//		this.packet = packet;
-//	}
-
+	//	/**
+	//	 * @return the packet
+	//	 */
+	//	public P getPacket()
+	//	{
+	//		return packet;
+	//	}
+	//
+	//
+	//	/**
+	//	 * @param packet the packet to set
+	//	 */
+	//	public void setPacket(P packet)
+	//	{
+	//		this.packet = packet;
+	//	}
 
 	/**
 	 * @return the channelContext
@@ -156,15 +145,14 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 		return channelContext;
 	}
 
-//
-//	/**
-//	 * @param channelContext the channelContext to set
-//	 */
-//	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)
-//	{
-//		this.channelContext = channelContext;
-//	}
-
+	//
+	//	/**
+	//	 * @param channelContext the channelContext to set
+	//	 */
+	//	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)
+	//	{
+	//		this.channelContext = channelContext;
+	//	}
 
 	/**
 	 * @return the writeSemaphore
@@ -173,7 +161,5 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	{
 		return writeSemaphore;
 	}
-
-
 
 }

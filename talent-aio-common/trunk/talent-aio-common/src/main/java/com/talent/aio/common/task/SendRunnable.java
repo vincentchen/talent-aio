@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.WriteCompletionHandler;
+import com.talent.aio.common.intf.AioHandler;
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
@@ -64,41 +66,28 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		getMsgQueue().clear();
 	}
 
-//	public void sendPackets(List<P> packets) throws IOException
-//	{
-//		if (packets == null || packets.size() == 0)
-//		{
-//			log.error("Packets is null，please check synchronize");
-//			return;
-//		}
-//
-//		for (P packet : packets)
-//		{
-//			
-//			sendPacket(packet);
-//		}
-//
-//	}
-
 	public void sendPacket(P packet)
 	{
-		if (packet == null)
+		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+		ByteBuffer byteBuffer = groupContext.getAioHandler().encode(packet, channelContext);
+		int packetCount = 1;
+		sendByteBuffer(byteBuffer, packetCount);
+	}
+
+	public void sendByteBuffer(ByteBuffer byteBuffer, Integer packetCount)
+	{
+		if (byteBuffer == null)
 		{
-			log.error("Packet is null，please check synchronize");
+			log.error("byteBuffer is null");
 			return;
 		}
-		
+
 		if (!AioUtils.checkBeforeIO(channelContext))
 		{
 			return;
 		}
-		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-//		GroupStat groupStat = groupContext.getGroupStat();
-//		log.error("发送数据:{}", packet);
-		ByteBuffer byteBuffer = groupContext.getAioHandler().encode(packet, channelContext);
-//		int sentSize = byteBuffer.capacity();
-		byteBuffer.flip();
 
+		byteBuffer.flip();
 		AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
 		WriteCompletionHandler<Ext, P, R> writeCompletionHandler = channelContext.getWriteCompletionHandler();
 		try
@@ -108,66 +97,13 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		{
 			log.error(e.toString(), e);
 		}
-		
-//		writeCompletionHandler.setPacket(packet);
-		asynchronousSocketChannel.write(byteBuffer, packet, writeCompletionHandler);
-		
-//		Future<Integer> future = asynchronousSocketChannel.write(byteBuffer);
-//		Integer result = null;
-//		try
-//		{
-//			result = future.get();
-//		} catch (InterruptedException e)
-//		{
-//			log.error(e.toString(), e);
-//		} catch (ExecutionException e)
-//		{
-//			log.error(e.toString(), e);
-//		}
-//
-//		if (result != null)
-//		{
-//			if (result > 0)
-//			{
-//				SendListener<Ext, P, R> aioListener = groupContext.getSendListener();
-//				groupStat.getSentPacket().incrementAndGet();
-//				groupStat.getSentBytes().addAndGet(result);
-//				channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
-//				if (aioListener != null)
-//				{
-//					aioListener.onAfterSent(channelContext, packet, result);
-//				}
-//			} else if (result == 0)
-//			{
-//				log.error("发送长度为{}", result);
-//				Aio.close(channelContext, "写数据返回:" + result);
-//			} else if (result < 0)
-//			{
-//				log.error("发送长度为{}", result);
-//				Aio.close(channelContext, "写数据返回:" + result);
-//			}
-//		} else
-//		{
-//			Aio.close(channelContext, "写不了数据");
-//		}
+		asynchronousSocketChannel.write(byteBuffer, packetCount, writeCompletionHandler);
 	}
 
 	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)
 	{
 		this.channelContext = channelContext;
 	}
-
-//	@Override
-//	public void runBatch(List<P> t)
-//	{
-//		try
-//		{
-//			sendPackets(t);
-//		} catch (IOException e)
-//		{
-//			Aio.close(channelContext, e, "发送消息包发生IO异常");
-//		}
-//	}
 
 	@Override
 	public String toString()
@@ -189,26 +125,84 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 	public void runTask()
 	{
 		ConcurrentLinkedQueue<P> queue = getMsgQueue();
-		P packet = null;
-		while ((packet = queue.poll()) != null)
+		int queueSize = queue.size();
+		if (queueSize == 0)
 		{
-			sendPacket(packet);
+			return;
 		}
-		
-		
-		
-//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
-//		P packet = null;
-//		while (true)
-//		{
-//			packet = queue.poll();
-//			if (packet != null)
-//			{
-//				sendPacket(packet);
-//			} else
-//			{
-//				break;
-//			}
-//		}
+
+		P packet = null;
+		GroupContext<Ext, P, R> groupContext = this.channelContext.getGroupContext();
+		AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
+		AioHandler<Ext, P, R> aioHandler = groupContext.getAioHandler();
+
+		if (queueSize > 1)
+		{
+
+			ByteBuffer[] byteBuffers = new ByteBuffer[queueSize];
+			int allBytebufferCapacity = 0;
+
+			int packetCount = 0;
+			for (int i = 0; i < queueSize; i++)
+			{
+				if ((packet = queue.poll()) != null)
+				{
+					if (aioListener != null)
+					{
+						aioListener.onBeforeSent(channelContext, packet);
+					}
+
+					ByteBuffer byteBuffer = aioHandler.encode(packet, channelContext);
+					allBytebufferCapacity += byteBuffer.limit();
+					packetCount++;
+					byteBuffers[i] = byteBuffer;
+				} else
+				{
+					break;
+				}
+			}
+
+			ByteBuffer allByteBuffer = ByteBuffer.allocate(allBytebufferCapacity);
+			for (ByteBuffer byteBuffer : byteBuffers)
+			{
+				if (byteBuffer != null)
+				{
+					byteBuffer.flip();
+					allByteBuffer.put(byteBuffer);
+				}
+			}
+
+			this.sendByteBuffer(allByteBuffer, packetCount);
+
+		} else
+		{
+			if ((packet = queue.poll()) != null)
+			{
+				if (aioListener != null)
+				{
+					aioListener.onBeforeSent(channelContext, packet);
+				}
+				sendPacket(packet);
+			}
+		}
+
+		if (queue.size() > 0)
+		{
+			runTask();
+		}
+
+		//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
+		//		P packet = null;
+		//		while (true)
+		//		{
+		//			packet = queue.poll();
+		//			if (packet != null)
+		//			{
+		//				sendPacket(packet);
+		//			} else
+		//			{
+		//				break;
+		//			}
+		//		}
 	}
 }

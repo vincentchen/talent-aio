@@ -105,17 +105,16 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * @see com.talent.aio.common.intf.AioListener#onBeforeSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
 	 * 
 	 * @param channelContext
 	 * @param packet
-	 * @param packetSize
 	 * @重写人: tanyaowu
 	 * @重写时间: 2016年12月20日 上午11:08:44
 	 * 
 	 */
 	@Override
-	public void onAfterSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
+	public void onBeforeSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet)
 	{
 		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
 		
