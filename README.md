@@ -1,6 +1,6 @@
 <h2>talent-aio技术交流群:<span style="color:red">428058412</span><a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术"></a></h2>
 
-<h3>把多线程技巧运用到极致，在易用和性能方面超越netty的TCP长连接框架，单机: 每秒可处理<span style="color:red">100万</span>级消息，可同时支持<span style="color:red">10万</span>级TCP长连接。</h3>
+<h3>把多线程技巧运用到极致，在易用和性能方面超越netty的TCP长连接框架，单机IM场景，每秒可处理<span style="color:red">100万</span>级消息，可收发数据70M/秒，可同时支持<span style="color:red">10万</span>级TCP长连接。</h3>
 
 <h3>talent-aio的一些测试数据(测试环境：i7 4790、8G内存、windows7)</h3>
 <ol>
@@ -10,7 +10,7 @@
 
 
 <h3>
-用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-3.png?dir=0&filepath=docs%2Fclient-3.png&oid=aa19fb37e8b569ca35173f54177ed903b25e68d4&sha=0f1f18adac3990cb942680c4ba985ceb32ddb7c2'>(点击本链接可见性能图)
+用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-4.png?dir=0&filepath=docs%2Fclient-4.png&oid=5d0af1bd72723d841fa7763e54871f560631e36c&sha=5f44cd4f8356f8ce131b4e087c12b2bb56993e80'>(点击本链接可见性能图)
 </a>
 </h3>
 
@@ -18,7 +18,7 @@
 <li>先运行parent/install.bat，用来安装本项目所有代码</li>
 <li>运行server examples: com.talent.aio.examples.im.server.ImServerStarter</li>
 <li>运行client examples: com.talent.aio.examples.im.client.ImClientStarter</li>
-<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-3.png?dir=0&filepath=docs%2Fclient-3.png&oid=aa19fb37e8b569ca35173f54177ed903b25e68d4&sha=0f1f18adac3990cb942680c4ba985ceb32ddb7c2 '></img>
+<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-4.png?dir=0&filepath=docs%2Fclient-4.png&oid=5d0af1bd72723d841fa7763e54871f560631e36c&sha=5f44cd4f8356f8ce131b4e087c12b2bb56993e80 '></img>
 </ol>
 
 <h3>talent-aio的一些特点</h3>
