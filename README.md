@@ -41,16 +41,9 @@
 <li><h3>帮助本项目</h3></li>
 <ol>
 <li><a target="_blank" href='https://git.oschina.net/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D='>提交Issue</a></li>
-<li><a href='javascript:talent_aio_();'><div class="ui green donate button">赞助本项目</div></a></li>
-
-
-
+<li><a href='#project-donate-overview'><div class="ui green donate button">点击下方的"捐赠"按钮赞助本项目</div></a></li>
 </ol>
 
 </ul>
-<script>
-function talent_aio_(){
-	$('.project-donate-modal').modal({onApprove: function() {return false;}});
-}
-</script>
+
 
