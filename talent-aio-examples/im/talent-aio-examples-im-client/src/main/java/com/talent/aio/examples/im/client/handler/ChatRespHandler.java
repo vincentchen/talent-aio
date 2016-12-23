@@ -55,35 +55,35 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 
 	public static final java.util.concurrent.atomic.AtomicInteger count = new AtomicInteger();
 
-//	@Override
-//	public Map<String, Object> onReceived(ImReqPacket packet, ChannelContext<ImClientChannelContextExt> channelContext) throws Exception
-//	{
-//		String bodyStr = null;
-//		if (packet.getBody() != null)
-//		{
-//			bodyStr = new String(packet.getBody(), Const.CHARSET_UTF8);
-//		}
-//		
-//		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
-//		int c = count.incrementAndGet();
-//		String xx = null;
-//		long time = SystemTimer.currentTimeMillis();
-//
-//		if (c == 1 || c == 0 || c % 10000 == 0)
-//		{
-//			if (StringUtils.isBlank(body.getToNick()))
-//			{
-//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
-//			} else
-//			{
-//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
-//			}
-//
-//			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
-//		}
-//
-//		return null;
-//	}
+	//	@Override
+	//	public Map<String, Object> onReceived(ImReqPacket packet, ChannelContext<ImClientChannelContextExt> channelContext) throws Exception
+	//	{
+	//		String bodyStr = null;
+	//		if (packet.getBody() != null)
+	//		{
+	//			bodyStr = new String(packet.getBody(), Const.CHARSET_UTF8);
+	//		}
+	//		
+	//		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
+	//		int c = count.incrementAndGet();
+	//		String xx = null;
+	//		long time = SystemTimer.currentTimeMillis();
+	//
+	//		if (c == 1 || c == 0 || c % 10000 == 0)
+	//		{
+	//			if (StringUtils.isBlank(body.getToNick()))
+	//			{
+	//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
+	//			} else
+	//			{
+	//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
+	//			}
+	//
+	//			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
+	//		}
+	//
+	//		return null;
+	//	}
 
 	/** 
 	 * @see com.talent.aio.examples.im.client.handler.ImBsAioHandlerIntf#handler(com.talent.aio.examples.im.common.ImPacket, com.talent.aio.common.ChannelContext)
@@ -99,20 +99,22 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-		String bodyStr = null;
-		if (packet.getBody() != null)
-		{
-			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
-		}
+//		String bodyStr = null;
+//		if (packet.getBody() != null)
+//		{
+//			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+//		}
+
+//		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
+		int packetCount = count.incrementAndGet();
 		
-		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
-		int c = count.incrementAndGet();
+		
+		
 		String xx = null;
 		long time = SystemTimer.currentTimeMillis();
 
-		
 		JFrameMain frameMain = JFrameMain.getInstance();
-		if (c == 1 || c == 0 || c % 100000 == 0)
+		if (packetCount == 1 || packetCount == 0 || packetCount % 100000 == 0)
 		{
 			long sendStartTime = frameMain.getSendStartTime();
 			long in = time - sendStartTime;
@@ -120,17 +122,33 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 			{
 				in = 1;
 			}
-			double per = Math.ceil(((double)c/(double)in) * (double)1000);
 			
-			xx = "已收 " + c + " 条消息" + ", 均速 " + per + " 条/秒, " + "耗时 " + in + "ms ";
 			
-//			if (StringUtils.isBlank(body.getToNick()))
-//			{
-//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
-//			} else
-//			{
-//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
-//			}
+			long initReceivedBytes = frameMain.getStartRecievedBytes();
+			long initSentBytes = frameMain.getStartSentBytes();
+			
+			long nowReceivedBytes = channelContext.getGroupContext().getGroupStat().getReceivedBytes().get();
+			long nowSentBytes = channelContext.getGroupContext().getGroupStat().getSentBytes().get();
+			
+			long receivedBytes = nowReceivedBytes - initReceivedBytes;
+			long sentBytes = nowSentBytes - initSentBytes;
+			
+			double perPacket = Math.ceil(((double) packetCount / (double) in) * (double) 1000);
+			double perReceivedBytes = Math.ceil(((double) receivedBytes / (double) in));
+			double perSentBytes = Math.ceil(((double) sentBytes / (double) in));
+			
+			
+			
+
+			xx = "已收 " + packetCount + " 条消息共" + (receivedBytes/1000000) + "M, " + perPacket + " 条/秒, 接收 " + perReceivedBytes + " KB/秒, 发送 " + perSentBytes + " KB/秒, " + "耗时 " + in + "ms ";
+
+			//			if (StringUtils.isBlank(body.getToNick()))
+			//			{
+			//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
+			//			} else
+			//			{
+			//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
+			//			}
 
 			frameMain.getMsgTextArea().append(xx + System.lineSeparator());
 		}

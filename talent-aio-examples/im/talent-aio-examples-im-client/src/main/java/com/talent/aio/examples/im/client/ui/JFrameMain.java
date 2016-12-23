@@ -144,7 +144,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         logtext.setColumns(20);
         logtext.setRows(5);
-        logtext.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”\n5、选中连接，再点击“进行群组”。（注意进入群组和后面的发送聊天，都只针对选中的客户端进行操作）\n\n");
+        logtext.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”\n5、选中连接，再点击“进入群组”。\n\n注: 进入群组和后面的发送聊天，都只针对选中的客户端进行操作\n\n");
         jScrollPane2.setViewportView(logtext);
 
         deleteBtn.setText("删除选中的客户端");
@@ -251,18 +251,18 @@ public class JFrameMain extends javax.swing.JFrame
                         .addComponent(jLabel6)
                         .addGap(18, 18, 18)
                         .addComponent(sendBtn)
-                        .addContainerGap())
+                        .addContainerGap(303, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 363, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 760, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(cleanBtn1)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 405, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 803, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                .addComponent(cleanBtn1)
+                                .addGap(289, 289, 289))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -381,9 +381,13 @@ public class JFrameMain extends javax.swing.JFrame
 
 	
 	private long sendStartTime;
+	private long startRecievedBytes;   //点击发送时的收到的字节数
+	private long startSentBytes;   //点击发送时的发送的字节数
 	private void sendBtnActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_sendBtnActionPerformed
 		
+		setStartRecievedBytes(imClientStarter.getAioClient().getClientGroupContext().getGroupStat().getReceivedBytes().get());
+		setStartSentBytes(imClientStarter.getAioClient().getClientGroupContext().getGroupStat().getSentBytes().get());
 		
 		JFrameMain.getInstance().getMsgTextArea().setText("");
 		ChatRespHandler.count.set(0);
@@ -989,5 +993,37 @@ public class JFrameMain extends javax.swing.JFrame
 	public void setSendStartTime(long sendStartTime)
 	{
 		this.sendStartTime = sendStartTime;
+	}
+
+	/**
+	 * @return the startRecievedBytes
+	 */
+	public long getStartRecievedBytes()
+	{
+		return startRecievedBytes;
+	}
+
+	/**
+	 * @param startRecievedBytes the startRecievedBytes to set
+	 */
+	public void setStartRecievedBytes(long startRecievedBytes)
+	{
+		this.startRecievedBytes = startRecievedBytes;
+	}
+
+	/**
+	 * @return the startSentBytes
+	 */
+	public long getStartSentBytes()
+	{
+		return startSentBytes;
+	}
+
+	/**
+	 * @param startSentBytes the startSentBytes to set
+	 */
+	public void setStartSentBytes(long startSentBytes)
+	{
+		this.startSentBytes = startSentBytes;
 	}
 }
