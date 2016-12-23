@@ -10,7 +10,7 @@
 
 
 <h3>
-用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-2.png?dir=0&filepath=docs%2Fclient-2.png&oid=269306904888b504cc9093d5e77ed241434ce2fb&sha=743df99230508d79afea463a4833cd45aa88ad20'>(点击本链接可见性能图)
+用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-3.png?dir=0&filepath=docs%2Fclient-3.png&oid=aa19fb37e8b569ca35173f54177ed903b25e68d4&sha=0f1f18adac3990cb942680c4ba985ceb32ddb7c2'>(点击本链接可见性能图)
 </a>
 </h3>
 
@@ -18,7 +18,7 @@
 <li>先运行parent/install.bat，用来安装本项目所有代码</li>
 <li>运行server examples: com.talent.aio.examples.im.server.ImServerStarter</li>
 <li>运行client examples: com.talent.aio.examples.im.client.ImClientStarter</li>
-<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-2.png?dir=0&filepath=docs%2Fclient-2.png&oid=269306904888b504cc9093d5e77ed241434ce2fb&sha=743df99230508d79afea463a4833cd45aa88ad20 '></img>
+<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-3.png?dir=0&filepath=docs%2Fclient-3.png&oid=aa19fb37e8b569ca35173f54177ed903b25e68d4&sha=0f1f18adac3990cb942680c4ba985ceb32ddb7c2 '></img>
 </ol>
 
 <h3>talent-aio的一些特点</h3>
