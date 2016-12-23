@@ -13,7 +13,7 @@ package com.talent.aio.common.maintain;
 
 import java.util.concurrent.locks.Lock;
 
-import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.Node;
