@@ -5,7 +5,6 @@ package com.talent.aio.examples.im.client.handler;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,7 +122,7 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 			}
 			double per = Math.ceil(((double)c/(double)in) * (double)1000);
 			
-			xx = "已收 " + c + " 条消息" + ", 均速 " + per + " 条/秒, " + "当前时间 " + time + " ";
+			xx = "已收 " + c + " 条消息" + ", 均速 " + per + " 条/秒, " + "耗时 " + in + "ms ";
 			
 //			if (StringUtils.isBlank(body.getToNick()))
 //			{
