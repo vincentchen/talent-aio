@@ -1,4 +1,4 @@
-<h1>talent-aio  技术交流群:<span style="color:red">428058412</span></h1>
+<h2>talent-aio技术交流群:<span style="color:red">428058412</span></h2>
 <ul>
 <li><h3>把多线程技巧运用到极致，在易用和性能方面超越netty的TCP长连接框架，单机: 每秒可处理<span style="color:red">100万</span>级消息，可同时支持<span style="color:red">10万</span>级TCP长连接。</h3></li>
 
@@ -10,8 +10,7 @@
 
 <li>
 <h3>
-<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-1.png?dir=0&filepath=docs%2Fclient-1.png&oid=050904d7aff73f932c0c58675c301fc20f57275a&sha=4d34c427e8d933feb5f64810c1d2ab06e1603de9'>
-用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据(点击本链接可见性能图)
+用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-1.png?dir=0&filepath=docs%2Fclient-1.png&oid=050904d7aff73f932c0c58675c301fc20f57275a&sha=4d34c427e8d933feb5f64810c1d2ab06e1603de9'>(点击本链接可见性能图)
 </a>
 </h3>
 </li>
@@ -19,7 +18,7 @@
 <li>先运行parent/install.bat，用来安装本项目所有代码</li>
 <li>运行server examples: com.talent.aio.examples.im.server.ImServerStarter</li>
 <li>运行client examples: com.talent.aio.examples.im.client.ImClientStarter</li>
-![im调试客户端](https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-1.png?dir=0&filepath=docs%2Fclient-1.png&oid=050904d7aff73f932c0c58675c301fc20f57275a&sha=4d34c427e8d933feb5f64810c1d2ab06e1603de9 "基于talent-aio的im调试客户端")</li>
+<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-1.png?dir=0&filepath=docs%2Fclient-1.png&oid=050904d7aff73f932c0c58675c301fc20f57275a&sha=4d34c427e8d933feb5f64810c1d2ab06e1603de9 '></img>
 </ol>
 
 <li><h3>talent-aio的一些特点</h3></li>
