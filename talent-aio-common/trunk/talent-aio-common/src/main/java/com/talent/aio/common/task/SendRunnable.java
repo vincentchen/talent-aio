@@ -130,6 +130,11 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		{
 			return;
 		}
+		if (queueSize >= 200)
+		{
+			queueSize = 100;
+		}
+		
 
 		P packet = null;
 		GroupContext<Ext, P, R> groupContext = this.channelContext.getGroupContext();

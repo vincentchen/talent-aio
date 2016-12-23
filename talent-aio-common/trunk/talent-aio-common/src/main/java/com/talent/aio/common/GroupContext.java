@@ -43,7 +43,7 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 {
 	static Logger log = LoggerFactory.getLogger(GroupContext.class);
 
-	public static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 2;
+	public static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 1;
 
 	/**
 	 * 心跳超时时间(单位: 毫秒)
