@@ -1,4 +1,4 @@
-<h2>talent-aio技术交流群:<span style="color:red">428058412</span></h2>
+<h2>talent-aio技术交流群:<span style="color:red">428058412</span><a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术"></a></h2>
 
 <h3>把多线程技巧运用到极致，在易用和性能方面超越netty的TCP长连接框架，单机: 每秒可处理<span style="color:red">100万</span>级消息，可同时支持<span style="color:red">10万</span>级TCP长连接。</h3>
 

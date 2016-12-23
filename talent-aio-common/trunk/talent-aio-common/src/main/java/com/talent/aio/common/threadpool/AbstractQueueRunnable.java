@@ -32,7 +32,7 @@ public abstract class AbstractQueueRunnable<T> extends AbstractSynRunnable imple
 	}
 
 	/** The msg queue. */
-	private ConcurrentLinkedQueue<T> msgQueue = new ConcurrentLinkedQueue<T>();
+	protected ConcurrentLinkedQueue<T> msgQueue = new ConcurrentLinkedQueue<T>();
 
 	/**
 	 * The main method.

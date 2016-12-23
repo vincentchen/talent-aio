@@ -134,7 +134,6 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		{
 			queueSize = 100;
 		}
-		
 
 		P packet = null;
 		GroupContext<Ext, P, R> groupContext = this.channelContext.getGroupContext();
@@ -152,15 +151,22 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			{
 				if ((packet = queue.poll()) != null)
 				{
-					if (aioListener != null)
-					{
-						aioListener.onBeforeSent(channelContext, packet);
-					}
 
 					ByteBuffer byteBuffer = aioHandler.encode(packet, channelContext);
 					allBytebufferCapacity += byteBuffer.limit();
 					packetCount++;
 					byteBuffers[i] = byteBuffer;
+
+					if (aioListener != null)
+					{
+						try
+						{
+							aioListener.onBeforeSent(channelContext, packet);
+						} catch (Exception e)
+						{
+							log.error(e.toString(), e);
+						}
+					}
 				} else
 				{
 					break;
@@ -185,7 +191,13 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			{
 				if (aioListener != null)
 				{
-					aioListener.onBeforeSent(channelContext, packet);
+					try
+					{
+						aioListener.onBeforeSent(channelContext, packet);
+					} catch (Exception e)
+					{
+						log.error(e.toString(), e);
+					}
 				}
 				sendPacket(packet);
 			}
@@ -195,19 +207,5 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		{
 			runTask();
 		}
-
-		//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
-		//		P packet = null;
-		//		while (true)
-		//		{
-		//			packet = queue.poll();
-		//			if (packet != null)
-		//			{
-		//				sendPacket(packet);
-		//			} else
-		//			{
-		//				break;
-		//			}
-		//		}
 	}
 }

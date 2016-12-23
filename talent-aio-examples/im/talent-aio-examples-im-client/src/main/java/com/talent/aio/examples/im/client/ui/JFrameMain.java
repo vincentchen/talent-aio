@@ -172,7 +172,7 @@ public class JFrameMain extends javax.swing.JFrame
         });
         jScrollPane3.setViewportView(msgTextArea);
 
-        groupField.setText("9527");
+        groupField.setText("g");
         groupField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 groupFieldActionPerformed(evt);
