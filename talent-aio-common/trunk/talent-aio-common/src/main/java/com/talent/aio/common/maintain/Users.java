@@ -34,7 +34,7 @@ public class Users <Ext, P extends Packet, R>
 	 * key: userid
 	 * value: ChannelContext
 	 */
-	private ObjWithReadWriteLock<DualHashBidiMap> map = new ObjWithReadWriteLock<>(new DualHashBidiMap());
+	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<>(new DualHashBidiMap<>());
 
 
 	/**
@@ -45,7 +45,7 @@ public class Users <Ext, P extends Packet, R>
 	public void remove(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = map.getLock().writeLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 		try
 		{
 			lock.lock();
@@ -69,7 +69,7 @@ public class Users <Ext, P extends Packet, R>
 	public void remove(String userid)
 	{
 		Lock lock = map.getLock().writeLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 		try
 		{
 			lock.lock();
@@ -95,7 +95,7 @@ public class Users <Ext, P extends Packet, R>
 	{
 		String key = userid;
 		Lock lock = map.getLock().writeLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 
 		try
 		{
@@ -118,12 +118,11 @@ public class Users <Ext, P extends Packet, R>
 	 * @param userid the userid
 	 * @return the channel context
 	 */
-	@SuppressWarnings("unchecked")
 	public ChannelContext<Ext, P, R> find(String userid)
 	{
 		String key = userid;
 		Lock lock = map.getLock().readLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 
 		try
 		{
@@ -158,7 +157,7 @@ public class Users <Ext, P extends Packet, R>
 	 */
 	public static void main(String[] args)
 	{
-		DualHashBidiMap dualHashBidiMap = new DualHashBidiMap();
+		DualHashBidiMap<String, String> dualHashBidiMap = new DualHashBidiMap<>();
 		dualHashBidiMap.put("111", "111111");
 		dualHashBidiMap.put("222", "111111");
 		System.out.println(dualHashBidiMap.getKey("111111"));

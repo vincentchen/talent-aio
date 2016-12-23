@@ -32,7 +32,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
-	private ObjWithReadWriteLock<DualHashBidiMap> map = new ObjWithReadWriteLock<>(new DualHashBidiMap());
+	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<>(new DualHashBidiMap<>());
 
 	/**
 	 * Gets the key.
@@ -81,7 +81,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 	public void remove(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = map.getLock().writeLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 		try
 		{
 			lock.lock();
@@ -109,7 +109,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 	{
 		String key = getKey(channelContext);
 		Lock lock = map.getLock().writeLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 
 		try
 		{
@@ -140,11 +140,10 @@ public class ClientNodes <Ext, P extends Packet, R>
 		return find(key);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public ChannelContext<Ext, P, R> find(String key)
 	{
 		Lock lock = map.getLock().readLock();
-		DualHashBidiMap m = map.getObj();
+		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
 
 		try
 		{
@@ -185,7 +184,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 	/**
 	 * @return the map
 	 */
-	public ObjWithReadWriteLock<DualHashBidiMap> getMap()
+	public ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> getMap()
 	{
 		return map;
 	}
