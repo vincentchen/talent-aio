@@ -51,8 +51,8 @@
 点击右上方的
 <span class="basic buttons mini star-container ui">
 <a href="javascritp:void(0);" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star</a>
-为本项目积攒人气
 </span>
+为本项目积攒人气
 </li>
 
 <li>点击下方的<a href='#project-donate-overview'><span class="ui green donate button">捐赠</span></a>为本项目积攒金币</li>
