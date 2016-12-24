@@ -13,14 +13,18 @@
 	</prerequisites>
 
 	<modules>
-		<module>../talent-aio-common/trunk/talent-aio-common</module>
-		<module>../talent-aio-server/trunk/talent-aio-server</module>
-		<module>../talent-aio-client/trunk/talent-aio-client</module>
+		<module>../core/talent-aio-common</module>
+		<module>../core/talent-aio-server</module>
+		<module>../core/talent-aio-client</module>
 
 
-		<module>../talent-aio-examples/im/talent-aio-examples-im-common</module>
-		<module>../talent-aio-examples/im/talent-aio-examples-im-server</module>
-		<module>../talent-aio-examples/im/talent-aio-examples-im-client</module>
+		<module>../example/im/talent-aio-examples-im-common</module>
+		<module>../example/im/talent-aio-examples-im-server</module>
+		<module>../example/im/talent-aio-examples-im-client</module>
+		
+		<module>../example/helloworld/talent-aio-examples-helloworld-common</module>
+		<module>../example/helloworld/talent-aio-examples-helloworld-client</module>
+		<module>../example/helloworld/talent-aio-examples-helloworld-server</module>
 	</modules>
 
 	<properties>
