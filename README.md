@@ -1,6 +1,7 @@
-<h2>talent-aio技术交流群:<span style="color:red">428058412</span><a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术"></a></h2>
+<h2>talent-aio框架: 为大并发即时通讯而生</h2>
 
-<h3>把多线程技巧运用到极致，在易用和性能方面超越netty的TCP长连接框架，单机IM场景，每秒可处理<span style="color:red">100万</span>级消息，可收发数据70M/秒，可同时支持<span style="color:red">10万</span>级TCP长连接。</h3>
+<h3>把多线程技巧运用到极致，在易用和性能方面超越netty的即时通讯框架。单机IM场景：可处理100万级消息/秒，可收发数据70M/秒，可同时支持10万级TCP长连接</h3>
+所以即使你使用不到talent-aio，也可以下载源代码，通过简单的源代码学习掌握多线程的各种技巧。talent-aio有如此强悍的性能，完全得益于多线程的运用。同样的，因为多线程充分利用了CPU，所以在不同CPU下，测出来的性能数据相差极大。
 
 <h3>talent-aio的一些测试数据(测试环境：i7 4790、8G内存、windows7)</h3>
 <ol>
@@ -40,7 +41,11 @@
 <h3>帮助本项目</h3>
 <ol>
 <li><a target="_blank" href='https://git.oschina.net/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D='>提交Issue</a></li>
-<li><a href='#project-donate-overview'>点击下方的<span class="ui green donate button">捐赠</span>按钮赞助本项目</a></li>
+
+<li>点击右上方的<a href="/tywo45/talent-aio/star" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star
+</a>为本项目积攒人气</li>
+
+<li><a href='#project-donate-overview'>点击下方的<span class="ui green donate button">捐赠</span>为本项目积攒金币</a></li>
 </ol>
 
 
