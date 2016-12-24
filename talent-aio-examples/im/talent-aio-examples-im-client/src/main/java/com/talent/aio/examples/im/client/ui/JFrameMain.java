@@ -324,14 +324,11 @@ public class JFrameMain extends javax.swing.JFrame
 			msgTextArea.append(str);
 		} finally{
                     lianjie.setEnabled(false);
-<<<<<<< HEAD
                     serverip.setEnabled(false);
                     port.setEnabled(false);
                     loginnameSufEndField.setEnabled(false);
                     groupField.setEnabled(false);
                     
-=======
->>>>>>> f579163f18d2264be883a2e850ecb14427feafbe
                     sendBtn.setEnabled(true);
                 }
 
