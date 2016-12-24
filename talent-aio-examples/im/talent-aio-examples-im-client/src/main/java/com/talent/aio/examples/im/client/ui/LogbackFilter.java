@@ -25,7 +25,7 @@ public class LogbackFilter extends LevelFilter
 		if (xx <= xx1)
 		{
 			
-			JFrameMain.getInstance().getLogtext().append(event.getFormattedMessage() + System.lineSeparator());
+			JFrameMain.getInstance().getMsgTextArea().append(event.getFormattedMessage() + System.lineSeparator());
 
 		}
 		return FilterReply.ACCEPT;

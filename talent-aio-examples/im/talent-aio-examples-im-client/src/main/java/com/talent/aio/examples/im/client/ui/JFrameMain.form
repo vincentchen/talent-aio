@@ -26,59 +26,45 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" attributes="0">
-                      <Component id="jLabel1" min="-2" pref="50" max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" pref="46" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="serverip" min="-2" pref="102" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="port" min="-2" pref="50" max="-2" attributes="0"/>
                   </Group>
                   <Component id="jScrollPane1" alignment="0" min="-2" pref="249" max="-2" attributes="0"/>
-                  <Group type="102" attributes="0">
-                      <Component id="clientCountLabel" min="-2" pref="94" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="deleteBtn" min="-2" max="-2" attributes="0"/>
-                  </Group>
               </Group>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
                       <Component id="jLabel3" min="-2" pref="50" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="loginnameSufEndField" min="-2" pref="60" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
+                      <Component id="jLabel4" min="-2" pref="50" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="groupField" min="-2" pref="86" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
                       <Component id="lianjie" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
-                      <Component id="groupField" min="-2" pref="125" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="joinBtn" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
-                      <Component id="msgField" min="-2" pref="200" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="loopcountField" min="-2" pref="33" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="sendBtn" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="303" max="32767" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
+                      <Component id="msgField" min="-2" pref="200" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane3" min="-2" pref="760" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <Component id="loopcountField" min="-2" pref="33" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="sendBtn" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="cleanBtn1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jScrollPane2" alignment="1" min="-2" pref="405" max="-2" attributes="0"/>
-                          <Group type="102" alignment="1" attributes="0">
-                              <Component id="cleanBtn1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="289" max="-2" attributes="0"/>
-                          </Group>
-                      </Group>
+                      <Component id="jScrollPane3" min="-2" pref="952" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -96,31 +82,18 @@
                   <Component id="loginnameSufEndField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lianjie" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="groupField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="joinBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="msgField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="loopcountField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="sendBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cleanBtn1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" attributes="0">
-                      <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
-                      <Component id="clientCountLabel" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="deleteBtn" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="cleanBtn1" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                  </Group>
-              </Group>
-              <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane1" pref="555" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="jScrollPane3" max="32767" attributes="0"/>
-                  <Component id="jScrollPane2" max="32767" attributes="0"/>
+                  <Component id="jScrollPane1" pref="586" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -159,6 +132,12 @@
     </Component>
     <Component class="javax.swing.JButton" name="lianjie">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="&#x5b8b;&#x4f53;" size="14" style="0"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="99" green="33" red="0" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="&#x8fde;&#x63a5;"/>
       </Properties>
       <Events>
@@ -174,6 +153,9 @@
       <SubComponents>
         <Component class="javax.swing.JList" name="clients">
           <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="&#x5b8b;&#x4f53;" size="18" style="0"/>
+            </Property>
             <Property name="model" type="javax.swing.ListModel" editor="org.netbeans.modules.form.editors2.ListModelEditor">
               <StringArray count="0"/>
             </Property>
@@ -184,33 +166,6 @@
         </Component>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JScrollPane" name="jScrollPane2">
-      <AuxValues>
-        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
-      </AuxValues>
-
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
-      <SubComponents>
-        <Component class="javax.swing.JTextArea" name="logtext">
-          <Properties>
-            <Property name="columns" type="int" value="20"/>
-            <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="&#x4f7f;&#x7528;&#x8bf4;&#x660e;&#xff1a;&#xa;1&#x3001;&#x8bbe;&#x7f6e;&#x597d;Server&#x548c;&#x7aef;&#x53e3;&#xa;2&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x8fde;&#x63a5;&#x6570;&#x91cf;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;3&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x7fa4;&#x7ec4;&#x540d;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;&#xa;4&#x3001;&#x70b9;&#x51fb;&#x201c;&#x8fde;&#x63a5;&#x201d;&#xa;5&#x3001;&#x9009;&#x4e2d;&#x8fde;&#x63a5;&#xff0c;&#x518d;&#x70b9;&#x51fb;&#x201c;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x201d;&#x3002;&#xa;&#xa;&#x6ce8;: &#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x548c;&#x540e;&#x9762;&#x7684;&#x53d1;&#x9001;&#x804a;&#x5929;&#xff0c;&#x90fd;&#x53ea;&#x9488;&#x5bf9;&#x9009;&#x4e2d;&#x7684;&#x5ba2;&#x6237;&#x7aef;&#x8fdb;&#x884c;&#x64cd;&#x4f5c;&#xa;&#xa;"/>
-          </Properties>
-          <AuxValues>
-            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new MyTextArea()"/>
-          </AuxValues>
-        </Component>
-      </SubComponents>
-    </Container>
-    <Component class="javax.swing.JButton" name="deleteBtn">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x5220;&#x9664;&#x9009;&#x4e2d;&#x7684;&#x5ba2;&#x6237;&#x7aef;"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteBtnActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JTextField" name="msgField">
       <Properties>
         <Property name="text" type="java.lang.String" value="he"/>
@@ -218,7 +173,13 @@
     </Component>
     <Component class="javax.swing.JButton" name="sendBtn">
       <Properties>
-        <Property name="text" type="java.lang.String" value="&#x53d1;&#x9001;&#x804a;&#x5929;"/>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="&#x5b8b;&#x4f53;" size="14" style="0"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="99" green="33" red="0" type="rgb"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="&#x7fa4;&#x53d1;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sendBtnActionPerformed"/>
@@ -234,7 +195,11 @@
         <Component class="javax.swing.JTextArea" name="msgTextArea">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="&#x5b8b;&#x4f53;" size="18" style="0"/>
+            </Property>
             <Property name="rows" type="int" value="5"/>
+            <Property name="text" type="java.lang.String" value="&#x4f7f;&#x7528;&#x8bf4;&#x660e;&#xff1a;&#xa;1&#x3001;&#x8bbe;&#x7f6e;&#x597d;Server&#x548c;&#x7aef;&#x53e3;&#xa;2&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x8fde;&#x63a5;&#x6570;&#x91cf;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;3&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x7fa4;&#x7ec4;&#x540d;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;&#xa;4&#x3001;&#x70b9;&#x51fb;&#x201c;&#x8fde;&#x63a5;&#x201d;&#xff0c;&#x5728;&#x4e0e;&#x670d;&#x52a1;&#x5668;&#x8fde;&#x63a5;&#x540e;&#xff0c;&#x5c06;&#x4f1a;&#x81ea;&#x52a8;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x3002;(&#x6b64;&#x6309;&#x94ae;&#x70b9;&#x51fb;&#x4e00;&#x6b21;&#x540e;&#x5c06;&#x7070;&#x5316;)&#xa;5&#x3001;&#x70b9;&#x51fb;&#x201c;&#x7fa4;&#x53d1;&#x201d;&#xff0c;&#x5c06;&#x4f1a;&#x6536;&#x5230;&#x8fde;&#x63a5;&#x6570;&#x91cf;&#x7684;&#x5e73;&#x65b9;&#x4e58;&#x4ee5;&#x7fa4;&#x53d1;&#x6b21;&#x6570;&#x6761;&#x6d88;&#x606f;(&#x672c;&#x4f8b;&#x4e2d;&#x7684;&#x6570;&#x636e;&#x662f;: 1000*1000*2=2000000)&#xa;&#xa;&#xa;"/>
           </Properties>
           <Events>
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="msgTextAreaMouseClicked"/>
@@ -253,17 +218,9 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="groupFieldActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="joinBtn">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="joinBtnActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JTextField" name="loopcountField">
       <Properties>
-        <Property name="text" type="java.lang.String" value="1"/>
+        <Property name="text" type="java.lang.String" value="2"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loopcountFieldActionPerformed"/>
@@ -273,8 +230,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="&#x6b21;"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="clientCountLabel">
     </Component>
     <Component class="javax.swing.JTextField" name="loginnameSufEndField">
       <Properties>
@@ -291,11 +246,22 @@
     </Component>
     <Component class="javax.swing.JButton" name="cleanBtn1">
       <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="&#x5b8b;&#x4f53;" size="14" style="0"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="99" green="33" red="0" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="&#x6253;&#x5370;&#x7edf;&#x8ba1;&#x4fe1;&#x606f;"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cleanBtn1ActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&#x7fa4;&#x7ec4;&#x540d;"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

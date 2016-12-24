@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.Const;
 import com.talent.aio.examples.im.common.ImPacket;
@@ -67,11 +68,11 @@ public class AuthRespHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-//		JoinReqBody joinReqBody = new JoinReqBody(com.talent.aio.examples.im.client.ImClientStarter.groupid);
-//		ImPacket respPacket = new ImPacket();
-//		respPacket.setCommand(Command.JOIN_GROUP_REQ);
-//		respPacket.setBody(Json.toJson(joinReqBody).getBytes(ImPacket.CHARSET));
-//		Aio.send(channelContext, respPacket);
+		JoinReqBody joinReqBody = new JoinReqBody(JFrameMain.getInstance().getGroupField().getText());
+		ImPacket respPacket = new ImPacket();
+		respPacket.setCommand(Command.JOIN_GROUP_REQ);
+		respPacket.setBody(Json.toJson(joinReqBody).getBytes(ImPacket.CHARSET));
+		Aio.send(channelContext, respPacket);
 		return null;
 	}
 }

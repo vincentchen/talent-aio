@@ -15,11 +15,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.client.intf.ClientAioListener;
+import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
+import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
+import com.talent.aio.examples.im.common.bs.AuthReqBody;
+import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.utils.Md5;
 
 /**
  * 
@@ -84,7 +89,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 
 			}
 
-			jFrameMain.updateClientCount();
+//			jFrameMain.updateClientCount();
 		}
 
 	}
@@ -116,8 +121,68 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	@Override
 	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext)
 	{
+		String did = "did";
+		String token = "token";
+		String info = "info";
+		Long seq = 1L;
+		ImPacket respPacket;
+		try
+		{
+			respPacket = createAuthPacket(did, token, info, seq);
+			Aio.send(channelContext, respPacket);
+		} catch (Exception e)
+		{
+			log.error(e.toString(), e);
+		}
+		
 		return true;
 	}
+	
+	
+	
+	
+	
+	
+	
+	/**
+	 * 构建鉴权包
+	 * @return
+	 * @throws Exception 
+	 */
+	public static ImPacket createAuthPacket(String did, String token, String info, Long seq) throws Exception
+	{
+		ImPacket imReqPacket = new ImPacket();
+		imReqPacket.setCommand(Command.AUTH_REQ);
+
+		AuthReqBody authReqBody = new AuthReqBody();
+		authReqBody.setDeviceId(did);
+		authReqBody.setSeq(seq);
+		authReqBody.setDeviceType((byte) 2);
+		authReqBody.setDeviceInfo(info);
+		authReqBody.setToken(token);
+
+		did = did == null ? "" : did;
+		token = token == null ? "" : token;
+		info = info == null ? "" : info;
+		seq = seq == null ? 0 : seq;
+		
+		String data = token + did + info + seq + "fdsfeofa";
+		String sign = null;
+		try
+		{
+			sign = Md5.getMD5(data);//DesUtils.encrypt(data, ImClientConfig.getInstance().getString("im.auth.private.key", "fdsfeofa"));
+		} catch (Exception e)
+		{
+			log.error(e.getLocalizedMessage(), e);
+			throw new RuntimeException(e);
+		}
+		authReqBody.setSign(sign);
+
+		imReqPacket.setBody(Json.toJson(authReqBody).getBytes(ImPacket.CHARSET));
+		return imReqPacket;
+	}
+	
+	
 
 	/** 
 	 * @see com.talent.aio.common.intf.AioListener#onBeforeSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
