@@ -136,13 +136,13 @@ API自带发送到指定用户、指定组等功能
 </li>
 
 <li>
-如果以上都不想做，那么请亲点击下方的
+如果以上都不想做，又想为开源项目出点力，那么请亲点击下方的
 <a href='#project-donate-overview'>
   <span class="ui green donate button">
     捐赠
   </span>
 </a>
-为本项目积攒金币:)
+按钮，为本项目积攒金币
 </li>
 </ol>
 
