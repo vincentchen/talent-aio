@@ -42,13 +42,18 @@
 <ol>
 
 <li>
-<a href="/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&amp;issue%5Bmilestone_id%5D=" class="ui mini green button" id="new_issue_link" title="提交issue"><i class="icon plus"></i>
+<a href="/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&amp;issue%5Bmilestone_id%5D=" class="ui mini green button" title="提交issue"><i class="icon plus"></i>
 提交Issue
 </a>
 </li>
 
-<li>点击右上方的<a href="javascritp:void(0);" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star
-</a>为本项目积攒人气</li>
+<li>
+点击右上方的
+<span class="basic buttons mini star-container ui">
+<a href="javascritp:void(0);" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star</a>
+为本项目积攒人气
+</span>
+</li>
 
 <li>点击下方的<a href='#project-donate-overview'><span class="ui green donate button">捐赠</span></a>为本项目积攒金币</li>
 </ol>
