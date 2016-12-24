@@ -99,17 +99,15 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-//		String bodyStr = null;
-//		if (packet.getBody() != null)
-//		{
-//			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
-//		}
+		//		String bodyStr = null;
+		//		if (packet.getBody() != null)
+		//		{
+		//			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+		//		}
 
-//		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
+		//		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
 		int packetCount = count.incrementAndGet();
-		
-		
-		
+
 		String xx = null;
 		long time = SystemTimer.currentTimeMillis();
 
@@ -122,25 +120,23 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 			{
 				in = 1;
 			}
-			
-			
+
 			long initReceivedBytes = frameMain.getStartRecievedBytes();
 			long initSentBytes = frameMain.getStartSentBytes();
-			
+
 			long nowReceivedBytes = channelContext.getGroupContext().getGroupStat().getReceivedBytes().get();
 			long nowSentBytes = channelContext.getGroupContext().getGroupStat().getSentBytes().get();
-			
+
 			long receivedBytes = nowReceivedBytes - initReceivedBytes;
 			long sentBytes = nowSentBytes - initSentBytes;
-			
+
 			double perPacket = Math.ceil(((double) packetCount / (double) in) * (double) 1000);
 			double perReceivedBytes = Math.ceil(((double) receivedBytes / (double) in));
 			double perSentBytes = Math.ceil(((double) sentBytes / (double) in));
-			
-			
-			
 
-			xx = "已收 " + packetCount + " 条消息共" + (receivedBytes/1000000) + "M, " + perPacket + " 条/秒, 接收 " + perReceivedBytes + " KB/秒, 发送 " + perSentBytes + " KB/秒, " + "耗时 " + in + "ms ";
+			xx = "<<--------------------\r\n已接收" + packetCount + "条消息，共" + (receivedBytes / (1024 * 1024)) + "M，一共耗时" + in + "毫秒\r\n平均每秒接收" + perPacket + "条消息，数据大小为"
+					+ perReceivedBytes + "KB(" + Math.ceil((perReceivedBytes / 1024)) + "M)，每条消息大小平均为" + Math.ceil((perReceivedBytes * 1024 / perPacket)) + "B\r\n平均每秒发送"
+					+ perSentBytes + "KB数据\r\n-------------------->>";
 
 			//			if (StringUtils.isBlank(body.getToNick()))
 			//			{

@@ -131,8 +131,8 @@ public class JFrameMain extends javax.swing.JFrame
             }
         });
 
-        lianjie.setFont(new java.awt.Font("宋体", 0, 14)); // NOI18N
-        lianjie.setForeground(new java.awt.Color(0, 51, 153));
+        lianjie.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        lianjie.setForeground(new java.awt.Color(51, 0, 255));
         lianjie.setText("连接");
         lianjie.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -145,9 +145,10 @@ public class JFrameMain extends javax.swing.JFrame
 
         msgField.setText("he");
 
-        sendBtn.setFont(new java.awt.Font("宋体", 0, 14)); // NOI18N
-        sendBtn.setForeground(new java.awt.Color(0, 51, 153));
+        sendBtn.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        sendBtn.setForeground(new java.awt.Color(51, 0, 255));
         sendBtn.setText("群发");
+        sendBtn.setEnabled(false);
         sendBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 sendBtnActionPerformed(evt);
@@ -190,8 +191,8 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel3.setText("连接数量");
 
-        cleanBtn1.setFont(new java.awt.Font("宋体", 0, 14)); // NOI18N
-        cleanBtn1.setForeground(new java.awt.Color(0, 51, 153));
+        cleanBtn1.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        cleanBtn1.setForeground(new java.awt.Color(51, 0, 255));
         cleanBtn1.setText("打印统计信息");
         cleanBtn1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -323,6 +324,7 @@ public class JFrameMain extends javax.swing.JFrame
 			msgTextArea.append(str);
 		} finally{
                     lianjie.setEnabled(false);
+                    sendBtn.setEnabled(true);
                 }
 
 	}//GEN-LAST:event_lianjieActionPerformed
@@ -446,9 +448,9 @@ public class JFrameMain extends javax.swing.JFrame
 		ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> connections = imClientStarter.getClientGroupContext().getConnections().getSet();
 		Set<ChannelContext<Object, ImPacket, Object>> set = connections.getObj();
 		ClientGroupStat clientGroupStat = imClientStarter.getClientGroupContext().getClientGroupStat();
-		log.error("[{}]:[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
-				clientGroupStat.getClosed().get(), clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
-				clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
+		log.error("<<--------------------\r\n当前时间:{}\r\n当前连接数:{}\r\n已经接受{}条消息共{}KB\r\n已经处理{}条消息\r\n已经发送{}条消息共{}KB\r\n-------------------->>", SystemTimer.currentTimeMillis(), set.size(),
+				 clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get() / 1000, clientGroupStat.getHandledPacket().get(),
+				clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get() / 1000);
 	}//GEN-LAST:event_cleanBtn1ActionPerformed
 
 	/**
