@@ -40,7 +40,12 @@
 
 <h3>帮助本项目</h3>
 <ol>
-<li><a target="_blank" href='https://git.oschina.net/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D='>提交Issue</a></li>
+
+<li>
+<a href="/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&amp;issue%5Bmilestone_id%5D=" class="ui mini green button" id="new_issue_link" title="提交issue"><i class="icon plus"></i>
+提交Issue
+</a>
+</li>
 
 <li>点击右上方的<a href="javascritp:void(0);" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star
 </a>为本项目积攒人气</li>
