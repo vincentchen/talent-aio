@@ -1,7 +1,7 @@
 <h2>talent-aio框架: 为大并发即时通讯而生</h2>
 
-<h3>把多线程技巧运用到极致，在易用和性能方面超越netty的即时通讯框架。单机IM场景：可处理100万级消息/秒，可收发数据70M/秒，可同时支持10万级TCP长连接</h3>
-所以即使你使用不到talent-aio，也可以下载源代码，通过简单的源代码学习掌握多线程的各种技巧。talent-aio有如此强悍的性能，完全得益于多线程的运用。同样的，因为多线程充分利用了CPU，所以在不同CPU下，测出来的性能数据相差极大。
+<h3>把多线程技巧运用到极致，在易用和性能方面超越netty的即时通讯框架。单机IM场景：可处理100万级消息/秒，可收发数据70M/秒，可同时稳定维护10万级TCP长连接</h3>
+所以即使你使用不到talent-aio，也可以下载源代码，通过简单的源代码学习掌握多线程的各种技巧。talent-aio性能测试数据如此令人惊讶，完全得益于多线程的运用。同样的，因为多线程充分利用了CPU，所以在不同CPU下，测出来的性能数据可能相差极大。
 
 <h3>talent-aio的一些测试数据(测试环境：i7 4790、8G内存、windows7)</h3>
 <ol>
@@ -11,7 +11,7 @@
 
 
 <h3>
-用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印相当性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-4.png?dir=0&filepath=docs%2Fclient-4.png&oid=5d0af1bd72723d841fa7763e54871f560631e36c&sha=5f44cd4f8356f8ce131b4e087c12b2bb56993e80'>(点击本链接可见性能图)
+用talent-aio实现的简单的im例子，先启动服务器再启动客户端，然后界面会打印性能数据<a target='_blank' href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-4.png?dir=0&filepath=docs%2Fclient-4.png&oid=5d0af1bd72723d841fa7763e54871f560631e36c&sha=5f44cd4f8356f8ce131b4e087c12b2bb56993e80'>(点击本链接可见性能图)
 </a>
 </h3>
 
@@ -42,10 +42,10 @@
 <ol>
 <li><a target="_blank" href='https://git.oschina.net/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D='>提交Issue</a></li>
 
-<li>点击右上方的<a href="/tywo45/talent-aio/star" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star
+<li>点击右上方的<a href="javascritp:void(0);" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star
 </a>为本项目积攒人气</li>
 
-<li><a href='#project-donate-overview'>点击下方的<span class="ui green donate button">捐赠</span>为本项目积攒金币</a></li>
+<li>点击下方的<a href='#project-donate-overview'><span class="ui green donate button">捐赠</span></a>为本项目积攒金币</li>
 </ol>
 
 
