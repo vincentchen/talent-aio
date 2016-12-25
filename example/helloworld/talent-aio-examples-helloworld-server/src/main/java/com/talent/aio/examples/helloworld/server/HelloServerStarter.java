@@ -13,10 +13,6 @@ package com.talent.aio.examples.helloworld.server;
 
 import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.helloworld.common.HelloPacket;
 import com.talent.aio.server.AioServer;
 import com.talent.aio.server.ServerGroupContext;
@@ -35,30 +31,11 @@ import com.talent.aio.server.intf.ServerAioListener;
  */
 public class HelloServerStarter
 {
-	private static Logger log = LoggerFactory.getLogger(HelloServerStarter.class);
-
-	/**
-	 * 
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2016年11月17日 下午5:59:24
-	 * 
-	 */
-	public HelloServerStarter()
-	{
-
-	}
-
 	static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
-
 	static AioServer<Object, HelloPacket, Object> aioServer = null; //可以为空
-
 	static ServerAioHandler<Object, HelloPacket, Object> aioHandler = null;
-
 	static ServerAioListener<Object, HelloPacket, Object> aioListener = null;
-
 	static String ip = null;
-
 	static int port = com.talent.aio.examples.helloworld.common.Const.PORT;
 
 	/**
@@ -72,10 +49,9 @@ public class HelloServerStarter
 	public static void main(String[] args) throws IOException
 	{
 		aioHandler = new HelloServerAioHandler();
-		aioListener = null;  //可以为空
+		aioListener = null; //可以为空
 		serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
 		aioServer = new AioServer<>(serverGroupContext);
 		aioServer.start();
 	}
-
 }
