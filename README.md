@@ -129,7 +129,7 @@
   用talent-aio实现的一个用于性能测试的群聊系统
   <a 
       target='_blank'
-      href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-4.png?dir=0&filepath=docs%2Fclient-4.png&oid=5d0af1bd72723d841fa7763e54871f560631e36c&sha=5f44cd4f8356f8ce131b4e087c12b2bb56993e80'>
+      href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-5.png?dir=0&filepath=docs%2Fclient-5.png&oid=f43b1da5710b6383d0c9b1e4f763d5721af41497&sha=c1d80fb3d6a5fda9e2d349fffc79aea890b6d4ae'>
 
     (点击本链接可见性能图)
   </a>
@@ -146,7 +146,7 @@
 	运行client examples: com.talent.aio.examples.im.client.ImClientStarter
 	</li>
 	<img 
-    src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-4.png?dir=0&filepath=docs%2Fclient-4.png&oid=5d0af1bd72723d841fa7763e54871f560631e36c&sha=5f44cd4f8356f8ce131b4e087c12b2bb56993e80 '>
+    src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/client-5.png?dir=0&filepath=docs%2Fclient-5.png&oid=f43b1da5710b6383d0c9b1e4f763d5721af41497&sha=c1d80fb3d6a5fda9e2d349fffc79aea890b6d4ae '>
 	</img>
 </ol>
 
