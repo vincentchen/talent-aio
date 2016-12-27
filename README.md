@@ -42,7 +42,7 @@
 </h4>
 本项目已经提供了一个helloworld版的例子，虽然有3个maven工程，6个java文件，但是有效代码只有区区100多行，结构清晰极易上手，位于:example\helloworld目录，可按如下步骤上手
 <ol>
-	<li>先运行parent/install.bat，用来安装本项目所有代码</li>
+	<li>先运行install.bat，用来安装本项目所有代码</li>
 	<li>运行com.talent.aio.examples.helloworld.server.HelloServerStarter</li>
 	<li>运行com.talent.aio.examples.helloworld.client.HelloClientStarter</li>
 	<li>顺藤摸瓜，花20分钟仔细阅读这个例子的100多行代码</li>
@@ -133,7 +133,7 @@
 
 <ol>
 	<li>
-	先运行parent/install.bat，用来安装本项目所有代码
+	先运行install.bat，用来安装本项目所有代码
 	</li>
 	<li>
 	运行server examples: com.talent.aio.examples.im.server.ImServerStarter
