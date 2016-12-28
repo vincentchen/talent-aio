@@ -16,7 +16,6 @@ import java.nio.ByteBuffer;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.exception.AioDecodeException;
 
-
 /**
  * The Interface AioHandler.
  *
@@ -24,9 +23,9 @@ import com.talent.aio.common.exception.AioDecodeException;
  * @param <P> the generic type
  * @param <R> the generic type
  */
-public interface AioHandler <Ext, P extends Packet, R>
+public interface AioHandler<Ext, P extends Packet, R>
 {
-	
+
 	/**
 	 * 处理消息包
 	 *
@@ -36,7 +35,7 @@ public interface AioHandler <Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月15日 上午11:38:52
 	 */
 	R handler(P packet, ChannelContext<Ext, P, R> channelContext) throws Exception;
-	
+
 	/**
 	 * 编码
 	 *
@@ -46,7 +45,7 @@ public interface AioHandler <Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月15日 上午11:38:52
 	 */
 	ByteBuffer encode(P packet, ChannelContext<Ext, P, R> channelContext);
-	
+
 	/**
 	 * 根据ByteBuffer解码成业务需要的Packet对象.
 	 *
@@ -55,5 +54,5 @@ public interface AioHandler <Ext, P extends Packet, R>
 	 * @throws AioDecodeException the aio decode exception
 	 */
 	P decode(ByteBuffer buffer, ChannelContext<Ext, P, R> channelContext) throws AioDecodeException;
-	
+
 }

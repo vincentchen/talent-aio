@@ -34,7 +34,8 @@ public class GroupStat
 	 * 
 	 */
 	public GroupStat()
-	{}
+	{
+	}
 
 	/**
 	 * 关闭了多少连接
@@ -56,11 +57,12 @@ public class GroupStat
 	 * 发送了的消息包数
 	 */
 	private AtomicLong sentPacket = new AtomicLong();
-	
+
 	/**
 	 * 发送了的字节数
 	 */
 	private AtomicLong sentBytes = new AtomicLong();
+
 	/**
 	 * @param args
 	 *
@@ -69,7 +71,9 @@ public class GroupStat
 	 * 
 	 */
 	public static void main(String[] args)
-	{}
+	{
+	}
+
 	/**
 	 * @return the receivedPacket
 	 */
@@ -77,6 +81,7 @@ public class GroupStat
 	{
 		return receivedPacket;
 	}
+
 	/**
 	 * @return the handledPacket
 	 */
@@ -84,6 +89,7 @@ public class GroupStat
 	{
 		return handledPacket;
 	}
+
 	/**
 	 * @return the sentPacket
 	 */
@@ -99,6 +105,7 @@ public class GroupStat
 	{
 		return closed;
 	}
+
 	/**
 	 * @param closed the closed to set
 	 */
@@ -106,6 +113,7 @@ public class GroupStat
 	{
 		this.closed = closed;
 	}
+
 	/**
 	 * @return the sentBytes
 	 */
@@ -113,6 +121,7 @@ public class GroupStat
 	{
 		return sentBytes;
 	}
+
 	/**
 	 * @return the receivedBytes
 	 */
@@ -120,6 +129,7 @@ public class GroupStat
 	{
 		return receivedBytes;
 	}
+
 	/**
 	 * @param receivedBytes the receivedBytes to set
 	 */
@@ -127,9 +137,5 @@ public class GroupStat
 	{
 		this.receivedBytes = receivedBytes;
 	}
-	
-	
-	
-	
 
 }

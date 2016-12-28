@@ -24,7 +24,6 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.Packet;
 
-
 /**
  * The Class Groups.
  *
@@ -33,17 +32,17 @@ import com.talent.aio.common.intf.Packet;
  * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2016年11月17日 | tanyaowu | 新建类
  */
-public class Groups <Ext, P extends Packet, R>
+public class Groups<Ext, P extends Packet, R>
 {
-	
+
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(Groups.class);
 
 	/** 一个组有哪些客户端 key: groupid value: Set<ChannelContext<?, ?, ?>. */
-	private  ObjWithReadWriteLock<Map<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>> groupmap = new ObjWithReadWriteLock<>(new ConcurrentHashMap<>());
+	private ObjWithReadWriteLock<Map<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>> groupmap = new ObjWithReadWriteLock<>(new ConcurrentHashMap<>());
 
 	/** 一个客户端在哪组组中 key: ChannelContext value: Set<groupid<?, ?, ?>. */
-	private  ObjWithReadWriteLock<Map<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>> channelmap = new ObjWithReadWriteLock<>(new ConcurrentHashMap<>());
+	private ObjWithReadWriteLock<Map<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>> channelmap = new ObjWithReadWriteLock<>(new ConcurrentHashMap<>());
 
 	/**
 	 * Removes映射.
@@ -53,7 +52,7 @@ public class Groups <Ext, P extends Packet, R>
 	 * @param <R> the generic type
 	 * @param channelContext the channel context
 	 */
-	public  void remove(ChannelContext<Ext, P, R> channelContext)
+	public void remove(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = channelmap.getLock().writeLock();
 
@@ -88,7 +87,7 @@ public class Groups <Ext, P extends Packet, R>
 		} catch (Exception e)
 		{
 			throw e;
-		} 
+		}
 	}
 
 	/**
@@ -170,7 +169,7 @@ public class Groups <Ext, P extends Packet, R>
 		{
 			lock1.unlock();
 		}
-		
+
 		if (channelContexts != null)
 		{
 			Lock lock11 = channelContexts.getLock().writeLock();
@@ -186,11 +185,7 @@ public class Groups <Ext, P extends Packet, R>
 				lock11.unlock();
 			}
 		}
-		
-		
 
-		
-		
 		Lock lock2 = channelmap.getLock().writeLock();
 		ObjWithReadWriteLock<Set<String>> groups = null;// = channelmap.getObj().get(channelContext);
 		try
@@ -209,7 +204,7 @@ public class Groups <Ext, P extends Packet, R>
 		{
 			lock2.unlock();
 		}
-		
+
 		if (groups != null)
 		{
 			Lock lock22 = groups.getLock().writeLock();
@@ -227,7 +222,6 @@ public class Groups <Ext, P extends Packet, R>
 		}
 	}
 
-	
 	/**
 	 * 一个组有哪些客户端
 	 *
@@ -239,7 +233,7 @@ public class Groups <Ext, P extends Packet, R>
 		ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> set = groupmap.getObj().get(groupid);
 		return set;
 	}
-	
+
 	/**
 	 * 某个客户端在哪些组中
 	 * @param channelContext
@@ -249,7 +243,7 @@ public class Groups <Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月17日 下午4:31:27
 	 *
 	 */
-	public ObjWithReadWriteLock<Set<String>> groups( ChannelContext<Ext, P, R> channelContext)
+	public ObjWithReadWriteLock<Set<String>> groups(ChannelContext<Ext, P, R> channelContext)
 	{
 		ObjWithReadWriteLock<Set<String>> set = channelmap.getObj().get(channelContext);
 		return set;

@@ -32,12 +32,12 @@ public class Packet
 	 * 高优先级
 	 */
 	public static final byte PRIORITY_HIGH = 2;
-	
+
 	/**
 	 * 消息处理的发送的优先级
 	 */
 	private byte priority = 1;
-	
+
 	/**
 	 * 同步发送时，需要的同步序列号
 	 */
@@ -74,5 +74,5 @@ public class Packet
 	{
 		this.synSeq = synSeq;
 	}
-	
+
 }

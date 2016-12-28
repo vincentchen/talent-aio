@@ -15,8 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 
-
-
 /**
  * 默认的RejectedExecutionHandler实现<br>
  * 如果Runnable提交被拒绝，本拒绝处理器会将Runnable放到一个队列中，并延时将该Runnable提交给ThreadPool执行。.
@@ -36,27 +34,27 @@ import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
  * </tbody>
  * </table>
  */
-public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implements  RejectedExecutionHandler
+public class DefaultRejectedExecutionHandler<R extends SynRunnableIntf> implements RejectedExecutionHandler
 {
-	
+
 	/** The log. */
 	private static Logger log = LoggerFactory.getLogger(DefaultRejectedExecutionHandler.class);
-	
+
 	/** The timer seq. */
 	private static AtomicInteger timerSeq = new AtomicInteger();
-	
+
 	/** The rejected count. */
 	private AtomicLong rejectedCount = new AtomicLong();
 
 	/**
 	 * The Class SubmitTaskRunnable.
 	 */
-	public static class SubmitTaskRunnable <R extends SynRunnableIntf> implements Runnable
+	public static class SubmitTaskRunnable<R extends SynRunnableIntf> implements Runnable
 	{
-		
+
 		/** The deque. */
 		LinkedBlockingDeque<SynRunnableIntf> deque = null;
-		
+
 		/** The executor. */
 		SynThreadPoolExecutor<SynRunnableIntf> executor = null;
 
@@ -91,7 +89,7 @@ public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implem
 					{
 						log.info("deque in run:{},hashcode:{}", deque.size(), deque.hashCode());
 					}
-					
+
 					if (deque.size() > 0)
 					{
 						int maximumPoolSize = executor.getMaximumPoolSize();
@@ -164,7 +162,7 @@ public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implem
 
 	/** The submit task thread. */
 	private Thread submitTaskThread;
-	
+
 	/** The submit task runnable. */
 	private SubmitTaskRunnable<R> submitTaskRunnable;
 
@@ -216,15 +214,14 @@ public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implem
 			log.error("只支持SynRunnableIntf");
 			return;
 		}
-		
+
 		if (rr.isCanceled())
 		{
 			log.error("任务已经取消");
 			return;
 		}
-		
-		rejectedCount.incrementAndGet();
 
+		rejectedCount.incrementAndGet();
 
 		//		LinkedBlockingQueue<Runnable> deque = myTimerTask.getQueue();
 		//		synchronized (deque)
@@ -238,13 +235,11 @@ public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implem
 		{
 			if (submitTaskThread == Thread.currentThread())
 			{
-				log.info("thread is same--submitTaskThread:{}, currentThread:{}", submitTaskThread,
-						Thread.currentThread());
+				log.info("thread is same--submitTaskThread:{}, currentThread:{}", submitTaskThread, Thread.currentThread());
 				deque.addFirst(rr);
 			} else
 			{
-				log.info("thread is diff--submitTaskThread:{}, currentThread:{}", submitTaskThread,
-						Thread.currentThread());
+				log.info("thread is diff--submitTaskThread:{}, currentThread:{}", submitTaskThread, Thread.currentThread());
 				deque.addLast(rr);
 			}
 		}
@@ -277,7 +272,7 @@ public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implem
 	 *
 	 * @return the submit task runnable
 	 */
-	public SubmitTaskRunnable getSubmitTaskRunnable()
+	public SubmitTaskRunnable<R> getSubmitTaskRunnable()
 	{
 		return submitTaskRunnable;
 	}
@@ -287,7 +282,7 @@ public class  DefaultRejectedExecutionHandler <R extends SynRunnableIntf> implem
 	 *
 	 * @param submitTaskRunnable the new submit task runnable
 	 */
-	public void setSubmitTaskRunnable(SubmitTaskRunnable submitTaskRunnable)
+	public void setSubmitTaskRunnable(SubmitTaskRunnable<R> submitTaskRunnable)
 	{
 		this.submitTaskRunnable = submitTaskRunnable;
 	}

@@ -209,7 +209,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 			sendRunnableHighPrior = new SendRunnable<>(this, groupContext.getSendExecutorHighPrior());
 			sendRunnableNormPrior = new SendRunnable<>(this, groupContext.getSendExecutorNormPrior());
-			
+
 			groupContext.getConnections().add(this);
 			groupContext.getClientNodes().put(this);
 		}

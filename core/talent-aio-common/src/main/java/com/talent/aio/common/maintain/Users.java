@@ -19,7 +19,6 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.intf.Packet;
 
-
 /**
  * The Class Users.
  *
@@ -27,7 +26,7 @@ import com.talent.aio.common.intf.Packet;
  * @param <P> the generic type
  * @param <R> the generic type
  */
-public class Users <Ext, P extends Packet, R>
+public class Users<Ext, P extends Packet, R>
 {
 
 	/**
@@ -35,7 +34,6 @@ public class Users <Ext, P extends Packet, R>
 	 * value: ChannelContext
 	 */
 	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<>(new DualHashBidiMap<>());
-
 
 	/**
 	 * Removes映射.
@@ -58,7 +56,7 @@ public class Users <Ext, P extends Packet, R>
 			lock.unlock();
 		}
 	}
-	
+
 	/**
 	 * Removes the.
 	 *
@@ -110,8 +108,7 @@ public class Users <Ext, P extends Packet, R>
 			lock.unlock();
 		}
 	}
-	
-	
+
 	/**
 	 * Find.
 	 *

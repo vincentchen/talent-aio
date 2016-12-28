@@ -23,7 +23,7 @@ import com.talent.aio.common.ChannelContext;
  *  (1) | 2016年12月8日 | tanyaowu | 新建类
  *
  */
-public interface AioListener <Ext, P extends Packet, R>
+public interface AioListener<Ext, P extends Packet, R>
 {
 	/**
 	 * 连接建立后触发的方法
@@ -35,8 +35,7 @@ public interface AioListener <Ext, P extends Packet, R>
 	 *
 	 */
 	boolean onAfterConnected(ChannelContext<Ext, P, R> channelContext);
-	
-	
+
 	/**
 	 * 消息包发送出去后
 	 * @param channelContext
@@ -47,7 +46,7 @@ public interface AioListener <Ext, P extends Packet, R>
 	 *
 	 */
 	void onBeforeSent(ChannelContext<Ext, P, R> channelContext, P packet);
-	
+
 	/**
 	 * 解码成功后
 	 * @param channelContext
@@ -59,7 +58,6 @@ public interface AioListener <Ext, P extends Packet, R>
 	 *
 	 */
 	void onAfterDecoded(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize);
-	
 
 	/**
 	 * 连接关闭前触发本方法，业务层作一些释放业务资源等操作，记录日志等.

@@ -83,7 +83,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					//					lastByteBuffer.position(0);
 					//					lastByteBuffer.limit(lastByteBuffer.capacity());
 					byteBuffer.position(0);
-//					byteBuffer.limit(byteBuffer.capacity());
+					//					byteBuffer.limit(byteBuffer.capacity());
 					byteBuffer = ByteBufferUtils.composite(lastByteBuffer, byteBuffer);
 					lastByteBuffer = null;
 				}
@@ -95,7 +95,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			try
 			{
 				byteBuffer.position(0);
-//				byteBuffer.limit(byteBuffer.capacity());
+				//				byteBuffer.limit(byteBuffer.capacity());
 
 				label_2: while (true)
 				{

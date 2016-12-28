@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * The Class SystemTimer.
  *
@@ -31,79 +30,78 @@ import org.slf4j.LoggerFactory;
  */
 public class SystemTimer
 {
-    
-    /** The log. */
-    @SuppressWarnings("unused")
+
+	/** The log. */
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(SystemTimer.class);
 
-    /**
-     * Instantiates a new system timer.
-     */
-    public SystemTimer()
-    {
-    	
-    }
+	/**
+	 * Instantiates a new system timer.
+	 */
+	public SystemTimer()
+	{
 
-    /**
-     * The main method.
-     *
-     * @param args the arguments
-     */
-    public static void main(String[] args)
-    {
-    }
+	}
 
-    /** The Constant executor. */
-    private final static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-    
-    /** The Constant tickUnit. */
-    private static final long tickUnit = Long.parseLong(System.getProperty("notify.systimer.tick", "10"));
-    
-    /** The time. */
-    private static volatile long time = System.currentTimeMillis();
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
+	public static void main(String[] args)
+	{
+	}
 
-    /**
-     * The Class TimerTicker.
-     */
-    private static class TimerTicker implements Runnable
-    {
-        
-        
-        /** 
-         * @see java.lang.Runnable#run()
-         * 
-         * @重写人: tanyaowu
-         * @重写时间: 2016年11月15日 上午9:07:45
-         * 
-         */
-        @Override
-        public void run()
-        {
-            time = System.currentTimeMillis();
-        }
-    }
+	/** The Constant executor. */
+	private final static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    /**
-     * Current time millis.
-     *
-     * @return the long
-     */
-    public static long currentTimeMillis()
-    {
-//    	return System.currentTimeMillis();
-        return time;
-    }
+	/** The Constant tickUnit. */
+	private static final long tickUnit = Long.parseLong(System.getProperty("notify.systimer.tick", "10"));
 
-    static
-    {
-        executor.scheduleAtFixedRate(new TimerTicker(), tickUnit, tickUnit, TimeUnit.MILLISECONDS);
-        Runtime.getRuntime().addShutdownHook(new Thread()
-        {
-            @Override
-            public void run()
-            {
-                executor.shutdown();
-            }
-        });
-    }
+	/** The time. */
+	private static volatile long time = System.currentTimeMillis();
+
+	/**
+	 * The Class TimerTicker.
+	 */
+	private static class TimerTicker implements Runnable
+	{
+
+		/** 
+		 * @see java.lang.Runnable#run()
+		 * 
+		 * @重写人: tanyaowu
+		 * @重写时间: 2016年11月15日 上午9:07:45
+		 * 
+		 */
+		@Override
+		public void run()
+		{
+			time = System.currentTimeMillis();
+		}
+	}
+
+	/**
+	 * Current time millis.
+	 *
+	 * @return the long
+	 */
+	public static long currentTimeMillis()
+	{
+		//    	return System.currentTimeMillis();
+		return time;
+	}
+
+	static
+	{
+		executor.scheduleAtFixedRate(new TimerTicker(), tickUnit, tickUnit, TimeUnit.MILLISECONDS);
+		Runtime.getRuntime().addShutdownHook(new Thread()
+		{
+			@Override
+			public void run()
+			{
+				executor.shutdown();
+			}
+		});
+	}
 }

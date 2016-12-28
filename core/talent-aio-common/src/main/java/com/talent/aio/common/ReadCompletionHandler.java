@@ -39,7 +39,7 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 	private static Logger log = LoggerFactory.getLogger(ReadCompletionHandler.class);
 	private ChannelContext<Ext, P, R> channelContext = null;
 
-//	private ByteBuffer byteBuffer = ByteBuffer.allocate(ChannelContext.READ_BUFFER_SIZE);
+	//	private ByteBuffer byteBuffer = ByteBuffer.allocate(ChannelContext.READ_BUFFER_SIZE);
 
 	/**
 	 * 
@@ -83,14 +83,14 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 			channelContext.getStat().setTimeLatestReceivedMsg(SystemTimer.currentTimeMillis());
 			byteBuffer.limit(byteBuffer.position());
 			byteBuffer.position(0);
-//			byteBuffer.flip();
-//			ByteBuffer byteBuffer1 = ByteBuffer.allocate(byteBuffer.limit());
-//			byteBuffer1.put(byteBuffer);
-//			byteBuffer.clear();
+			//			byteBuffer.flip();
+			//			ByteBuffer byteBuffer1 = ByteBuffer.allocate(byteBuffer.limit());
+			//			byteBuffer1.put(byteBuffer);
+			//			byteBuffer.clear();
 
 			DecodeRunnable<Ext, P, R> decodeRunnable = channelContext.getDecodeRunnable();
 			decodeRunnable.addMsg(byteBuffer);
-			
+
 			groupContext.getDecodeExecutor().execute(decodeRunnable);
 
 		} else if (result == 0)
@@ -126,21 +126,21 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 
 	}
 
-//	/**
-//	 * @return the byteBuffer
-//	 */
-//	public ByteBuffer getByteBuffer()
-//	{
-//		return byteBuffer;
-//	}
-//
-//	/**
-//	 * @param byteBuffer the byteBuffer to set
-//	 */
-//	public void setByteBuffer(ByteBuffer byteBuffer)
-//	{
-//		this.byteBuffer = byteBuffer;
-//	}
+	//	/**
+	//	 * @return the byteBuffer
+	//	 */
+	//	public ByteBuffer getByteBuffer()
+	//	{
+	//		return byteBuffer;
+	//	}
+	//
+	//	/**
+	//	 * @param byteBuffer the byteBuffer to set
+	//	 */
+	//	public void setByteBuffer(ByteBuffer byteBuffer)
+	//	{
+	//		this.byteBuffer = byteBuffer;
+	//	}
 
 	/**
 	 * @return the channelContext

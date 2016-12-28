@@ -11,8 +11,6 @@
  */
 package com.talent.aio.common;
 
-import java.util.concurrent.ConcurrentSkipListSet;
-
 /**
  * 
  * 
@@ -84,7 +82,7 @@ public class Node implements Comparable<Node>
 
 	public static void main(String[] args) throws InterruptedException
 	{
-		
+
 	}
 
 	@Override
@@ -94,7 +92,7 @@ public class Node implements Comparable<Node>
 		{
 			return -1;
 		}
-//		RemoteNode other = (RemoteNode) obj;
+		//		RemoteNode other = (RemoteNode) obj;
 
 		if (ip.equals(other.getIp()) && port == other.getPort())
 		{

@@ -14,9 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 
 /**
@@ -44,14 +41,14 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	/** The Constant RUNNABLE_QUEUE. */
 	public final static SynchronousQueue<Runnable> RUNNABLE_QUEUE = new SynchronousQueue<Runnable>(); // 存放runnable的队列
 
-//	/** The task act submit count. */
-//	private java.util.concurrent.atomic.AtomicLong taskActSubmitCount = new AtomicLong(0);
+	//	/** The task act submit count. */
+	//	private java.util.concurrent.atomic.AtomicLong taskActSubmitCount = new AtomicLong(0);
 
-//	/** The task submit count. */
-//	private java.util.concurrent.atomic.AtomicLong taskSubmitCount = new AtomicLong(0);
+	//	/** The task submit count. */
+	//	private java.util.concurrent.atomic.AtomicLong taskSubmitCount = new AtomicLong(0);
 
 	/** The Constant log. */
-	private static final Logger log = LoggerFactory.getLogger(SynThreadPoolExecutor.class);
+//	private static final Logger log = LoggerFactory.getLogger(SynThreadPoolExecutor.class);
 
 	/** The name. */
 	private String name = null;
@@ -139,6 +136,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	{
 		super(corePoolSize, maximumPoolSize, keepAliveTime, TIME_UNIT, (BlockingQueue<Runnable>) runnableQueue, threadFactory);
 		this.name = name;
+		@SuppressWarnings({ "unchecked", "rawtypes" })
 		RejectedExecutionHandler handler = new DefaultRejectedExecutionHandler(this);
 		this.setRejectedExecutionHandler(handler);
 	}
@@ -269,7 +267,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	public void execute(Runnable _runnable)
 	{
 		T runnable = (T) _runnable;
-//		taskSubmitCount.incrementAndGet();
+		//		taskSubmitCount.incrementAndGet();
 		if (checkBeforeExecute(runnable))
 		{
 			//			synchronized (runnable)
@@ -277,7 +275,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 			//				runnable.setInSchedule(true);
 			//				runnable.setRunning(false);
 			super.execute(runnable);
-//			taskActSubmitCount.incrementAndGet();
+			//			taskActSubmitCount.incrementAndGet();
 			//			}
 
 		}
@@ -368,44 +366,44 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 
 	}
 
-//	/**
-//	 * Gets the task act submit count.
-//	 *
-//	 * @return the task act submit count
-//	 */
-//	public java.util.concurrent.atomic.AtomicLong getTaskActSubmitCount()
-//	{
-//		return taskActSubmitCount;
-//	}
-//
-//	/**
-//	 * Sets the task act submit count.
-//	 *
-//	 * @param taskActSubmitCount the new task act submit count
-//	 */
-//	public void setTaskActSubmitCount(java.util.concurrent.atomic.AtomicLong taskActSubmitCount)
-//	{
-//		this.taskActSubmitCount = taskActSubmitCount;
-//	}
-//
-//	/**
-//	 * Gets the task submit count.
-//	 *
-//	 * @return the task submit count
-//	 */
-//	public java.util.concurrent.atomic.AtomicLong getTaskSubmitCount()
-//	{
-//		return taskSubmitCount;
-//	}
-//
-//	/**
-//	 * Sets the task submit count.
-//	 *
-//	 * @param taskSubmitCount the new task submit count
-//	 */
-//	public void setTaskSubmitCount(java.util.concurrent.atomic.AtomicLong taskSubmitCount)
-//	{
-//		this.taskSubmitCount = taskSubmitCount;
-//	}
+	//	/**
+	//	 * Gets the task act submit count.
+	//	 *
+	//	 * @return the task act submit count
+	//	 */
+	//	public java.util.concurrent.atomic.AtomicLong getTaskActSubmitCount()
+	//	{
+	//		return taskActSubmitCount;
+	//	}
+	//
+	//	/**
+	//	 * Sets the task act submit count.
+	//	 *
+	//	 * @param taskActSubmitCount the new task act submit count
+	//	 */
+	//	public void setTaskActSubmitCount(java.util.concurrent.atomic.AtomicLong taskActSubmitCount)
+	//	{
+	//		this.taskActSubmitCount = taskActSubmitCount;
+	//	}
+	//
+	//	/**
+	//	 * Gets the task submit count.
+	//	 *
+	//	 * @return the task submit count
+	//	 */
+	//	public java.util.concurrent.atomic.AtomicLong getTaskSubmitCount()
+	//	{
+	//		return taskSubmitCount;
+	//	}
+	//
+	//	/**
+	//	 * Sets the task submit count.
+	//	 *
+	//	 * @param taskSubmitCount the new task submit count
+	//	 */
+	//	public void setTaskSubmitCount(java.util.concurrent.atomic.AtomicLong taskSubmitCount)
+	//	{
+	//		this.taskSubmitCount = taskSubmitCount;
+	//	}
 
 }

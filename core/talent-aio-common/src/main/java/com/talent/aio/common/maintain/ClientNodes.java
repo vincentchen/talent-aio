@@ -28,7 +28,7 @@ import com.talent.aio.common.intf.Packet;
  * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2016年11月17日 | tanyaowu | 新建类
  */
-public class ClientNodes <Ext, P extends Packet, R>
+public class ClientNodes<Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
@@ -53,7 +53,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 		String key = getKey(remotenode.getIp(), remotenode.getPort());
 		return key;
 	}
-	
+
 	/**
 	 * Gets the key.
 	 *
@@ -123,7 +123,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 			lock.unlock();
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param ip
@@ -139,7 +139,7 @@ public class ClientNodes <Ext, P extends Packet, R>
 		String key = getKey(ip, port);
 		return find(key);
 	}
-	
+
 	public ChannelContext<Ext, P, R> find(String key)
 	{
 		Lock lock = map.getLock().readLock();

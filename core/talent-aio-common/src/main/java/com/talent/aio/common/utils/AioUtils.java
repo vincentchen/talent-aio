@@ -37,6 +37,7 @@ import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 public class AioUtils
 {
 	private static Logger log = LoggerFactory.getLogger(AioUtils.class);
+
 	/**
 	 * 
 	 *
@@ -46,9 +47,9 @@ public class AioUtils
 	 */
 	public AioUtils()
 	{
-		
+
 	}
-	
+
 	public static <Ext, P extends Packet, R> boolean checkBeforeIO(ChannelContext<Ext, P, R> channelContext)
 	{
 		AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
@@ -60,9 +61,6 @@ public class AioUtils
 		}
 		return true;
 	}
-	
-	
-	
 
 	public static <Ext, P extends Packet, R> SendRunnable<Ext, P, R> selectSendRunnable(ChannelContext<Ext, P, R> channelContext, Packet packet)
 	{
@@ -87,7 +85,7 @@ public class AioUtils
 			return channelContext.getGroupContext().getSendExecutorNormPrior();
 		}
 	}
-	
+
 	public static <Ext, P extends Packet, R> HandlerRunnable<Ext, P, R> selectHandlerRunnable(ChannelContext<Ext, P, R> channelContext, Packet packet)
 	{
 		byte priority = packet.getPriority();

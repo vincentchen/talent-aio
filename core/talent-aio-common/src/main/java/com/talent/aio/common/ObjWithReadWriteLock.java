@@ -10,11 +10,11 @@
  * **************************************************************************
  */
 package com.talent.aio.common;
+
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * 自带读写锁的对象.
@@ -25,23 +25,23 @@ import org.slf4j.LoggerFactory;
  * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2016年11月5日 | tanyaowu | 新建类
  */
-public class ObjWithReadWriteLock <T>
+public class ObjWithReadWriteLock<T>
 {
-	
+
 	/** The log. */
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(ObjWithReadWriteLock.class);
-	
+
 	/** The obj. */
 	private T obj = null;
-	
+
 	/**
 	 * The lock.
 	 *
 	 * @含义: 
 	 * @类型: ReentrantReadWriteLock
 	 */
-	private ReentrantReadWriteLock lock = null; 
+	private ReentrantReadWriteLock lock = null;
 
 	/**
 	 * Instantiates a new obj with read write lock.
@@ -79,7 +79,7 @@ public class ObjWithReadWriteLock <T>
 	 */
 	public static void main(String[] args)
 	{
-		
+
 	}
 
 	/**
@@ -94,17 +94,17 @@ public class ObjWithReadWriteLock <T>
 		return lock;
 	}
 
-//	/**
-//	 * Sets the lock.
-//	 *
-//	 * @param lock the new lock
-//	 * @author: tanyaowu
-//	 * @创建时间:　2016年11月7日 上午10:17:31
-//	 */
-//	public void setLock(ReentrantReadWriteLock lock)
-//	{
-//		this.lock = lock;
-//	}
+	//	/**
+	//	 * Sets the lock.
+	//	 *
+	//	 * @param lock the new lock
+	//	 * @author: tanyaowu
+	//	 * @创建时间:　2016年11月7日 上午10:17:31
+	//	 */
+	//	public void setLock(ReentrantReadWriteLock lock)
+	//	{
+	//		this.lock = lock;
+	//	}
 
 	/**
 	 * Gets the obj.
@@ -130,5 +130,3 @@ public class ObjWithReadWriteLock <T>
 		this.obj = obj;
 	}
 }
-
-

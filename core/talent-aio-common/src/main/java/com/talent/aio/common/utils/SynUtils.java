@@ -11,16 +11,13 @@
  */
 package com.talent.aio.common.utils;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 /**
  * @author tanyaowu 
@@ -45,9 +42,9 @@ public class SynUtils
 	 */
 	public static <T> T synRead(ReadLock readLock, SynTask<T> synTask) throws Exception
 	{
-		return synRun(readLock,  synTask);
+		return synRun(readLock, synTask);
 	}
-	
+
 	/**
 	 * 同步写操作
 	 * @param writeLock
@@ -59,9 +56,9 @@ public class SynUtils
 	 */
 	public static <T> T synWrite(WriteLock writeLock, SynTask<T> synTask) throws Exception
 	{
-		return synRun(writeLock,  synTask);
+		return synRun(writeLock, synTask);
 	}
-	
+
 	/**
 	 * 
 	 * @param writeLock
@@ -89,7 +86,7 @@ public class SynUtils
 			return false;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @param writeLock
@@ -117,7 +114,7 @@ public class SynUtils
 			return false;
 		}
 	}
-	
+
 	/**
 	 * true: 如果该key已经存在，则会替换旧值，false: 如果该key已经存在，则直接返回
 	 * @param writeLock
@@ -216,16 +213,12 @@ public class SynUtils
 	 * @创建时间:　2016年11月4日 上午9:59:52
 	 */
 	public static void main(String[] args)
-	{}
-	
+	{
+	}
 
-
-	public static interface SynTask <T>
+	public static interface SynTask<T>
 	{
 		T runTask() throws Exception;
 	}
-	
-	
-	
-	
+
 }

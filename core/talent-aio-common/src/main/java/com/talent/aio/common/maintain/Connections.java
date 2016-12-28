@@ -31,13 +31,12 @@ import com.talent.aio.common.intf.Packet;
  * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2016年11月17日 | tanyaowu | 新建类
  */
-public class Connections <Ext, P extends Packet, R>
+public class Connections<Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
 	private ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> set = new ObjWithReadWriteLock<>(new HashSet<>());
 
-	
 	/**
 	 * Adds the.
 	 *
@@ -46,7 +45,7 @@ public class Connections <Ext, P extends Packet, R>
 	public void add(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = set.getLock().writeLock();
-		
+
 		try
 		{
 			lock.lock();
@@ -60,8 +59,7 @@ public class Connections <Ext, P extends Packet, R>
 			lock.unlock();
 		}
 	}
-	
-	
+
 	/**
 	 * Removes the.
 	 *
@@ -71,7 +69,7 @@ public class Connections <Ext, P extends Packet, R>
 	public boolean remove(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = set.getLock().writeLock();
-		
+
 		try
 		{
 			lock.lock();

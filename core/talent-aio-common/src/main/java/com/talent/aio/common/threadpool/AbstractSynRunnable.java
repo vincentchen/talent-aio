@@ -7,12 +7,10 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 
 /**
@@ -93,11 +91,11 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 	@Override
 	public final void run()
 	{
-		if (isCanceled())  //任务已经被取消
+		if (isCanceled()) //任务已经被取消
 		{
 			return;
 		}
-		
+
 		ReadWriteLock runningLock = runningLock();
 		Lock writeLock = runningLock.writeLock();
 		boolean trylock = writeLock.tryLock();
@@ -105,7 +103,7 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 		{
 			return;
 		}
-		
+
 		try
 		{
 			runTask();
@@ -117,7 +115,7 @@ public abstract class AbstractSynRunnable implements SynRunnableIntf
 			writeLock.unlock();
 			if (isNeededExecute())
 			{
-//				log.error(this + "-----------------------------------------------------------------------------------------需要运行");
+				//				log.error(this + "-----------------------------------------------------------------------------------------需要运行");
 				getExecutor().execute(this);
 			}
 		}

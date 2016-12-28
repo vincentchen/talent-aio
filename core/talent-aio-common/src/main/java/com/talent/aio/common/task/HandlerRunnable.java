@@ -137,21 +137,21 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 		this.channelContext = channelContext;
 	}
 
-//	@Override
-//	public void runBatch(List<P> packetss)
-//	{
-//		for (P packet : packetss)
-//		{
-//			try
-//			{
-//				doPacket(packet);
-//			} catch (Exception e)
-//			{
-//				log.error(packet.toString());
-//				throw new RuntimeException(e.toString(), e);
-//			}
-//		}
-//	}
+	//	@Override
+	//	public void runBatch(List<P> packetss)
+	//	{
+	//		for (P packet : packetss)
+	//		{
+	//			try
+	//			{
+	//				doPacket(packet);
+	//			} catch (Exception e)
+	//			{
+	//				log.error(packet.toString());
+	//				throw new RuntimeException(e.toString(), e);
+	//			}
+	//		}
+	//	}
 
 	@Override
 	public String toString()
@@ -178,34 +178,21 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 		{
 			doPacket(packet);
 		}
-		
-		
-		
-		
-		
-		
-		
-//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
-//		P packet = null;
-//		while (true)
-//		{
-//			packet = queue.poll();
-//			if (packet != null)
-//			{
-//				doPacket(packet);
-//			} else
-//			{
-//				break;
-//			}
-//		}
-		
-		
-		
-		
-		
-		
-		
-		
+
+		//		ConcurrentLinkedQueue<P> queue = getMsgQueue();
+		//		P packet = null;
+		//		while (true)
+		//		{
+		//			packet = queue.poll();
+		//			if (packet != null)
+		//			{
+		//				doPacket(packet);
+		//			} else
+		//			{
+		//				break;
+		//			}
+		//		}
+
 	}
 
 	// public String getMsgType()

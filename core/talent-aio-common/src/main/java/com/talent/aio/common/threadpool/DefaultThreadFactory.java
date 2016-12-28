@@ -11,8 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 /**
  * 默认的ThreadFactory，在生成Thread对象时，会使用应用提供的名字+序号作为线程的名字，这样方便大家辨认线程。<br>
  * 生成的Thread对象，其名字形如：myname-1, myname-2等.
@@ -43,7 +41,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultThreadFactory implements ThreadFactory
 {
-	
+
 	/** The log. */
 	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(DefaultThreadFactory.class);
@@ -53,13 +51,12 @@ public class DefaultThreadFactory implements ThreadFactory
 
 	/** The map of name and thread factory. */
 	private static Map<String, DefaultThreadFactory> mapOfNameAndThreadFactory = new HashMap<String, DefaultThreadFactory>();
-	
+
 	/** The map of name and atomic integer. */
 	private static Map<String, AtomicInteger> mapOfNameAndAtomicInteger = new HashMap<String, AtomicInteger>();
-	
+
 	/** The priority. */
 	private int priority = Thread.NORM_PRIORITY;
-	
 
 	/**
 	 * Gets the single instance of DefaultThreadFactory.
@@ -85,8 +82,7 @@ public class DefaultThreadFactory implements ThreadFactory
 		}
 		return defaultThreadFactory;
 	}
-	
-	
+
 	public static DefaultThreadFactory getInstance(String threadName)
 	{
 		return getInstance(threadName, Thread.NORM_PRIORITY);

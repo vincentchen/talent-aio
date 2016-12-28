@@ -2,8 +2,6 @@ package com.talent.aio.common.threadpool.intf;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-
-
 /**
  * 队列数据处理任务接口.
  *
@@ -13,11 +11,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public interface QueueRunnableIntf<T>
 {
-    
-    /**
-     * 获取数据队列.
-     *
-     * @return 保存着要处理的数据的队列
-     */
-    ConcurrentLinkedQueue<T> getMsgQueue();
+
+	/**
+	 * 获取数据队列.
+	 *
+	 * @return 保存着要处理的数据的队列
+	 */
+	ConcurrentLinkedQueue<T> getMsgQueue();
 }
