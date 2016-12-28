@@ -23,41 +23,41 @@ package com.talent.aio.common.intf;
  */
 public class Packet
 {
-	/**
-	 * 低优先级
-	 */
-	public static final byte PRIORITY_LOW = 1;
+//	/**
+//	 * 低优先级
+//	 */
+//	public static final byte PRIORITY_LOW = 1;
+//
+//	/**
+//	 * 高优先级
+//	 */
+//	public static final byte PRIORITY_HIGH = 2;
 
-	/**
-	 * 高优先级
-	 */
-	public static final byte PRIORITY_HIGH = 2;
-
-	/**
-	 * 消息处理的发送的优先级
-	 */
-	private byte priority = 1;
+//	/**
+//	 * 消息处理的发送的优先级
+//	 */
+//	private byte priority = 1;
 
 	/**
 	 * 同步发送时，需要的同步序列号
 	 */
 	private Integer synSeq = null;
-
-	/**
-	 * @return the priority
-	 */
-	public byte getPriority()
-	{
-		return priority;
-	}
-
-	/**
-	 * @param priority the priority to set
-	 */
-	public void setPriority(byte priority)
-	{
-		this.priority = priority;
-	}
+//
+//	/**
+//	 * @return the priority
+//	 */
+//	public byte getPriority()
+//	{
+//		return priority;
+//	}
+//
+//	/**
+//	 * @param priority the priority to set
+//	 */
+//	public void setPriority(byte priority)
+//	{
+//		this.priority = priority;
+//	}
 
 	/**
 	 * @return the synSeq

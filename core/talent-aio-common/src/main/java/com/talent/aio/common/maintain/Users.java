@@ -33,7 +33,8 @@ public class Users<Ext, P extends Packet, R>
 	 * key: userid
 	 * value: ChannelContext
 	 */
-	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<>(new DualHashBidiMap<>());
+	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>>(
+			new DualHashBidiMap<String, ChannelContext<Ext, P, R>>());
 
 	/**
 	 * Removes映射.

@@ -32,7 +32,8 @@ public class ClientNodes<Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
-	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<>(new DualHashBidiMap<>());
+	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>>(
+			new DualHashBidiMap<String, ChannelContext<Ext, P, R>>());
 
 	/**
 	 * Gets the key.

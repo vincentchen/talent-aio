@@ -76,7 +76,7 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月15日 下午1:09:28
 	 * 
 	 */
-	public AioClient(ClientGroupContext<Ext, P, R> clientGroupContext) throws IOException
+	public AioClient(final ClientGroupContext<Ext, P, R> clientGroupContext) throws IOException
 	{
 		super();
 		this.clientGroupContext = clientGroupContext;
@@ -84,10 +84,10 @@ public class AioClient<Ext, P extends Packet, R>
 		this.channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
 
 		///////
-		ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
-		ClientAioHandler<Ext, P, R> aioHandler = (ClientAioHandler<Ext, P, R>) clientGroupContext.getClientAioHandler();
-		long heartbeatTimeout = clientGroupContext.getHeartbeatTimeout();
-		String id = clientGroupContext.getId();
+		final ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
+		final ClientAioHandler<Ext, P, R> aioHandler = (ClientAioHandler<Ext, P, R>) clientGroupContext.getClientAioHandler();
+		final long heartbeatTimeout = clientGroupContext.getHeartbeatTimeout();
+		final String id = clientGroupContext.getId();
 		new Thread(new Runnable()
 		{
 			@Override

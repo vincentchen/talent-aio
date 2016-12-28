@@ -35,7 +35,7 @@ public class Connections<Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
-	private ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> set = new ObjWithReadWriteLock<>(new HashSet<>());
+	private ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> set = new ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>(new HashSet<ChannelContext<Ext, P, R>>());
 
 	/**
 	 * Adds the.

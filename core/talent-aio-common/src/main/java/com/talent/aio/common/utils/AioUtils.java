@@ -64,50 +64,50 @@ public class AioUtils
 
 	public static <Ext, P extends Packet, R> SendRunnable<Ext, P, R> selectSendRunnable(ChannelContext<Ext, P, R> channelContext, Packet packet)
 	{
-		byte priority = packet.getPriority();
-		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
-		{
-			return channelContext.getSendRunnableHighPrior();
-		} else
-		{
+//		byte priority = packet.getPriority();
+//		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
+//		{
+//			return channelContext.getSendRunnableHighPrior();
+//		} else
+//		{
 			return channelContext.getSendRunnableNormPrior();
-		}
+//		}
 	}
 
 	public static <Ext, P extends Packet, R> SynThreadPoolExecutor<SynRunnableIntf> selectSendExecutor(ChannelContext<Ext, P, R> channelContext, Packet packet)
 	{
-		byte priority = packet.getPriority();
-		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
-		{
-			return channelContext.getGroupContext().getSendExecutorHighPrior();
-		} else
-		{
+//		byte priority = packet.getPriority();
+//		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
+//		{
+//			return channelContext.getGroupContext().getSendExecutorHighPrior();
+//		} else
+//		{
 			return channelContext.getGroupContext().getSendExecutorNormPrior();
-		}
+//		}
 	}
 
 	public static <Ext, P extends Packet, R> HandlerRunnable<Ext, P, R> selectHandlerRunnable(ChannelContext<Ext, P, R> channelContext, Packet packet)
 	{
-		byte priority = packet.getPriority();
-		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
-		{
-			return channelContext.getHandlerRunnableHighPrior();
-		} else
-		{
-			return channelContext.getHandlerRunnableHighPrior();
-		}
+//		byte priority = packet.getPriority();
+//		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
+//		{
+//			return channelContext.getHandlerRunnableHighPrior();
+//		} else
+//		{
+			return channelContext.getHandlerRunnableNormPrior();
+//		}
 	}
 
 	public static <Ext, P extends Packet, R> SynThreadPoolExecutor<SynRunnableIntf> selectHandlerExecutor(ChannelContext<Ext, P, R> channelContext, Packet packet)
 	{
-		byte priority = packet.getPriority();
-		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
-		{
-			return channelContext.getGroupContext().getHandlerExecutorHighPrior();
-		} else
-		{
+//		byte priority = packet.getPriority();
+//		if (priority == com.talent.aio.common.intf.Packet.PRIORITY_HIGH)
+//		{
+//			return channelContext.getGroupContext().getHandlerExecutorHighPrior();
+//		} else
+//		{
 			return channelContext.getGroupContext().getHandlerExecutorNormPrior();
-		}
+//		}
 	}
 
 	/**

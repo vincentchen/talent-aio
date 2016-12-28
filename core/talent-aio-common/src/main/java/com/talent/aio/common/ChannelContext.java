@@ -36,10 +36,10 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private DecodeRunnable<Ext, P, R> decodeRunnable = null;
 
 	private CloseRunnable<Ext, P, R> closeRunnable = null;
-	private HandlerRunnable<Ext, P, R> handlerRunnableHighPrior = null;
+//	private HandlerRunnable<Ext, P, R> handlerRunnableHighPrior = null;
 	private HandlerRunnable<Ext, P, R> handlerRunnableNormPrior = null;
 
-	private SendRunnable<Ext, P, R> sendRunnableHighPrior = null;
+//	private SendRunnable<Ext, P, R> sendRunnableHighPrior = null;
 	private SendRunnable<Ext, P, R> sendRunnableNormPrior = null;
 
 	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
@@ -204,10 +204,10 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 			decodeRunnable = new DecodeRunnable<>(this, groupContext.getDecodeExecutor());
 			closeRunnable = new CloseRunnable<>(this, null, null, groupContext.getCloseExecutor());
 
-			handlerRunnableHighPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorHighPrior());
+//			handlerRunnableHighPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorHighPrior());
 			handlerRunnableNormPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorNormPrior());
 
-			sendRunnableHighPrior = new SendRunnable<>(this, groupContext.getSendExecutorHighPrior());
+//			sendRunnableHighPrior = new SendRunnable<>(this, groupContext.getSendExecutorHighPrior());
 			sendRunnableNormPrior = new SendRunnable<>(this, groupContext.getSendExecutorNormPrior());
 
 			groupContext.getConnections().add(this);
@@ -247,21 +247,21 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		this.decodeRunnable = decodeRunnable;
 	}
 
-	/**
-	 * @return the handlerRunnableHighPrior
-	 */
-	public HandlerRunnable<Ext, P, R> getHandlerRunnableHighPrior()
-	{
-		return handlerRunnableHighPrior;
-	}
+//	/**
+//	 * @return the handlerRunnableHighPrior
+//	 */
+//	public HandlerRunnable<Ext, P, R> getHandlerRunnableHighPrior()
+//	{
+//		return handlerRunnableHighPrior;
+//	}
 
-	/**
-	 * @param handlerRunnableHighPrior the handlerRunnableHighPrior to set
-	 */
-	public void setHandlerRunnableHighPrior(HandlerRunnable<Ext, P, R> handlerRunnableHighPrior)
-	{
-		this.handlerRunnableHighPrior = handlerRunnableHighPrior;
-	}
+//	/**
+//	 * @param handlerRunnableHighPrior the handlerRunnableHighPrior to set
+//	 */
+//	public void setHandlerRunnableHighPrior(HandlerRunnable<Ext, P, R> handlerRunnableHighPrior)
+//	{
+//		this.handlerRunnableHighPrior = handlerRunnableHighPrior;
+//	}
 
 	/**
 	 * @return the handlerRunnableNormPrior
@@ -279,21 +279,21 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		this.handlerRunnableNormPrior = handlerRunnableNormPrior;
 	}
 
-	/**
-	 * @return the sendRunnableHighPrior
-	 */
-	public SendRunnable<Ext, P, R> getSendRunnableHighPrior()
-	{
-		return sendRunnableHighPrior;
-	}
-
-	/**
-	 * @param sendRunnableHighPrior the sendRunnableHighPrior to set
-	 */
-	public void setSendRunnableHighPrior(SendRunnable<Ext, P, R> sendRunnableHighPrior)
-	{
-		this.sendRunnableHighPrior = sendRunnableHighPrior;
-	}
+//	/**
+//	 * @return the sendRunnableHighPrior
+//	 */
+//	public SendRunnable<Ext, P, R> getSendRunnableHighPrior()
+//	{
+//		return sendRunnableHighPrior;
+//	}
+//
+//	/**
+//	 * @param sendRunnableHighPrior the sendRunnableHighPrior to set
+//	 */
+//	public void setSendRunnableHighPrior(SendRunnable<Ext, P, R> sendRunnableHighPrior)
+//	{
+//		this.sendRunnableHighPrior = sendRunnableHighPrior;
+//	}
 
 	/**
 	 * @return the sendRunnableNormPrior

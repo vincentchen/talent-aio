@@ -39,10 +39,12 @@ public class Groups<Ext, P extends Packet, R>
 	private static Logger log = LoggerFactory.getLogger(Groups.class);
 
 	/** 一个组有哪些客户端 key: groupid value: Set<ChannelContext<?, ?, ?>. */
-	private ObjWithReadWriteLock<Map<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>> groupmap = new ObjWithReadWriteLock<>(new ConcurrentHashMap<>());
+	private ObjWithReadWriteLock<Map<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>> groupmap = new ObjWithReadWriteLock<Map<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>>(
+			new ConcurrentHashMap<String, ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>>());
 
 	/** 一个客户端在哪组组中 key: ChannelContext value: Set<groupid<?, ?, ?>. */
-	private ObjWithReadWriteLock<Map<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>> channelmap = new ObjWithReadWriteLock<>(new ConcurrentHashMap<>());
+	private ObjWithReadWriteLock<Map<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>> channelmap = new ObjWithReadWriteLock<Map<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>>(
+			new ConcurrentHashMap<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>());
 
 	/**
 	 * Removes映射.
@@ -159,7 +161,7 @@ public class Groups<Ext, P extends Packet, R>
 			channelContexts = groupmap.getObj().get(groupid);
 			if (channelContexts == null)
 			{
-				channelContexts = new ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>(new HashSet<>());
+				channelContexts = new ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>>(new HashSet<ChannelContext<Ext, P, R>>());
 			}
 			groupmap.getObj().put(groupid, channelContexts);
 		} catch (Exception e)
@@ -194,7 +196,7 @@ public class Groups<Ext, P extends Packet, R>
 			groups = channelmap.getObj().get(channelContext);
 			if (groups == null)
 			{
-				groups = new ObjWithReadWriteLock<Set<String>>(new HashSet<>());
+				groups = new ObjWithReadWriteLock<Set<String>>(new HashSet<String>());
 			}
 			channelmap.getObj().put(channelContext, groups);
 		} catch (Exception e)

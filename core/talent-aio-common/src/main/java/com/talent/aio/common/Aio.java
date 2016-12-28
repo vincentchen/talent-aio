@@ -77,15 +77,15 @@ public class Aio
 
 		channelContext.getDecodeRunnable().clearMsgQueue();
 		channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
-		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
+//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
 		channelContext.getSendRunnableNormPrior().clearMsgQueue();
-		channelContext.getSendRunnableHighPrior().clearMsgQueue();
+//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
 
 		channelContext.getDecodeRunnable().setCanceled(true);
 		channelContext.getHandlerRunnableNormPrior().setCanceled(true);
-		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
+//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
 		channelContext.getSendRunnableNormPrior().setCanceled(true);
-		channelContext.getSendRunnableHighPrior().setCanceled(true);
+//		channelContext.getSendRunnableHighPrior().setCanceled(true);
 
 		synchronized (channelContext)
 		{

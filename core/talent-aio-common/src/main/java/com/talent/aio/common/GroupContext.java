@@ -84,19 +84,19 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 */
 	private SynThreadPoolExecutor<SynRunnableIntf> closeExecutor = null;
 
-	/**
-	 * 高优先级的业务处理线程池
-	 */
-	private SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior = null;
+//	/**
+//	 * 高优先级的业务处理线程池
+//	 */
+//	private SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior = null;
 	/**
 	 * 低优先级的业务处理线程池
 	 */
 	private SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorNormPrior = null;
 
-	/**
-	 * 高优先级的消息发送线程池
-	 */
-	private SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior = null;
+//	/**
+//	 * 高优先级的消息发送线程池
+//	 */
+//	private SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior = null;
 	/**
 	 * 低优先级的消息发送线程池
 	 */
@@ -126,78 +126,25 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	{
 		super();
 		this.id = id;
-		//		this.aioHandler = aioHandler;
-		//		this.aioListener = aioListener;
-		//		SynchronousQueue<Runnable> decodePoolQueue = new SynchronousQueue<Runnable>();
-		//		decodeExecutor = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, decodePoolQueue, "t-aio-decode");
-		//		decodeExecutor.prestartAllCoreThreads();
-		//
-		//		SynchronousQueue<Runnable> handlerPoolQueueHighPrior = new SynchronousQueue<Runnable>();
-		//		handlerExecutorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, handlerPoolQueueHighPrior,
-		//				DefaultThreadFactory.getInstance("t-aio-handler-high-prior", Thread.MAX_PRIORITY), "t-aio-handler-high-prior");
-		//		handlerExecutorHighPrior.prestartAllCoreThreads();
-		//
-		//		SynchronousQueue<Runnable> handlerPoolQueueNormPrior = new SynchronousQueue<Runnable>();
-		//		handlerExecutorNormPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, handlerPoolQueueNormPrior,
-		//				"t-aio-handler-low-prior");
-		//		handlerExecutorNormPrior.prestartAllCoreThreads();
-		//
-		//		SynchronousQueue<Runnable> sendPoolQueueHighPrior = new SynchronousQueue<Runnable>();
-		//		sendExecutorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, sendPoolQueueHighPrior,
-		//				DefaultThreadFactory.getInstance("t-aio-send-high-prior", Thread.MAX_PRIORITY), "t-aio-send-high-prior");
-		//		sendExecutorHighPrior.prestartAllCoreThreads();
-		//
-		//		SynchronousQueue<Runnable> sendPoolQueueNormPrior = new SynchronousQueue<Runnable>();
-		//		sendExecutorNormPrior = new SynThreadPoolExecutor<SynRunnableIntf>(corePoolSize, maximumPoolSize, keepAliveTime, sendPoolQueueNormPrior,
-		//				"t-aio-send-low-prior");
-		//		sendExecutorNormPrior.prestartAllCoreThreads();
-
-		LinkedBlockingQueue<Runnable> poolQueueHighPrior = new LinkedBlockingQueue<Runnable>();
-		SynThreadPoolExecutor<SynRunnableIntf> executorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(CORE_POOL_SIZE, CORE_POOL_SIZE, KEEP_ALIVE_TIME, poolQueueHighPrior,
-				DefaultThreadFactory.getInstance("t-aio-high-prior", Thread.MAX_PRIORITY), "t-aio-high-prior");
-		executorHighPrior.prestartAllCoreThreads();
+		
+//		LinkedBlockingQueue<Runnable> poolQueueHighPrior = new LinkedBlockingQueue<Runnable>();
+//		SynThreadPoolExecutor<SynRunnableIntf> executorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(CORE_POOL_SIZE, CORE_POOL_SIZE, KEEP_ALIVE_TIME, poolQueueHighPrior,
+//				DefaultThreadFactory.getInstance("t-aio-high-prior", Thread.MAX_PRIORITY), "t-aio-high-prior");
+//		executorHighPrior.prestartAllCoreThreads();
 
 		LinkedBlockingQueue<Runnable> poolQueueNormPrior = new LinkedBlockingQueue<Runnable>();
 		SynThreadPoolExecutor<SynRunnableIntf> executorNormPrior = new SynThreadPoolExecutor<SynRunnableIntf>(CORE_POOL_SIZE, CORE_POOL_SIZE, KEEP_ALIVE_TIME, poolQueueNormPrior,
-				DefaultThreadFactory.getInstance("t-aio-low-prior", Thread.NORM_PRIORITY), "t-aio-low-prior");
+				DefaultThreadFactory.getInstance("t-aio-norm-prior", Thread.NORM_PRIORITY), "t-aio-norm-prior");
 		executorNormPrior.prestartAllCoreThreads();
 
 		decodeExecutor = executorNormPrior;
-		closeExecutor = executorHighPrior;
-		handlerExecutorHighPrior = executorHighPrior;
+		closeExecutor = executorNormPrior;//executorHighPrior;
+//		handlerExecutorHighPrior = executorNormPrior;//executorHighPrior;
 		handlerExecutorNormPrior = executorNormPrior;
-		sendExecutorHighPrior = executorHighPrior;
+//		sendExecutorHighPrior = executorNormPrior;//executorHighPrior;
 		sendExecutorNormPrior = executorNormPrior;
 
 	}
-
-	//	/**
-	//	 * @param ip
-	//	 * @param port
-	//	 * @param aioHandler
-	//	 * @param decodeExecutor
-	//	 * @param handlerExecutorHighPrior
-	//	 * @param handlerExecutorNormPrior
-	//	 * @param sendExecutorHighPrior
-	//	 * @param sendExecutorNormPrior
-	//	 *
-	//	 * @author: tanyaowu
-	//	 * @创建时间:　2016年11月16日 上午10:23:47
-	//	 * 
-	//	 */
-	//	public GroupContext(AioHandler<Ext, P, R> aioHandler, SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor, SynThreadPoolExecutor<SynRunnableIntf> closeExecutor,
-	//			SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior, SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorNormPrior,
-	//			SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior, SynThreadPoolExecutor<SynRunnableIntf> sendExecutorNormPrior)
-	//	{
-	//		super();
-	//		this.aioHandler = aioHandler;
-	//		this.decodeExecutor = decodeExecutor;
-	//		this.closeExecutor = closeExecutor;
-	//		this.handlerExecutorHighPrior = handlerExecutorHighPrior;
-	//		this.handlerExecutorNormPrior = handlerExecutorNormPrior;
-	//		this.sendExecutorHighPrior = sendExecutorHighPrior;
-	//		this.sendExecutorNormPrior = sendExecutorNormPrior;
-	//	}
 
 	/**
 	 * @param args
@@ -243,21 +190,21 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		this.decodeExecutor = decodeExecutor;
 	}
 
-	/**
-	 * @return the handlerExecutorHighPrior
-	 */
-	public SynThreadPoolExecutor<SynRunnableIntf> getHandlerExecutorHighPrior()
-	{
-		return handlerExecutorHighPrior;
-	}
-
-	/**
-	 * @param handlerExecutorHighPrior the handlerExecutorHighPrior to set
-	 */
-	public void setHandlerExecutorHighPrior(SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior)
-	{
-		this.handlerExecutorHighPrior = handlerExecutorHighPrior;
-	}
+//	/**
+//	 * @return the handlerExecutorHighPrior
+//	 */
+//	public SynThreadPoolExecutor<SynRunnableIntf> getHandlerExecutorHighPrior()
+//	{
+//		return handlerExecutorHighPrior;
+//	}
+//
+//	/**
+//	 * @param handlerExecutorHighPrior the handlerExecutorHighPrior to set
+//	 */
+//	public void setHandlerExecutorHighPrior(SynThreadPoolExecutor<SynRunnableIntf> handlerExecutorHighPrior)
+//	{
+//		this.handlerExecutorHighPrior = handlerExecutorHighPrior;
+//	}
 
 	/**
 	 * @return the handlerExecutorNormPrior
@@ -275,21 +222,21 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		this.handlerExecutorNormPrior = handlerExecutorNormPrior;
 	}
 
-	/**
-	 * @return the sendExecutorHighPrior
-	 */
-	public SynThreadPoolExecutor<SynRunnableIntf> getSendExecutorHighPrior()
-	{
-		return sendExecutorHighPrior;
-	}
-
-	/**
-	 * @param sendExecutorHighPrior the sendExecutorHighPrior to set
-	 */
-	public void setSendExecutorHighPrior(SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior)
-	{
-		this.sendExecutorHighPrior = sendExecutorHighPrior;
-	}
+//	/**
+//	 * @return the sendExecutorHighPrior
+//	 */
+//	public SynThreadPoolExecutor<SynRunnableIntf> getSendExecutorHighPrior()
+//	{
+//		return sendExecutorHighPrior;
+//	}
+//
+//	/**
+//	 * @param sendExecutorHighPrior the sendExecutorHighPrior to set
+//	 */
+//	public void setSendExecutorHighPrior(SynThreadPoolExecutor<SynRunnableIntf> sendExecutorHighPrior)
+//	{
+//		this.sendExecutorHighPrior = sendExecutorHighPrior;
+//	}
 
 	/**
 	 * @return the sendExecutorNormPrior
