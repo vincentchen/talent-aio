@@ -10,7 +10,6 @@ import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
-import com.talent.aio.examples.im.common.Const;
 import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.common.bs.JoinReqBody;
 import com.talent.aio.examples.im.common.json.Json;

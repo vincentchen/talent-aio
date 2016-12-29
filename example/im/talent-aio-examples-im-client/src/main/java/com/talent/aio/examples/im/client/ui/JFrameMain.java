@@ -133,7 +133,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         lianjie.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
         lianjie.setForeground(new java.awt.Color(51, 0, 255));
-        lianjie.setText("连接");
+        lianjie.setText("连接并进入群组");
         lianjie.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lianjieActionPerformed(evt);
@@ -158,7 +158,7 @@ public class JFrameMain extends javax.swing.JFrame
         msgTextArea.setColumns(20);
         msgTextArea.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         msgTextArea.setRows(5);
-        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”，在与服务器连接后，将会自动进入群组。(此按钮点击一次后将灰化)\n5、点击“群发”，将会收到连接数量的平方乘以群发次数条消息(本例中的数据是: 1000*1000*2=2000000)\n\n\n");
+        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接”，在与服务器连接后，将会自动进入群组。(此按钮点击一次后将灰化)\n5、点击“群发”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 1000*2000=2000000)\n\n\n");
         msgTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 msgTextAreaMouseClicked(evt);
@@ -173,7 +173,7 @@ public class JFrameMain extends javax.swing.JFrame
             }
         });
 
-        loopcountField.setText("2");
+        loopcountField.setText("2000");
         loopcountField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loopcountFieldActionPerformed(evt);
@@ -232,12 +232,12 @@ public class JFrameMain extends javax.swing.JFrame
                         .addComponent(groupField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(lianjie)
-                        .addGap(82, 82, 82)
+                        .addGap(66, 66, 66)
                         .addComponent(jLabel5)
-                        .addGap(18, 18, 18)
-                        .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(loopcountField, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(loopcountField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -390,6 +390,7 @@ public class JFrameMain extends javax.swing.JFrame
 				{
 					Aio.send(channelContext, packet);
 				}
+                                break;//此处只用一个客户端发送，防止初次用户不能理解消息量为什么这么大。
 
 			}
 		} catch (Throwable e)

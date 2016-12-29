@@ -80,7 +80,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 
 			if (StringUtils.isNotBlank(remark))
 			{
-				log.error("关闭连接:" + channelContext.toString() + ", 备注: " + remark);
+				log.error("关闭连接:" + channelContext.toString() + ", " + remark);
 			}
 
 			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
