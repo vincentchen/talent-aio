@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.task.CloseRunnable;
-import com.talent.aio.common.task.HandlerRunnable;
 import com.talent.aio.common.task.SendRunnable;
 import com.talent.aio.common.threadpool.SynThreadPoolExecutor;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
@@ -77,15 +76,15 @@ public class Aio
 
 		channelContext.getDecodeRunnable().clearMsgQueue();
 		channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
-//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
+		//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
 		channelContext.getSendRunnableNormPrior().clearMsgQueue();
-//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
+		//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
 
 		channelContext.getDecodeRunnable().setCanceled(true);
 		channelContext.getHandlerRunnableNormPrior().setCanceled(true);
-//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
+		//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
 		channelContext.getSendRunnableNormPrior().setCanceled(true);
-//		channelContext.getSendRunnableHighPrior().setCanceled(true);
+		//		channelContext.getSendRunnableHighPrior().setCanceled(true);
 
 		synchronized (channelContext)
 		{
@@ -116,64 +115,115 @@ public class Aio
 		close(channelContext, t, remark);
 	}
 
-	//	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByRemote(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport)
-	//	{
-	//		return groupContext.getRemotes().find(remoteip, remoteport);
-	//	}
+	/**
+	 * 
+	 * @param groupContext
+	 * @param remoteip
+	 * @param remoteport
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月29日 下午2:42:25
+	 *
+	 */
+	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByRemote(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport)
+	{
+		return groupContext.getClientNodes().find(remoteip, remoteport);
+	}
 
-	//	/**
-	//	 * 一个组有哪些客户端
-	//	 *
-	//	 * @param groupid the groupid
-	//	 * @return the obj with read write lock
-	//	 */
-	//	public static <Ext, P extends Packet, R> ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> getChannelContextsByGroup(GroupContext<Ext, P, R> groupContext, String groupid)
-	//	{
-	//		return groupContext.getGroups().clients(groupid);
-	//	}
-	//	
-	//	/**
-	//	 * 与用户关联上
-	//	 * @param groupContext
-	//	 * @param channelContext
-	//	 * @param userid
-	//	 *
-	//	 * @author: tanyaowu
-	//	 * @创建时间:　2016年11月17日 下午5:51:43
-	//	 *
-	//	 */
-	//	public static <Ext, P extends Packet, R> void attachUserid(GroupContext<Ext, P, R> groupContext, ChannelContext<Ext, P, R> channelContext, String userid)
-	//	{
-	//		groupContext.getUsers().put(userid, channelContext);
-	//	}
-	//	/**
-	//	 * 取消与用户的关联
-	//	 * @param groupContext
-	//	 * @param channelContext
-	//	 *
-	//	 * @author: tanyaowu
-	//	 * @创建时间:　2016年11月17日 下午5:54:31
-	//	 *
-	//	 */
-	//	public static <Ext, P extends Packet, R> void removeUserid(GroupContext<Ext, P, R> groupContext, ChannelContext<Ext, P, R> channelContext)
-	//	{
-	//		groupContext.getUsers().remove(channelContext);//(userid, channelContext);
-	//	}
-	//	/**
-	//	 * 
-	//	 * @param groupContext
-	//	 * @param userid
-	//	 * @return
-	//	 *
-	//	 * @author: tanyaowu
-	//	 * @创建时间:　2016年11月17日 下午5:43:59
-	//	 *
-	//	 */
-	//	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByUserid(GroupContext<Ext, P, R> groupContext, String userid)
-	//	{
-	//		return groupContext.getUsers().find(userid);
-	//	}
+	/**
+	 * 一个组有哪些客户端
+	 *
+	 * @param groupid the groupid
+	 * @return the obj with read write lock
+	 */
+	public static <Ext, P extends Packet, R> ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> getChannelContextsByGroup(GroupContext<Ext, P, R> groupContext, String groupid)
+	{
+		return groupContext.getGroups().clients(groupid);
+	}
 
+	/**
+	 * 绑定用户
+	 * @param groupContext
+	 * @param channelContext
+	 * @param userid
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年11月17日 下午5:51:43
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void bindUser(ChannelContext<Ext, P, R> channelContext, String userid)
+	{
+		channelContext.getGroupContext().getUsers().bind(userid, channelContext);
+	}
+
+	/**
+	 * 解绑用户
+	 * @param groupContext
+	 * @param channelContext
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年11月17日 下午5:54:31
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void unbindUser(ChannelContext<Ext, P, R> channelContext)
+	{
+		channelContext.getGroupContext().getUsers().unbind(channelContext);
+	}
+
+	/**
+	 * 绑定群组
+	 * @param channelContext
+	 * @param groupid
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年11月17日 下午5:51:43
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void bindGroup(ChannelContext<Ext, P, R> channelContext, String groupid)
+	{
+		channelContext.getGroupContext().getGroups().bind(groupid, channelContext);
+	}
+
+	/**
+	 * 解绑群组
+	 * @param groupContext
+	 * @param channelContext
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年11月17日 下午5:54:31
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void unbindGroup(ChannelContext<Ext, P, R> channelContext)
+	{
+		channelContext.getGroupContext().getUsers().unbind(channelContext);
+	}
+
+	/**
+	 * 
+	 * @param groupContext
+	 * @param userid
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年11月17日 下午5:43:59
+	 *
+	 */
+	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByUserid(GroupContext<Ext, P, R> groupContext, String userid)
+	{
+		return groupContext.getUsers().find(userid);
+	}
+
+	/**
+	 * 
+	 * @param groupContext
+	 * @param userid
+	 * @param packet
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月29日 下午2:42:33
+	 *
+	 */
 	public static <Ext, P extends Packet, R> void sendToUser(GroupContext<Ext, P, R> groupContext, String userid, P packet)
 	{
 		ChannelContext<Ext, P, R> channelContext = groupContext.getUsers().find(userid);
@@ -200,6 +250,26 @@ public class Aio
 		sendRunnable.addMsg(packet);
 		SynThreadPoolExecutor<SynRunnableIntf> synThreadPoolExecutor = AioUtils.selectSendExecutor(channelContext, packet);
 		synThreadPoolExecutor.execute(sendRunnable);
+	}
+
+	/**
+	 * 发送到指定的ip和port
+	 * @param groupContext
+	 * @param ip
+	 * @param port
+	 * @param packet
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月29日 下午2:28:42
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void send(GroupContext<Ext, P, R> groupContext, String ip, int port, P packet)
+	{
+		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(ip, port);
+		if (channelContext != null)
+		{
+			send(channelContext, packet);
+		}
 	}
 
 	/**
@@ -242,24 +312,6 @@ public class Aio
 		{
 			lock.unlock();
 		}
-
-	}
-
-	/**
-	 * Handler.
-	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
-	 * @param channelContext the channel context
-	 * @param packet the packet
-	 */
-	public static <Ext, P extends Packet, R> void handler(ChannelContext<Ext, P, R> channelContext, P packet)
-	{
-		HandlerRunnable<Ext, P, R> handlerRunnable = AioUtils.selectHandlerRunnable(channelContext, packet);
-		handlerRunnable.addMsg(packet);
-		SynThreadPoolExecutor<SynRunnableIntf> synThreadPoolExecutor = AioUtils.selectHandlerExecutor(channelContext, packet);
-		synThreadPoolExecutor.execute(handlerRunnable);
 	}
 
 	/**

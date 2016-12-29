@@ -137,14 +137,14 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				}
 				try
 				{
-					groupContext.getUsers().remove(channelContext);
+					groupContext.getUsers().unbind(channelContext);
 				} catch (Throwable e)
 				{
 					log.error(e.toString(), e);
 				}
 				try
 				{
-					groupContext.getGroups().remove(channelContext);
+					groupContext.getGroups().unbind(channelContext);
 				} catch (Throwable e)
 				{
 					log.error(e.toString(), e);

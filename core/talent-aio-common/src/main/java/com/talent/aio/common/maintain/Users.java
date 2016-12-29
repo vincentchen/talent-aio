@@ -37,11 +37,11 @@ public class Users<Ext, P extends Packet, R>
 			new DualHashBidiMap<String, ChannelContext<Ext, P, R>>());
 
 	/**
-	 * Removes映射.
+	 * 解除绑定
 	 *
 	 * @param channelContext the channel context
 	 */
-	public void remove(ChannelContext<Ext, P, R> channelContext)
+	public void unbind(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = map.getLock().writeLock();
 		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
@@ -59,13 +59,13 @@ public class Users<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * Removes the.
+	 * 解除绑定
 	 *
 	 * @param userid the userid
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 下午2:43:28
 	 */
-	public void remove(String userid)
+	public void unbind(String userid)
 	{
 		Lock lock = map.getLock().writeLock();
 		DualHashBidiMap<String, ChannelContext<Ext, P, R>> m = map.getObj();
@@ -83,14 +83,14 @@ public class Users<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * 添加映射.
+	 * 绑定userid.
 	 *
 	 * @param userid the userid
 	 * @param channelContext the channel context
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 下午2:25:46
 	 */
-	public void put(String userid, ChannelContext<Ext, P, R> channelContext)
+	public void bind(String userid, ChannelContext<Ext, P, R> channelContext)
 	{
 		String key = userid;
 		Lock lock = map.getLock().writeLock();

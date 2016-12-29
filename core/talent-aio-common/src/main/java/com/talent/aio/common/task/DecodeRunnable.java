@@ -16,6 +16,9 @@ import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
+import com.talent.aio.common.threadpool.SynThreadPoolExecutor;
+import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
+import com.talent.aio.common.utils.AioUtils;
 import com.talent.aio.common.utils.ByteBufferUtils;
 
 /**
@@ -150,7 +153,24 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	 */
 	private void submit(P packet, int byteCount)
 	{
-		Aio.handler(channelContext, packet);
+		handler(channelContext, packet);
+	}
+	
+	/**
+	 * Handler.
+	 *
+	 * @param <Ext> the generic type
+	 * @param <P> the generic type
+	 * @param <R> the generic type
+	 * @param channelContext the channel context
+	 * @param packet the packet
+	 */
+	public static <Ext, P extends Packet, R> void handler(ChannelContext<Ext, P, R> channelContext, P packet)
+	{
+		HandlerRunnable<Ext, P, R> handlerRunnable = AioUtils.selectHandlerRunnable(channelContext, packet);
+		handlerRunnable.addMsg(packet);
+		SynThreadPoolExecutor<SynRunnableIntf> synThreadPoolExecutor = AioUtils.selectHandlerExecutor(channelContext, packet);
+		synThreadPoolExecutor.execute(handlerRunnable);
 	}
 
 	/**

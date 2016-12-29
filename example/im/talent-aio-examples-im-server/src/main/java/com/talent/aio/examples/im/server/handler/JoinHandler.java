@@ -60,7 +60,7 @@ public class JoinHandler implements ImBsAioHandlerIntf
 			return null;
 		}
 
-		channelContext.getGroupContext().getGroups().put(groupid, channelContext);
+		channelContext.getGroupContext().getGroups().bind(groupid, channelContext);
 		
 		JoinGroupResultVo joinGroupResultVo = new JoinGroupResultVo();
 		joinGroupResultVo.setCode(com.talent.aio.examples.im.common.vo.JoinGroupResultVo.Code.OK);

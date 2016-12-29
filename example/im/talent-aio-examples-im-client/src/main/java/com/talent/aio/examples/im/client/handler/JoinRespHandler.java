@@ -111,7 +111,7 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 		{
 			
 			String group = body.getGroup();
-			channelContext.getGroupContext().getGroups().put(group, channelContext);
+			channelContext.getGroupContext().getGroups().bind(group, channelContext);
 			//			log.info("join group {}", group);
 			String xx = ClientNodes.getKey(channelContext) + "进入组:" + group;
 			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());

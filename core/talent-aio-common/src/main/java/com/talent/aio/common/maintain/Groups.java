@@ -47,14 +47,14 @@ public class Groups<Ext, P extends Packet, R>
 			new ConcurrentHashMap<ChannelContext<Ext, P, R>, ObjWithReadWriteLock<Set<String>>>());
 
 	/**
-	 * Removes映射.
+	 * 与组解除绑定
 	 *
 	 * @param <Ext> the generic type
 	 * @param <P> the generic type
 	 * @param <R> the generic type
 	 * @param channelContext the channel context
 	 */
-	public void remove(ChannelContext<Ext, P, R> channelContext)
+	public void unbind(ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock = channelmap.getLock().writeLock();
 
@@ -82,7 +82,7 @@ public class Groups<Ext, P extends Packet, R>
 				{
 					for (String groupid : groups)
 					{
-						remove(groupid, channelContext);
+						unbind(groupid, channelContext);
 					}
 				}
 			}
@@ -93,7 +93,7 @@ public class Groups<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * Removes the.
+	 * 与组解除绑定
 	 *
 	 * @param <Ext> the generic type
 	 * @param <P> the generic type
@@ -103,7 +103,7 @@ public class Groups<Ext, P extends Packet, R>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 下午4:10:59
 	 */
-	private void remove(String groupid, ChannelContext<Ext, P, R> channelContext)
+	private void unbind(String groupid, ChannelContext<Ext, P, R> channelContext)
 	{
 		ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> set = groupmap.getObj().get(groupid);
 
@@ -141,7 +141,7 @@ public class Groups<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * 添加映射.
+	 * 和组绑定
 	 *
 	 * @param <Ext> the generic type
 	 * @param <P> the generic type
@@ -151,7 +151,7 @@ public class Groups<Ext, P extends Packet, R>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 下午2:25:46
 	 */
-	public void put(String groupid, ChannelContext<Ext, P, R> channelContext)
+	public void bind(String groupid, ChannelContext<Ext, P, R> channelContext)
 	{
 		Lock lock1 = groupmap.getLock().writeLock();
 		ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> channelContexts = null;
