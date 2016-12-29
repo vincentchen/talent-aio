@@ -80,10 +80,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			{
 				if (lastByteBuffer != null)
 				{
-					//					lastByteBuffer.position(0);
-					//					lastByteBuffer.limit(lastByteBuffer.capacity());
 					byteBuffer.position(0);
-					//					byteBuffer.limit(byteBuffer.capacity());
 					byteBuffer = ByteBufferUtils.composite(lastByteBuffer, byteBuffer);
 					lastByteBuffer = null;
 				}
@@ -95,8 +92,6 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 			try
 			{
 				byteBuffer.position(0);
-				//				byteBuffer.limit(byteBuffer.capacity());
-
 				label_2: while (true)
 				{
 					int initPosition = byteBuffer.position();
@@ -106,14 +101,10 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					{
 						// 数据不够，组不了包，
 						byteBuffer.position(initPosition);
-						//						byteBuffer.limit(byteBuffer.capacity());
-
 						lastByteBuffer = byteBuffer;
-						//						needLength = packetMeta.getNeededLength();
 						continue label_1;
 					} else //组包成功
 					{
-
 						int afterDecodePosition = byteBuffer.position();
 						int len = afterDecodePosition - initPosition;
 						AioListener<Ext, P, R> aioListener = channelContext.getGroupContext().getAioListener();
@@ -121,7 +112,6 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						{
 							aioListener.onAfterDecoded(channelContext, packet, len);
 						}
-						//						needLength = -1;
 						submit(packet, len);
 						channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
 						channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
@@ -132,20 +122,15 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 							{
 								log.debug("组包后，还剩一点数据:{}", byteBuffer.limit() - byteBuffer.position());
 							}
-
-							//							lastByteBuffer = ByteBufferUtils.copy(byteBuffer, len, byteBuffer.capacity());
-
 							continue label_2;
-						} else
+						} else//组包后，数据刚好用完
 						{
 							lastByteBuffer = null;
 							log.debug("组包后，数据刚好用完");
 							continue label_1;
 						}
-
 					}
 				}
-
 			} catch (AioDecodeException e)
 			{
 				log.error(channelContext.toString(), e);
