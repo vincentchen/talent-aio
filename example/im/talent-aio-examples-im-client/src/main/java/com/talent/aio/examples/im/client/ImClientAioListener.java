@@ -72,6 +72,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * @重写时间: 2016年12月16日 下午5:52:24
 	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
 	{

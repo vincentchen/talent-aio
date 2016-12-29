@@ -35,6 +35,7 @@ import com.talent.aio.examples.im.common.json.Json;
 
 public class AuthRespHandler implements ImBsAioHandlerIntf
 {
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(AuthRespHandler.class);
 
 	/**

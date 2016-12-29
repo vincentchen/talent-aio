@@ -35,6 +35,7 @@ import com.talent.aio.examples.im.common.vo.JoinGroupResultVo;
  */
 public class JoinRespHandler implements ImBsAioHandlerIntf
 {
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(JoinRespHandler.class);
 
 	/**

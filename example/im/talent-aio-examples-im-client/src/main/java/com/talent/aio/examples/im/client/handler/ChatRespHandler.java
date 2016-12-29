@@ -12,8 +12,6 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.ChatRespBody;
-import com.talent.aio.examples.im.common.json.Json;
 
 /**
  * 
@@ -35,6 +33,7 @@ import com.talent.aio.examples.im.common.json.Json;
  */
 public class ChatRespHandler implements ImBsAioHandlerIntf
 {
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(ChatRespHandler.class);
 
 	/**

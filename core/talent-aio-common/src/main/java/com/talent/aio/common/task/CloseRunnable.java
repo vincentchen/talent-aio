@@ -1,14 +1,3 @@
-/**
- * **************************************************************************
- *
- * @说明: 
- * @项目名称: talent-aio-server
- *
- * @author: tanyaowu 
- * @创建时间: 2016年11月19日 下午1:44:39
- *
- * **************************************************************************
- */
 package com.talent.aio.common.task;
 
 import java.nio.channels.AsynchronousSocketChannel;
@@ -84,18 +73,8 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			}
 
 			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-			//			Semaphore semaphore = groupContext.getCloseSemaphore();
 			try
 			{
-				//				long starttime = SystemTimer.currentTimeMillis();
-				//				semaphore.acquire();
-				//				long endtime = SystemTimer.currentTimeMillis();
-				//				long cost = (endtime - starttime);
-				//				if (cost > 100)
-				//				{
-				//					log.error("等关闭权限耗时:{}ms", cost);
-				//				}
-
 				AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
 				if (aioListener != null)
 				{

@@ -6,7 +6,6 @@
 package com.talent.aio.examples.im.client.ui;
 
 import java.awt.event.MouseEvent;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
@@ -40,6 +39,11 @@ import com.talent.aio.examples.im.common.json.Json;
 public class JFrameMain extends javax.swing.JFrame
 {
 
+	/**
+	 * @含义: 
+	 * @类型: long
+	 */
+	private static final long serialVersionUID = -7052228425670244367L;
 	private static Logger log = LoggerFactory.getLogger(JFrameMain.class);
 	private static JFrameMain instance = null;
 
@@ -368,7 +372,7 @@ public class JFrameMain extends javax.swing.JFrame
 		int loopcount = Integer.parseInt(loopcountField.getText());
 		String toGroup = groupField.getText();
 		ChatReqBody chatReqBody = new ChatReqBody(ChatType.pub, msg, toGroup, null, null);
-		int count = 0;
+//		int count = 0;
 		setSendStartTime(SystemTimer.currentTimeMillis());
 
 		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getAioClient().getClientGroupContext();
@@ -450,6 +454,7 @@ public class JFrameMain extends javax.swing.JFrame
 
 	private void cleanBtn1ActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_cleanBtn1ActionPerformed
+		@SuppressWarnings("unused")
 		String id = imClientStarter.getClientGroupContext().getId();
 		ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> connections = imClientStarter.getClientGroupContext().getConnections().getSet();
 		Set<ChannelContext<Object, ImPacket, Object>> set = connections.getObj();
@@ -512,6 +517,7 @@ public class JFrameMain extends javax.swing.JFrame
 		});
 	}
 
+	@SuppressWarnings("rawtypes")
 	DefaultListModel listModel = new DefaultListModel();
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
@@ -567,6 +573,7 @@ public class JFrameMain extends javax.swing.JFrame
 	/**
 	 * @return the listModel
 	 */
+	@SuppressWarnings("rawtypes")
 	public DefaultListModel getListModel()
 	{
 		return listModel;
@@ -575,6 +582,7 @@ public class JFrameMain extends javax.swing.JFrame
 	/**
 	 * @param listModel the listModel to set
 	 */
+	@SuppressWarnings("rawtypes")
 	public void setListModel(DefaultListModel listModel)
 	{
 		this.listModel = listModel;
