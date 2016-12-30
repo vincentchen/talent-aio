@@ -212,10 +212,7 @@
 	</li>
 
 	<li>
-	如果以上都不想做，又想为开源项目出点力，那么请亲点击下方的
-	<a href='#project-donate-overview'>
-	<span class="ui green donate button">捐赠</span>
-	</a>按钮，为本项目积攒金币
+	如果以上都不想做，又想为开源项目出点力，那么请点击下方的 <a href='#project-donate-overview'>捐赠</a> 按钮，为talent-aio积攒项目运作资金
 	</li>
 </ol>
 
