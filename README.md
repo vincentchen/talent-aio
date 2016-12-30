@@ -67,7 +67,7 @@
 	<li>除了启动性的API，其它开放给使用者的api，几乎都在<strong>com.talent.aio.common.Aio</strong>中，并且以static方法提供，方便使用</li>
 	
 	<li>启动server请参见com.talent.aio.examples.helloworld.server.HelloServerStarter
-		<code>
+		```
 		public class HelloServerStarter
 		{
 			static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
@@ -86,10 +86,10 @@
 				aioServer.start();
 			}
 		}
-		</code>
+		```
 	</li>
 	<li>启动client请参见com.talent.aio.examples.helloworld.client.HelloClientStarter
-		<code>
+		```
 		public class HelloClientStarter
 		{
 			private static String serverIp = null; //服务器的IP地址
@@ -123,7 +123,7 @@
 				Aio.send(clientChannelContext, packet);
 			}
 		}
-		</code>
+		```
 	</li>
 </ol>
 
