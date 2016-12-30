@@ -12,31 +12,31 @@
 			<li>每秒收发消息及处理消息的能力</li>
 		</ul>
 	</li>
-	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的通讯层框架</li>
+	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的通讯层框架
 		<ul>
 			<li>可作RPC框架的通讯层框架</li>
 			<li>点对点聊天</li>
 			<li>群组聊天</li>
 			<li>实时监测</li>
 		</ul>
+	</li>
 
-	<li><strong>性能：</strong>请参考见下方的测试数据及截图</li>
-	<table>
-	<tr>
-	<td>
-	<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step.png?dir=0&filepath=docs%2Fstep%2Faio-test-step.png&oid=2593045570415b26c028b18e53a7e8f01ca0a5f1&sha=ba3bfff3360a1f2083b7c7391f67fd60e2121b3b'>
-	</td>
-	</tr>
-	<tr>
-	<td>
-	<img 
-    src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-8.png?dir=0&filepath=docs%2Fperformance%2Fclient-8.png&oid=0866934f6e636f33b357d907d7e1d20a2fd96f82&sha=cf5bfd7aa595d9698a61f8379c14a7857e8da188 '>
-	</img>
-	</td>
-	</tr>
-	
-	</table>
-	
+	<li><strong>性能：</strong>请参考见下方的测试数据及截图
+		<table>
+			<tr>
+				<td>
+				<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step.png?dir=0&filepath=docs%2Fstep%2Faio-test-step.png&oid=2593045570415b26c028b18e53a7e8f01ca0a5f1&sha=ba3bfff3360a1f2083b7c7391f67fd60e2121b3b'>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				<img  src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-8.png?dir=0&filepath=docs%2Fperformance%2Fclient-8.png&oid=0866934f6e636f33b357d907d7e1d20a2fd96f82&sha=cf5bfd7aa595d9698a61f8379c14a7857e8da188 '>
+				</img>
+				</td>
+			</tr>
+		
+		</table>
+	</li>
 	
 	
 	
