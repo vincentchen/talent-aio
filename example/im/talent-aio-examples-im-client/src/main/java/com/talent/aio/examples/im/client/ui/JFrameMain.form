@@ -64,7 +64,7 @@
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="sendBtn" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="cleanBtn1" min="-2" max="-2" attributes="0"/>
+                      <Component id="printLogBtn" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
@@ -93,7 +93,7 @@
                   <Component id="sendBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="cleanBtn1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="printLogBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
@@ -251,7 +251,7 @@
         <Property name="text" type="java.lang.String" value="&#x8fde;&#x63a5;&#x6570;&#x91cf;"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JButton" name="cleanBtn1">
+    <Component class="javax.swing.JButton" name="printLogBtn">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="&#x5b8b;&#x4f53;" size="14" style="1"/>
@@ -262,7 +262,7 @@
         <Property name="text" type="java.lang.String" value="&#x6253;&#x5370;&#x7edf;&#x8ba1;&#x4fe1;&#x606f;"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cleanBtn1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="printLogBtnActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">

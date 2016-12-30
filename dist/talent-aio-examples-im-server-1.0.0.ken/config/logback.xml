@@ -7,8 +7,6 @@
 		<encoder>
 			<pattern>${conversion.pattern}</pattern>
 		</encoder>
-		<filter class="com.talent.aio.examples.im.client.ui.LogbackFilter">
-		</filter>
 	</appender>
 	
 	<!-- root file 日志 -->

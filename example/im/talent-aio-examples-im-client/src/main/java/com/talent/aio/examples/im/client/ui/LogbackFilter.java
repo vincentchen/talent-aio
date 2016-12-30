@@ -21,12 +21,10 @@ public class LogbackFilter extends LevelFilter
 	public FilterReply decide(ILoggingEvent event)
 	{
 		int xx = event.getLevel().levelInt;
-		int xx1 = Level.ERROR.toInt();
-		if (xx <= xx1)
+		int xx1 = Level.ERROR.toInt();  //error:40000, warn:30000, info:20000
+		if (xx >= xx1)
 		{
-			
 			JFrameMain.getInstance().getMsgTextArea().append(event.getFormattedMessage() + System.lineSeparator());
-
 		}
 		return FilterReply.ACCEPT;
 	}

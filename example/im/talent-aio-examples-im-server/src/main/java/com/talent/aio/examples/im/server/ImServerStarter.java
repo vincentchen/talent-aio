@@ -12,14 +12,10 @@
 package com.talent.aio.examples.im.server;
 
 import java.io.IOException;
-import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;

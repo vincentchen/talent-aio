@@ -109,7 +109,7 @@ public class JFrameMain extends javax.swing.JFrame
         jLabel6 = new javax.swing.JLabel();
         loginnameSufEndField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        cleanBtn1 = new javax.swing.JButton();
+        printLogBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
 
@@ -195,12 +195,12 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel3.setText("连接数量");
 
-        cleanBtn1.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
-        cleanBtn1.setForeground(new java.awt.Color(51, 0, 255));
-        cleanBtn1.setText("打印统计信息");
-        cleanBtn1.addActionListener(new java.awt.event.ActionListener() {
+        printLogBtn.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        printLogBtn.setForeground(new java.awt.Color(51, 0, 255));
+        printLogBtn.setText("打印统计信息");
+        printLogBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cleanBtn1ActionPerformed(evt);
+                printLogBtnActionPerformed(evt);
             }
         });
 
@@ -249,7 +249,7 @@ public class JFrameMain extends javax.swing.JFrame
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sendBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(cleanBtn1)
+                        .addComponent(printLogBtn)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -273,7 +273,7 @@ public class JFrameMain extends javax.swing.JFrame
                     .addComponent(sendBtn)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
-                    .addComponent(cleanBtn1)
+                    .addComponent(printLogBtn)
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -454,7 +454,7 @@ public class JFrameMain extends javax.swing.JFrame
 			// TODO add your handling code here:
 	}//GEN-LAST:event_loopcountFieldActionPerformed
 
-	private void cleanBtn1ActionPerformed(java.awt.event.ActionEvent evt)
+	private void printLogBtnActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_cleanBtn1ActionPerformed
 		@SuppressWarnings("unused")
 		String id = imClientStarter.getClientGroupContext().getId();
@@ -524,7 +524,6 @@ public class JFrameMain extends javax.swing.JFrame
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cleanBtn1;
     private javax.swing.JList<String> clients;
     private javax.swing.JTextField groupField;
     private javax.swing.JLabel jLabel1;
@@ -541,6 +540,7 @@ public class JFrameMain extends javax.swing.JFrame
     private javax.swing.JTextField msgField;
     private javax.swing.JTextArea msgTextArea;
     private javax.swing.JTextField port;
+    private javax.swing.JButton printLogBtn;
     private javax.swing.JButton sendBtn;
     private javax.swing.JTextField serverip;
     // End of variables declaration//GEN-END:variables
@@ -611,7 +611,7 @@ public class JFrameMain extends javax.swing.JFrame
 	 */
 	public javax.swing.JButton getPrintBtn()
 	{
-		return cleanBtn1;
+		return printLogBtn;
 	}
 
 	/**
@@ -619,7 +619,7 @@ public class JFrameMain extends javax.swing.JFrame
 	 */
 	public void setPrintBtn(javax.swing.JButton printBtn)
 	{
-		this.cleanBtn1 = printBtn;
+		this.printLogBtn = printBtn;
 	}
 
 	
