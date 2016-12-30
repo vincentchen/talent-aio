@@ -38,14 +38,6 @@ public class HelloServerStarter
 	static String ip = null;
 	static int port = com.talent.aio.examples.helloworld.common.Const.PORT;
 
-	/**
-	 * @param args
-	 *
-	 * @author: tanyaowu
-	 * @throws IOException 
-	 * @创建时间:　2016年11月17日 下午5:59:24
-	 * 
-	 */
 	public static void main(String[] args) throws IOException
 	{
 		aioHandler = new HelloServerAioHandler();

@@ -40,18 +40,9 @@ public class HelloClientStarter
 	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
 	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
 
-	//--------------
-
 	public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
 	public static int SERVER_PORT = 9321; //服务器的PORT
-	/**
-	 * @param args
-	 *
-	 * @author: tanyaowu
-	 * @throws IOException 
-	 * @创建时间:　2016年11月17日 下午5:59:24
-	 * 
-	 */
+
 	public static void main(String[] args) throws Exception
 	{
 		serverIp = "127.0.0.1";
@@ -66,9 +57,10 @@ public class HelloClientStarter
 		boolean autoReconnect = false; //暂时不支持自动重连，需要业务自己实现，后续版本会支持此属性为true
 		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort, autoReconnect);
 
+		
+		//以下内容不是启动的过程，而是属于发消息的过程
 		HelloPacket packet = new HelloPacket();
 		packet.setBody("hello world".getBytes(HelloPacket.CHARSET));
-
 		Aio.send(clientChannelContext, packet);
 	}
 }

@@ -3,14 +3,45 @@
 </h3>
 
 <h4>
-  talent-aio是什么？应用场景是什么？性能如何？稳定性如何？上手是否困难？
+  关于talent-aio
 </h4>
 <ol>
-	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty，当然talent-aio的出现是要在性能和易用性方面实现对netty的超越</li>
-	<li><strong>应用场景</strong>：即时通讯场景皆可----实时聊天、TCP长连接(譬如mysql客户端、redis客户端等)、实时监控等</li>
-	<li><strong>性能</strong>：单机IM场景，可处理<strong>73万条消息/秒</strong>，收发数据量<strong>70M/秒</strong>，可同时稳定维护<strong>10万级以上TCP长连接</strong>(测试环境：i7 4790、8G内存、windows7)</li>
-	<li><strong>稳定性</strong>：talent-aio本身来源于经历严酷考验的talent-nio，稳定性方面有一个很好的基础。最近也做过稳定性测试，压过两个星期，<strong>7万TCP长连接</strong>，妥妥地没有任何异常(测试环境：服务器i7 4790、8G内存、windows7；客户端为4台虚拟机和一台笔记本)</li>
-	<li><strong>上手是否困难</strong>：本项目提供了一个helloworld版的例子，如果已有bytebuffer知识基础，<strong>30分钟就可以上手</strong>。本项目还提供了一个用于压测的聊天版的例子，但涉及到了界面、性能测试和统计、类似QQ群聊等功能，所以上手会要一天左右的样子</li>
+	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty和mina但又略有侧重。talent-aio的出现对解决如下几个业界难题，提供了一个可选方案：
+		<ul>
+			<li>tcp server端能支持的最大tcp连接数</li>
+			<li>每秒收发消息及处理消息的能力</li>
+		</ul>
+	</li>
+	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的通讯层框架</li>
+		<ul>
+			<li>可作RPC框架的通讯层框架</li>
+			<li>点对点聊天</li>
+			<li>群组聊天</li>
+			<li>实时监测</li>
+		</ul>
+
+	<li><strong>性能：</strong>请参考见下方的测试数据及截图</li>
+	<table>
+	<tr>
+	<td>
+	<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step.png?dir=0&filepath=docs%2Fstep%2Faio-test-step.png&oid=2593045570415b26c028b18e53a7e8f01ca0a5f1&sha=ba3bfff3360a1f2083b7c7391f67fd60e2121b3b'>
+	</td>
+	</tr>
+	<tr>
+	<td>
+	<img 
+    src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-8.png?dir=0&filepath=docs%2Fperformance%2Fclient-8.png&oid=0866934f6e636f33b357d907d7e1d20a2fd96f82&sha=cf5bfd7aa595d9698a61f8379c14a7857e8da188 '>
+	</img>
+	</td>
+	</tr>
+	
+	</table>
+	
+	
+	
+	
+	
+	<li><strong>上手是否困难</strong>：本项目提供了一个helloworld版的例子，如果已有bytebuffer知识基础，<strong>30分钟就可以上手使用</strong></li>
 </ol>
 
 
@@ -20,20 +51,80 @@
 <ol>
 	<li>2011年本人有幸参与了中兴某刀片的网管系统，大领导亲点让我来改造原来的实时通讯模块，因为老系统每管理一个节点就需要两个线程，实测出来的数据是管理100个节点时，就会达到1000多个线程，稳定性和性能极差。在这样的背景下，开始学习nio，改造后的系统线程维持在100个左右，可管理上千个节点，消息收发速度极快，最近和中兴同事了解过，核心代码仍然在运行，足见稳定性，这就是后来talent-nio的雏形</li>
 	<li>后来作为热波间(一个直播平台)的平台端架构师，持续优化和封装了talent-nio，使之可以支持4万TCP长连接，每秒可以收发10万条消息</li>
-	<li>因为热波间架构师的角色，认识了不少业界朋友，很多朋友要求我开源talent-nio，但是talent-nio在API设计方面不是太好，开源出来无疑个砸牌子的事情</li>
-	<li>一翻纠结后，写了talent-aio，线程池部分来源于并优化于talent-nio，其它部分一律重新设计，尤其是锁的优化和API的重新设计，为了折衷花费了大量精力。</li>
+	<li>因为热波间架构师的角色，认识了不少业界朋友，很多朋友要求我开源talent-nio，但是talent-nio在API设计方面不是太好，开源出来无疑是个不负责任的行为(浪费观众的时间)</li>
+	<li>一翻考虑之后，写了talent-aio，线程池部分来源于并优化于talent-nio，其它部分一律重新设计，尤其是锁的优化和API的重新设计。</li>
 </ol>
 
 
 <h4>
-  netty和talent-aio两者，应该选谁？
+  talent-aio功能和入门简介
 </h4>
 <ol>
-	<li>如果您已经精通并有把握驾驭netty，选谁都不重要</li>
-	<li>如果条件1不成立，建议花30分钟学习一下本项目提供的helloworld例子入下门，相信你会有惊喜发现</li>
-	<li>对性能和稳定性要求极高，建议talent-aio。netty的性能也好，但talent-aio性能更好，对前者几乎形成碾压之势，本项目提供的im例子可以证实这一点，大家可以对比一下测试数据</li>
-	<li>talent-aio已经提供了绑定群组、绑定用户id等功能，方便实际业务方面的开发</li>
-	<li>talent-aio对开发者的唯一要求是会bytebuffer，这个不管你是用哪个aio或 nio框架都无法逃避的技能，因为自定义编码解码是必须要接触到这个的。当然不排除有框架不需要掌握这个，而只需要会byte[]，但必然这是要浪费一层性能损耗的</li>
+	<li>框架层面已经解决<strong>粘包问题</strong>，所以困扰很多用户的粘包问题将不会再存在</li>
+	<li>在框架层面为tcp client提供定时发<strong>心跳功能</strong>，用户只需要提供一个心跳包给框架----实现：com.talent.aio.client.intf.ClientAioHandler.heartbeatPacket()</li>
+	<li>可以方便地将链路和<strong>用户绑定</strong>，方便实际业务操作，譬如聊天、权限等</li>
+	<li>可以方便地将链路和<strong>群组绑定</strong>，方便实际业务操作，譬如群聊、类似频道需求等</li>
+	<li>除了启动性的API，其它开放给使用者的api，几乎都在<strong>com.talent.aio.common.Aio</strong>中，并且以static方法提供，方便使用</li>
+	
+	<li>启动server请参见com.talent.aio.examples.helloworld.server.HelloServerStarter
+		<code>
+		public class HelloServerStarter
+		{
+			static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
+			static AioServer<Object, HelloPacket, Object> aioServer = null; //可以为空
+			static ServerAioHandler<Object, HelloPacket, Object> aioHandler = null;
+			static ServerAioListener<Object, HelloPacket, Object> aioListener = null;
+			static String ip = null;
+			static int port = com.talent.aio.examples.helloworld.common.Const.PORT;
+
+			public static void main(String[] args) throws IOException
+			{
+				aioHandler = new HelloServerAioHandler();
+				aioListener = null; //可以为空
+				serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
+				aioServer = new AioServer<>(serverGroupContext);
+				aioServer.start();
+			}
+		}
+		</code>
+	</li>
+	<li>启动client请参见com.talent.aio.examples.helloworld.client.HelloClientStarter
+		<code>
+		public class HelloClientStarter
+		{
+			private static String serverIp = null; //服务器的IP地址
+			private static int serverPort = 0; //服务器的PORT
+			private static AioClient<Object, HelloPacket, Object> aioClient;
+			private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
+			private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
+			private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
+
+			public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
+			public static int SERVER_PORT = 9321; //服务器的PORT
+
+			public static void main(String[] args) throws Exception
+			{
+				serverIp = "127.0.0.1";
+				serverPort = com.talent.aio.examples.helloworld.common.Const.PORT;
+				aioClientHandler = new HelloClientAioHandler();
+				aioListener = null;
+				clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
+				aioClient = new AioClient<>(clientGroupContext);
+
+				String bindIp = null;
+				int bindPort = 0;
+				boolean autoReconnect = false; //暂时不支持自动重连，需要业务自己实现，后续版本会支持此属性为true
+				ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort, autoReconnect);
+
+				
+				//以下内容不是启动的过程，而是属于发消息的过程
+				HelloPacket packet = new HelloPacket();
+				packet.setBody("hello world".getBytes(HelloPacket.CHARSET));
+				Aio.send(clientChannelContext, packet);
+			}
+		}
+		</code>
+	</li>
 </ol>
 
 
@@ -125,24 +216,5 @@
 </ol>
 
 
-<h4>
-  基于talent-aio实现的用于压测的群聊系统
-  <a  target='_blank'
-      href='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-8.png?dir=0&filepath=docs%2Fperformance%2Fclient-8.png&oid=0866934f6e636f33b357d907d7e1d20a2fd96f82&sha=cf5bfd7aa595d9698a61f8379c14a7857e8da188'> (点击本链接可见性能图)</a>
-</h4>
 
-<ol>
-	<li>
-	先运行install.bat，用来安装本项目所有代码
-	</li>
-	<li>
-	运行server examples: com.talent.aio.examples.im.server.ImServerStarter
-	</li>
-	<li>
-	运行client examples: com.talent.aio.examples.im.client.ImClientStarter
-	</li>
-	<img 
-    src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-8.png?dir=0&filepath=docs%2Fperformance%2Fclient-8.png&oid=0866934f6e636f33b357d907d7e1d20a2fd96f82&sha=cf5bfd7aa595d9698a61f8379c14a7857e8da188 '>
-	</img>
-</ol>
 

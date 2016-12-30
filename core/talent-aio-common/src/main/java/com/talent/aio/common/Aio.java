@@ -44,7 +44,7 @@ public class Aio
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月15日 上午11:22:48
 	 */
-	public Aio()
+	private Aio()
 	{
 
 	}
