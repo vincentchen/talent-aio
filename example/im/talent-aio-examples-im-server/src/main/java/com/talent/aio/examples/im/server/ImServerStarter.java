@@ -16,10 +16,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.utils.SystemTimer;
-import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.server.AioServer;
 import com.talent.aio.server.ServerGroupContext;
 import com.talent.aio.server.intf.ServerAioHandler;
@@ -37,6 +34,7 @@ import com.talent.aio.server.intf.ServerAioListener;
  */
 public class ImServerStarter
 {
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(ImServerStarter.class);
 
 	/**
@@ -81,24 +79,24 @@ public class ImServerStarter
 
 		
 		//下面的代码就是定时打印日志，实际生产环境中可以不用。
-		new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				while (true)
-				{
-					try
-					{
-						log.error("[{}]: command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
-						Thread.sleep(5000);
-					} catch (Throwable e)
-					{
-						log.error("", e);
-					}
-				}
-			}
-		}, "t-aio-server-monitor").start();
+//		new Thread(new Runnable()
+//		{
+//			@Override
+//			public void run()
+//			{
+//				while (true)
+//				{
+//					try
+//					{
+//						log.info("[{}]: command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
+//						Thread.sleep(5000);
+//					} catch (Throwable e)
+//					{
+//						log.error("", e);
+//					}
+//				}
+//			}
+//		}, "t-aio-server-monitor").start();
 	}
 
 }

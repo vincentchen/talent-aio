@@ -62,9 +62,9 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	private AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = null;
 
 	private ServerAioHandler<Ext, P, R> serverAioHandler = null;
-	
+
 	private ServerAioListener<Ext, P, R> serverAioListener = null;
-	
+
 	protected ServerGroupStat serverGroupStat = new ServerGroupStat();
 
 	/** The accept executor. */
@@ -106,7 +106,6 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		this.acceptCompletionHandler = new AcceptCompletionHandler<>();
 		this.setServerAioHandler(serverAioHandler);
 		this.setServerAioListener(serverAioListener);
-		
 
 		this.acceptExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), DefaultThreadFactory.getInstance("t-aio-server-accept"));
 
@@ -138,13 +137,18 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 								long interval = (currtime - compareTime);
 								if (interval > heartbeatTimeout)
 								{
-									Aio.close(channelContext, "定时任务检查，" + channelContext.toString() + "隔了" + interval + "ms没有发送消息");
+									Aio.close(channelContext, interval + "ms没有收发消息");
 								}
 							}
-							log.error("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
-									serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
-									serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
-									serverGroupStat.getSentBytes().get());
+
+							if (log.isInfoEnabled())
+							{
+								log.info("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id,
+										set.size(), serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
+										serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
+										serverGroupStat.getSentBytes().get());
+							}
+
 						} catch (Throwable e)
 						{
 							log.error("", e);
@@ -293,7 +297,6 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	//		this.serverGroupStat = serverGroupStat;
 	//	}
 
-	
 	public ServerGroupStat getServerGroupStat()
 	{
 		return serverGroupStat;
