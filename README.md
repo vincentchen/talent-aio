@@ -6,10 +6,10 @@
   关于talent-aio
 </h4>
 <ol>
-	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty和mina但又略有侧重。talent-aio的出现对解决如下几个业界难题，提供了一个可选方案：
+	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，性能极好（后面有描述，各位看客可以试试找出性能比talent-aio更好的类似框架），功能类似netty和mina，但极易掌握，不需要各种学习才能入门，只需要<strong>花上半天学习helloworld</strong>就能比较好地掌握并实现一个性能极好的即时应用，并且天生不会有粘包问题。
 		<ul>
-			<li>tcp server端能支持的最大tcp连接数</li>
-			<li>每秒收发消息及处理消息的能力</li>
+			<li>tcp server端能支持的最大tcp连接数，<strong>talent-aio可同时支持10万级tcp长连接，彻底甩开当年的c10K问题</strong></li>
+			<li>每秒收发消息及处理消息的能力，<strong>talent-aio每秒可收发处理70万以上条消息，每秒收发的消息大小可达70M以上</strong></li>
 		</ul>
 	</li>
 	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的通讯层框架
@@ -37,9 +37,6 @@
 		
 		</table>
 	</li>
-	
-	
-	
 	
 	<li><strong>上手是否困难</strong>：本项目提供了一个helloworld版的例子，如果已有bytebuffer知识基础，<strong>30分钟就可以上手使用</strong></li>
 </ol>
@@ -69,63 +66,63 @@
 	<li>启动server请参见com.talent.aio.examples.helloworld.server.HelloServerStarter
 		<code>
 		<pre>
-		public class HelloServerStarter
-		{
-			static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
-			static AioServer<Object, HelloPacket, Object> aioServer = null; //可以为空
-			static ServerAioHandler<Object, HelloPacket, Object> aioHandler = null;
-			static ServerAioListener<Object, HelloPacket, Object> aioListener = null;
-			static String ip = null;
-			static int port = com.talent.aio.examples.helloworld.common.Const.PORT;
+public class HelloServerStarter
+{
+	static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
+	static AioServer<Object, HelloPacket, Object> aioServer = null; //可以为空
+	static ServerAioHandler<Object, HelloPacket, Object> aioHandler = null;
+	static ServerAioListener<Object, HelloPacket, Object> aioListener = null;
+	static String ip = null;
+	static int port = com.talent.aio.examples.helloworld.common.Const.PORT;
 
-			public static void main(String[] args) throws IOException
-			{
-				aioHandler = new HelloServerAioHandler();
-				aioListener = null; //可以为空
-				serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
-				aioServer = new AioServer<>(serverGroupContext);
-				aioServer.start();
-			}
-		}
+	public static void main(String[] args) throws IOException
+	{
+		aioHandler = new HelloServerAioHandler();
+		aioListener = null; //可以为空
+		serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
+		aioServer = new AioServer<>(serverGroupContext);
+		aioServer.start();
+	}
+}
 		</pre>
 		</code>
 	</li>
 	<li>启动client请参见com.talent.aio.examples.helloworld.client.HelloClientStarter
 		<code>
 		<pre>
-		public class HelloClientStarter
-		{
-			private static String serverIp = null; //服务器的IP地址
-			private static int serverPort = 0; //服务器的PORT
-			private static AioClient<Object, HelloPacket, Object> aioClient;
-			private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
-			private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
-			private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
+public class HelloClientStarter
+{
+	private static String serverIp = null; //服务器的IP地址
+	private static int serverPort = 0; //服务器的PORT
+	private static AioClient<Object, HelloPacket, Object> aioClient;
+	private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
+	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
+	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
 
-			public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
-			public static int SERVER_PORT = 9321; //服务器的PORT
+	public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
+	public static int SERVER_PORT = 9321; //服务器的PORT
 
-			public static void main(String[] args) throws Exception
-			{
-				serverIp = "127.0.0.1";
-				serverPort = com.talent.aio.examples.helloworld.common.Const.PORT;
-				aioClientHandler = new HelloClientAioHandler();
-				aioListener = null;
-				clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
-				aioClient = new AioClient<>(clientGroupContext);
+	public static void main(String[] args) throws Exception
+	{
+		serverIp = "127.0.0.1";
+		serverPort = com.talent.aio.examples.helloworld.common.Const.PORT;
+		aioClientHandler = new HelloClientAioHandler();
+		aioListener = null;
+		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
+		aioClient = new AioClient<>(clientGroupContext);
 
-				String bindIp = null;
-				int bindPort = 0;
-				boolean autoReconnect = false; //暂时不支持自动重连，需要业务自己实现，后续版本会支持此属性为true
-				ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort, autoReconnect);
+		String bindIp = null;
+		int bindPort = 0;
+		boolean autoReconnect = false; //暂时不支持自动重连，需要业务自己实现，后续版本会支持此属性为true
+		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort, autoReconnect);
 
-				
-				//以下内容不是启动的过程，而是属于发消息的过程
-				HelloPacket packet = new HelloPacket();
-				packet.setBody("hello world".getBytes(HelloPacket.CHARSET));
-				Aio.send(clientChannelContext, packet);
-			}
-		}
+		
+		//以下内容不是启动的过程，而是属于发消息的过程
+		HelloPacket packet = new HelloPacket();
+		packet.setBody("hello world".getBytes(HelloPacket.CHARSET));
+		Aio.send(clientChannelContext, packet);
+	}
+}
 		</pre>
 		</code>
 	</li>
