@@ -6,22 +6,18 @@
   关于talent-aio
 </h4>
 <ol>
-	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，性能极好（后面有描述，各位看客可以试试找出性能比talent-aio更好的类似框架），功能类似netty和mina，但极易掌握，不需要各种学习才能入门，只需要<strong>花上半天学习helloworld</strong>就能比较好地掌握并实现一个性能极好的即时应用，并且天生不会有粘包问题。
-		<ul>
-			<li>tcp server端能支持的最大tcp连接数，<strong>talent-aio可同时支持10万级tcp长连接，彻底甩开当年的c10K问题</strong></li>
-			<li>每秒收发消息及处理消息的能力，<strong>talent-aio每秒可收发处理70万以上条消息，每秒收发的消息大小可达70M以上</strong></li>
-		</ul>
+	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty和mina，但极易掌握，不需要各种学习才能入门，只需要<strong>花上半天学习helloworld</strong>就能比较好地掌握并实现一个性能极好的即时应用，并且天生不会有粘包问题；talent-aio性能极好：<strong>可同时支持10万级tcp长连接，彻底甩开当年的c10K问题</strong>；<strong>每秒可收发处理70万以上条消息，每秒收发的消息大小可达70M以上</strong>
 	</li>
-	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的通讯层框架
+	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的应用通讯层框架
 		<ul>
-			<li>可作RPC框架的通讯层框架</li>
+			<li>RPC框架</li>
 			<li>点对点聊天</li>
 			<li>群组聊天</li>
 			<li>实时监测</li>
 		</ul>
 	</li>
 
-	<li><strong>性能：</strong>请参考见下方的测试数据及截图
+	<li><strong>性能：</strong>请参考见下方的测试数据及截图，因为im客户端程序算法和界面有改动，所以截图样子略有不同(第二张图当时是循环所有连接并群聊，第三张是选一个连接出来群聊)
 		<table>
 			<tr>
 				<td>
@@ -34,6 +30,14 @@
 				</img>
 				</td>
 			</tr>
+			<tr>
+				<td>
+				<img  src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-9.png?dir=0&filepath=docs%2Fperformance%2Fclient-9.png&oid=c6f5fbce1bf6a3f65d4a91207c65c4293c378cd6&sha=17e222a00b68dd4029fd5ed15e839cb340317554 '>
+				</img>
+				</td>
+			</tr>
+			
+			
 		
 		</table>
 	</li>
@@ -209,7 +213,7 @@ public class HelloClientStarter
 	</li>
 
 	<li>
-	如果以上都不想做，又想为开源项目出点力，那么请点击下方的 <a href='#project-donate-overview'>捐赠</a> 按钮，为talent-aio积攒项目运作资金
+	如果以上都不想做，又想为本开源项目出点力，那作者也没办法了:)
 	</li>
 </ol>
 
