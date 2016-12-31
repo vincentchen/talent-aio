@@ -38,7 +38,12 @@
 			</tr>
 		</table>
 	</li>
-	<li><strong>如何驾驭本框架</strong>：本项目提供了一个helloworld版的例子，如果已有bytebuffer知识基础，<strong>30分钟就可以上手使用，两天就能驾驭</strong>。后文有talent-aio快速上手指南，请参考</li>
+	<li><strong>如何驾驭本框架</strong>：本项目提供了一个helloworld版的例子(位置见下图)，如果已有bytebuffer知识基础，<strong>30分钟就可以上手使用，两天就能驾驭</strong>。后文有talent-aio快速上手指南，请参考
+	<div>
+		<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/docs/example-dir.png?dir=0&filepath=docs%2Fdocs%2Fexample-dir.png&oid=c003e1a2194ec85610f447ce591641b6f26398c8&sha=5213d09a2ebea417b6f0d1bb08b061da294e2f2e'/>
+	</div>
+	
+	</li>
 </ol>
 
 
