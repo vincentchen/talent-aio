@@ -163,16 +163,9 @@ public class HelloClientStarter
 </h4>
 <ol>
 	<li>
-	talent-aio官方交流群:
+	talent-aio技术交流群:
 	<a  target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459">
     <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术">
-	</a>
-	</li>
-	<li>邮箱:<a href="mailto:tywo45@163.com">tywo45@163.com</a></li>
-	<li>
-	作者QQ(不能及时回复):
-	<a target="_blank" href="http://wpa.qq.com/msgrd?v=3&uin=33745965&site=qq&menu=yes">
-	<img border="0" src="http://wpa.qq.com/pa?p=2:33745965:52" alt="点击这里给我发消息" title="点击这里给我发消息"/>
 	</a>
 	</li>
 </ol>
