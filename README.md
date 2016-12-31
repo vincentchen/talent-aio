@@ -164,7 +164,7 @@ public class HelloClientStarter
 </h4>
 <ol>
 	<li>
-	talent-aio技术交流群:
+	加入talent-aio技术群和一群技术大伽共同成长:
 	<a  target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459">
     <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术">
 	</a>
@@ -176,7 +176,7 @@ public class HelloClientStarter
       title="提交issue">
     <i class="icon plus"></i>提交Issue
 	</a>
-	为本项目出谋划策，或是指出项目BUG
+	给项目提出有意义的新需求，或是帮项目发现BUG，或是上传你本地测试的一些数据让作者参考以便进一步优化。
 	</li>
 
 	<li>
