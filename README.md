@@ -172,7 +172,7 @@ public class HelloClientStarter
 
 
 <h4>
-  帮助本项目
+  与项目一起成长
 </h4>
 <ol>
 	<li>
