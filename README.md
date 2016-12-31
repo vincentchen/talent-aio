@@ -143,9 +143,7 @@ public class HelloClientStarter
 	<li>运行com.talent.aio.examples.helloworld.server.HelloServerStarter</li>
 	<li>运行com.talent.aio.examples.helloworld.client.HelloClientStarter</li>
 	<li>顺藤摸瓜，花20分钟仔细阅读这个例子的100多行代码</li>
-	<li>恭喜您，你已经顺利上手了，后续遇到问题可以点击<a target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459">
-	<img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术">
-  </a>咨询</li>
+	<li>恭喜您，你已经顺利上手了</li>
 </ol>
 
 
