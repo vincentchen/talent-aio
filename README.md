@@ -182,7 +182,7 @@ public class HelloClientStarter
 	<span class="basic buttons mini star-container ui">
 	<a href="javascritp:void(0);" class="ui button star" data-method="post" data-remote="true" rel="nofollow">Star</a>
 	</span>
-	为本项目积攒人气
+	以便随时掌握本项目的动态
 	</li>
 </ol>
 
