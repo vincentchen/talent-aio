@@ -199,22 +199,6 @@ public class HelloClientStarter
 	</span>
 	为本项目积攒人气
 	</li>
-
-	<li>
-	碰到有需要即时通讯的朋友（譬如IM系统、实时监控系统等），请按如下方式推荐本项目
-		<ul>
-			<li>
-			告知本项目的地址: https://git.oschina.net/tywo45/talent-aio
-			</li>
-			<li>
-			告知本项目的技术交流群: http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459
-			</li>
-		</ul>
-	</li>
-
-	<li>
-	如果以上都不想做，又想为本开源项目出点力，那作者也没办法了:)
-	</li>
 </ol>
 
 
