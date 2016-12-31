@@ -36,13 +36,9 @@
 				</img>
 				</td>
 			</tr>
-			
-			
-		
 		</table>
 	</li>
-	
-	<li><strong>上手是否困难</strong>：本项目提供了一个helloworld版的例子，如果已有bytebuffer知识基础，<strong>30分钟就可以上手使用</strong></li>
+	<li><strong>如何驾驭本框架</strong>：本项目提供了一个helloworld版的例子，如果已有bytebuffer知识基础，<strong>30分钟就可以上手使用，两天就能驾驭</strong>。后文有talent-aio快速上手指南，请参考</li>
 </ol>
 
 
@@ -134,7 +130,7 @@ public class HelloClientStarter
 
 
 <h4>
-  talent-aio如何快速上手？
+  talent-aio快速上手指南
 </h4>
 本项目已经提供了一个helloworld版的例子，虽然有3个maven工程，6个java文件，但是有效代码只有区区100多行，结构清晰极易上手，位于:example\helloworld目录，可按如下步骤上手
 <ol>
@@ -159,7 +155,7 @@ public class HelloClientStarter
 
 
 <h4>
-  获取帮助
+  与项目一起成长
 </h4>
 <ol>
 	<li>
@@ -168,13 +164,6 @@ public class HelloClientStarter
     <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术">
 	</a>
 	</li>
-</ol>
-
-
-<h4>
-  与项目一起成长
-</h4>
-<ol>
 	<li>
 	<a 
       href="/tywo45/talent-aio/issues/new?issue%5Bassignee_id%5D=&amp;issue%5Bmilestone_id%5D="
