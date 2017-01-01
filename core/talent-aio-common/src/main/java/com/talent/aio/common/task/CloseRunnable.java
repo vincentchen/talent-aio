@@ -73,12 +73,14 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 		//			{
 		//				
 		//			}
+		
+		closeCount.incrementAndGet();
 		if (t != null)
 		{
-			log.error("第{}次关闭连接:{},{}", closeCount.incrementAndGet(), channelContext.toString(), remark);
+			log.error("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
 		} else
 		{
-			log.info("第{}次关闭连接:{},{}", closeCount.incrementAndGet(), channelContext.toString(), remark);
+			log.info("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
 		}
 
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
