@@ -22,7 +22,7 @@ import com.talent.aio.common.utils.AioUtils;
 import com.talent.aio.common.utils.ByteBufferUtils;
 
 /**
- * 接收socket消息时，需要将消息组包。本类就是处理组包操作的。
+ * 解码
  * 
  * @author 谭耀武
  * @date 2012-08-09
@@ -67,8 +67,6 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 		lastByteBuffer = null;
 	}
 
-	//	private int needLength = -1;
-
 	@Override
 	public void runTask()
 	{
@@ -100,9 +98,12 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					int initPosition = byteBuffer.position();
 					P packet = channelContext.getGroupContext().getAioHandler().decode(byteBuffer, channelContext);
 
-					if (packet == null)
+					if (packet == null)// 数据不够，组不了包
 					{
-						// 数据不够，组不了包，
+						if (log.isDebugEnabled())
+						{
+							log.debug("数据不够，组不了包");
+						}
 						byteBuffer.position(initPosition);
 						lastByteBuffer = byteBuffer;
 						continue label_1;
@@ -119,11 +120,11 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
 						channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
 
-						if (byteBuffer.hasRemaining())//组包后，还剩有数据，留到下一次解码。
+						if (byteBuffer.hasRemaining())//组包后，还剩有数据
 						{
 							if (log.isDebugEnabled())
 							{
-								log.debug("组包后，还剩一点数据:{}", byteBuffer.limit() - byteBuffer.position());
+								log.debug("组包后，还剩有数据:{}", byteBuffer.limit() - byteBuffer.position());
 							}
 							continue label_2;
 						} else//组包后，数据刚好用完
@@ -155,7 +156,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	{
 		handler(channelContext, packet);
 	}
-	
+
 	/**
 	 * Handler.
 	 *
@@ -180,11 +181,6 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	{
 
 	}
-
-	//	public static SynThreadPoolExecutor<SynRunnableIntf> getThreadExecutor()
-	//	{
-	//		return handlerPoolExecutor1;
-	//	}
 
 	public ChannelContext<Ext, P, R> getChannelContext()
 	{

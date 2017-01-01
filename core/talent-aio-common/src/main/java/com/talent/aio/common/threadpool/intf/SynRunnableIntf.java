@@ -26,20 +26,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 public interface SynRunnableIntf extends Runnable
 {
 
-	//	/**
-	//	 * 设置是否正在运行.
-	//	 *
-	//	 * @param isRunning the new running
-	//	 */
-	//	public void setRunning(boolean isRunning);
-	//
-	//	/**
-	//	 * 任务是否正在运行.
-	//	 *
-	//	 * @return true:正在运行；false:未运行
-	//	 */
-	//	public boolean isRunning();
-
 	public ReadWriteLock runningLock();
 
 	public boolean isNeededExecute();
@@ -53,24 +39,4 @@ public interface SynRunnableIntf extends Runnable
 	 */
 	public void runTask();
 
-	//	/**
-	//	 * 设置任务是否被添加到了执行日程。.
-	//	 *
-	//	 * @param isInSchedule            true:已经添加到了执行日程，会在将来的某个时候执行；false:反之
-	//	 */
-	//	public void setInSchedule(boolean isInSchedule);
-	//
-	//	/**
-	//	 * 任务是否被添加到了执行日程.
-	//	 *
-	//	 * @return isInSchedule true:已经添加到了执行日程，会在将来的某个时候执行；false:反之
-	//	 */
-	//	public boolean isInSchedule();
-
-	//	/**
-	//	 * 获取当前执行该任务的线程.
-	//	 *
-	//	 * @return the curr threads
-	//	 */
-	//	public AtomicInteger getCurrThreadCount();
 }

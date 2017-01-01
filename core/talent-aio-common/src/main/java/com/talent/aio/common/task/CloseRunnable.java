@@ -2,8 +2,8 @@ package com.talent.aio.common.task;
 
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +30,8 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	private ChannelContext<Ext, P, R> channelContext;
 	private String remark;
 	private Throwable t;
+	private boolean isWaitingExecute = false;
+	private static final AtomicLong closeCount = new AtomicLong();
 
 	public CloseRunnable(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, Executor executor)
 	{
@@ -49,97 +51,104 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	@Override
 	public void runTask()
 	{
-		if (channelContext == null)
+		//		if (channelContext == null)
+		//		{
+		//			log.warn("channelContext == null");
+		//			return;
+		//		}
+		//
+		//		if (channelContext.isClosed())
+		//		{
+		//			return;
+		//		}
+
+		//		synchronized (this)
+		//		{
+		//			if (channelContext.isClosed())//double check
+		//			{
+		//				return;
+		//			}
+
+		//			if (StringUtils.isNotBlank(remark))
+		//			{
+		//				
+		//			}
+		if (t != null)
 		{
-			log.warn("channelContext == null");
-			return;
+			log.error("第{}次关闭连接:{},{}", closeCount.incrementAndGet(), channelContext.toString(), remark);
+		} else
+		{
+			log.info("第{}次关闭连接:{},{}", closeCount.incrementAndGet(), channelContext.toString(), remark);
 		}
 
-		if (channelContext.isClosed())
+		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+		try
 		{
-			return;
-		}
-
-		synchronized (channelContext)
-		{
-			if (channelContext.isClosed())
+			AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
+			if (aioListener != null)
 			{
-				return;
+				try
+				{
+					groupContext.getAioListener().onBeforeClose(channelContext, t, remark);
+				} catch (Throwable e)
+				{
+					log.error(e.toString(), e);
+				}
 			}
 
-			if (StringUtils.isNotBlank(remark))
-			{
-				log.error("关闭连接:" + channelContext.toString() + ", " + remark);
-			}
-
-			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 			try
 			{
-				AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
-				if (aioListener != null)
+				AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
+				if (asynchronousSocketChannel != null)
 				{
-					try
-					{
-						groupContext.getAioListener().onBeforeClose(channelContext, t, remark);
-					} catch (Throwable e)
-					{
-						log.error(e.toString(), e);
-					}
+					asynchronousSocketChannel.close();
 				}
+			} catch (Throwable e)
+			{
+				log.error(e.toString());
+			}
 
-				try
-				{
-					AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
-					if (asynchronousSocketChannel != null)
-					{
-						asynchronousSocketChannel.close();
-					}
-				} catch (Throwable e)
-				{
-					log.error(e.toString());
-				}
-
-				//删除集合中的维护信息 start
-				try
-				{
-					groupContext.getClientNodes().remove(channelContext);
-				} catch (Throwable e)
-				{
-					log.error(e.toString(), e);
-				}
-				try
-				{
-					groupContext.getConnections().remove(channelContext);
-				} catch (Throwable e)
-				{
-					log.error(e.toString(), e);
-				}
-				try
-				{
-					groupContext.getUsers().unbind(channelContext);
-				} catch (Throwable e)
-				{
-					log.error(e.toString(), e);
-				}
-				try
-				{
-					groupContext.getGroups().unbind(channelContext);
-				} catch (Throwable e)
-				{
-					log.error(e.toString(), e);
-				}
-				channelContext.setClosed(true);
-				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
-				//删除集合中的维护信息 end
-
+			//删除集合中的维护信息 start
+			try
+			{
+				groupContext.getClientNodes().remove(channelContext);
 			} catch (Throwable e)
 			{
 				log.error(e.toString(), e);
-			} finally
-			{
-				//				semaphore.release();
 			}
+			try
+			{
+				groupContext.getConnections().remove(channelContext);
+			} catch (Throwable e)
+			{
+				log.error(e.toString(), e);
+			}
+			try
+			{
+				groupContext.getUsers().unbind(channelContext);
+			} catch (Throwable e)
+			{
+				log.error(e.toString(), e);
+			}
+			try
+			{
+				groupContext.getGroups().unbind(channelContext);
+			} catch (Throwable e)
+			{
+				log.error(e.toString(), e);
+			}
+			channelContext.setClosed(true);
+			channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
+			//删除集合中的维护信息 end
+
+		} catch (Throwable e)
+		{
+			log.error(e.toString(), e);
+		} finally
+		{
+			//				semaphore.release();
 		}
+		//		}
 
 	}
 
@@ -204,5 +213,21 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 		builder.append(this.getClass().getSimpleName()).append(":");
 		builder.append(channelContext.toString());
 		return builder.toString();
+	}
+
+	/**
+	 * @return the isWaitingExecute
+	 */
+	public boolean isWaitingExecute()
+	{
+		return isWaitingExecute;
+	}
+
+	/**
+	 * @param isWaitingExecute the isWaitingExecute to set
+	 */
+	public void setWaitingExecute(boolean isWaitingExecute)
+	{
+		this.isWaitingExecute = isWaitingExecute;
 	}
 }

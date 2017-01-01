@@ -73,7 +73,6 @@ public class Aio
 	 */
 	public static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark)
 	{
-
 		channelContext.getDecodeRunnable().clearMsgQueue();
 		channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
 		//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
@@ -85,13 +84,23 @@ public class Aio
 		//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
 		channelContext.getSendRunnableNormPrior().setCanceled(true);
 		//		channelContext.getSendRunnableHighPrior().setCanceled(true);
-
-		synchronized (channelContext)
+		
+		
+		CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
+		if (closeRunnable.isWaitingExecute())
 		{
-			CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
+			return;
+		}
+		synchronized (closeRunnable)
+		{
+			if (closeRunnable.isWaitingExecute())//double check
+			{
+				return;
+			}
 			closeRunnable.setRemark(remark);
 			closeRunnable.setT(t);
 			closeRunnable.getExecutor().execute(closeRunnable);
+			closeRunnable.setWaitingExecute(true);
 		}
 		//		closeRunnable.runTask();
 	}

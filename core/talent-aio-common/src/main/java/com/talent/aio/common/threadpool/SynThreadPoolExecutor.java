@@ -3,7 +3,6 @@
  */
 package com.talent.aio.common.threadpool;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -40,15 +39,6 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 
 	/** The Constant RUNNABLE_QUEUE. */
 	public final static SynchronousQueue<Runnable> RUNNABLE_QUEUE = new SynchronousQueue<Runnable>(); // 存放runnable的队列
-
-	//	/** The task act submit count. */
-	//	private java.util.concurrent.atomic.AtomicLong taskActSubmitCount = new AtomicLong(0);
-
-	//	/** The task submit count. */
-	//	private java.util.concurrent.atomic.AtomicLong taskSubmitCount = new AtomicLong(0);
-
-	/** The Constant log. */
-//	private static final Logger log = LoggerFactory.getLogger(SynThreadPoolExecutor.class);
 
 	/** The name. */
 	private String name = null;
@@ -148,11 +138,11 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	 * @重写时间: 2016年11月15日 上午9:07:00
 	 * 
 	 */
-	@Override
-	public void shutdown()
-	{
-		super.shutdown();
-	}
+//	@Override
+//	public void shutdown()
+//	{
+//		super.shutdown();
+//	}
 
 	/** 
 	 * @see java.util.concurrent.ThreadPoolExecutor#shutdownNow()
@@ -162,72 +152,18 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 	 * @重写时间: 2016年11月15日 上午9:07:00
 	 * 
 	 */
-	@Override
-	public List<Runnable> shutdownNow()
-	{
-		List<Runnable> ret = super.shutdownNow();
-		return ret;
-	}
+//	@Override
+//	public List<Runnable> shutdownNow()
+//	{
+//		List<Runnable> ret = super.shutdownNow();
+//		return ret;
+//	}
 
-	/** 
-	 * @see java.util.concurrent.ThreadPoolExecutor#beforeExecute(java.lang.Thread, java.lang.Runnable)
-	 * 
-	 * @param thread
-	 * @param runnable
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:00
-	 * 
-	 */
-	@Override
-	protected void beforeExecute(Thread thread, Runnable runnable)
-	{
-
-		//		
-		//		try
-		//		{
-		//			super.beforeExecute(thread, runnable);
-		//		} catch (Exception e)
-		//		{
-		//			log.error(e.toString(), e);
-		//		} finally
-		//		{
-		//			synchronized (runnableTask)
-		//			{
-		//				runnableTask.setRunning(true);
-		//				//				runnableTask.setInSchedule(false);
-		//			}
-		//
-		//			
-		//			
-		//			
-		//		}
-
-	}
-
-	//	@Override
-	//	protected void afterExecute(Runnable runnable, Throwable throwable)
-	//	{
-	//		try
-	//		{
-	//			super.afterExecute(runnable, throwable);
-	//			if (throwable != null)
-	//			{
-	//				log.error(throwable.getLocalizedMessage(), throwable);
-	//			}
-	//		} catch (Exception e)
-	//		{
-	//			log.error(e.toString(), e);
-	//		} finally
-	//		{
-	//			@SuppressWarnings("unchecked")
-	//			T runnableTask = (T) runnable;
-	//			synchronized (runnableTask)
-	//			{
-	//				runnableTask.setRunning(false);
-	//				//				runnableTask.setInSchedule(false);
-	//			}
-	//		}
-	//	}
+//	@Override
+//	protected void beforeExecute(Thread thread, Runnable runnable)
+//	{
+//		super.beforeExecute(thread, runnable);
+//	}
 
 	/**
 	 * 提交前作些检查，看是否有必要提交.
@@ -254,43 +190,17 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 
 	}
 
-	/** 
-	 * @see java.util.concurrent.ThreadPoolExecutor#execute(java.lang.Runnable)
-	 * 
-	 * @param _runnable
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:00
-	 * 
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(Runnable _runnable)
 	{
 		T runnable = (T) _runnable;
-		//		taskSubmitCount.incrementAndGet();
 		if (checkBeforeExecute(runnable))
 		{
-			//			synchronized (runnable)
-			//			{
-			//				runnable.setInSchedule(true);
-			//				runnable.setRunning(false);
 			super.execute(runnable);
-			//			taskActSubmitCount.incrementAndGet();
-			//			}
-
 		}
 	}
 
-	/** 
-	 * @see java.util.concurrent.AbstractExecutorService#submit(java.lang.Runnable, java.lang.Object)
-	 * 
-	 * @param _runnable
-	 * @param result
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月15日 上午9:07:00
-	 * 
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <R> Future<R> submit(Runnable _runnable, R result)
@@ -298,13 +208,7 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 		T runnable = (T) _runnable;
 		if (checkBeforeExecute(runnable))
 		{
-			//			synchronized (runnable)
-			//			{
-			//				runnable.setInSchedule(true);
-			//			}
-
 			Future<R> ret = super.submit(runnable, result);
-
 			return ret;
 		} else
 		{
@@ -365,45 +269,4 @@ public class SynThreadPoolExecutor<T extends SynRunnableIntf> extends ThreadPool
 		return this.getName().compareTo(o.getName());
 
 	}
-
-	//	/**
-	//	 * Gets the task act submit count.
-	//	 *
-	//	 * @return the task act submit count
-	//	 */
-	//	public java.util.concurrent.atomic.AtomicLong getTaskActSubmitCount()
-	//	{
-	//		return taskActSubmitCount;
-	//	}
-	//
-	//	/**
-	//	 * Sets the task act submit count.
-	//	 *
-	//	 * @param taskActSubmitCount the new task act submit count
-	//	 */
-	//	public void setTaskActSubmitCount(java.util.concurrent.atomic.AtomicLong taskActSubmitCount)
-	//	{
-	//		this.taskActSubmitCount = taskActSubmitCount;
-	//	}
-	//
-	//	/**
-	//	 * Gets the task submit count.
-	//	 *
-	//	 * @return the task submit count
-	//	 */
-	//	public java.util.concurrent.atomic.AtomicLong getTaskSubmitCount()
-	//	{
-	//		return taskSubmitCount;
-	//	}
-	//
-	//	/**
-	//	 * Sets the task submit count.
-	//	 *
-	//	 * @param taskSubmitCount the new task submit count
-	//	 */
-	//	public void setTaskSubmitCount(java.util.concurrent.atomic.AtomicLong taskSubmitCount)
-	//	{
-	//		this.taskSubmitCount = taskSubmitCount;
-	//	}
-
 }
