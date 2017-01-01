@@ -325,15 +325,16 @@ public class Aio
 
 	/**
 	 * 同步发送消息.
+	 * @param channelContext
+	 * @param packet
+	 * @param timeout 超时时间，单位：毫秒
+	 * @return
 	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
-	 * @param channelContext the channel context
-	 * @param packet the packet
-	 * @return the p
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月1日 下午12:52:11
+	 *
 	 */
-	public static <Ext, P extends Packet, R> P synSend(ChannelContext<Ext, P, R> channelContext, P packet)
+	public static <Ext, P extends Packet, R> P synSend(ChannelContext<Ext, P, R> channelContext, P packet, long timeout)
 	{
 		log.error("待实现");
 		return null;
