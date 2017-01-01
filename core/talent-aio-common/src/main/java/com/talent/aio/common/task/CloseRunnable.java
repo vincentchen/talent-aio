@@ -41,39 +41,9 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 		this.remark = remark;
 	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#runTask()
-	 * 
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月19日 下午1:46:31
-	 * 
-	 */
 	@Override
 	public void runTask()
 	{
-		//		if (channelContext == null)
-		//		{
-		//			log.warn("channelContext == null");
-		//			return;
-		//		}
-		//
-		//		if (channelContext.isClosed())
-		//		{
-		//			return;
-		//		}
-
-		//		synchronized (this)
-		//		{
-		//			if (channelContext.isClosed())//double check
-		//			{
-		//				return;
-		//			}
-
-		//			if (StringUtils.isNotBlank(remark))
-		//			{
-		//				
-		//			}
-		
 		closeCount.incrementAndGet();
 		if (t != null)
 		{
@@ -150,18 +120,8 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 		{
 			//				semaphore.release();
 		}
-		//		}
-
 	}
 
-	/** 
-	 * @see com.talent.aio.common.threadpool.intf.SynRunnableIntf#isNeededExecute()
-	 * 
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月3日 下午6:01:11
-	 * 
-	 */
 	@Override
 	public boolean isNeededExecute()
 	{
