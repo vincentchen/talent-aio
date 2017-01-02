@@ -1,14 +1,3 @@
-/**
- * **************************************************************************
- *
- * @说明: 
- * @项目名称: talent-aio-server
- *
- * @author: tanyaowu 
- * @创建时间: 2016年11月15日 上午11:35:17
- *
- * **************************************************************************
- */
 package com.talent.aio.client;
 
 import java.io.IOException;
@@ -41,28 +30,33 @@ import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
+ * 
  * @author tanyaowu 
- * @创建时间 2016年11月15日 上午11:35:17
+ * @创建时间 2017年1月2日 下午6:02:56
  *
  * @操作列表
  *  编号	| 操作时间	| 操作人员	 | 操作说明
- *  (1) | 2016年11月15日 | tanyaowu | 新建类
+ *  (1) | 2017年1月2日 | tanyaowu | 新建类
  *
  */
 public class AioClient<Ext, P extends Packet, R>
 {
 	private static Logger log = LoggerFactory.getLogger(AioClient.class);
 
-	private ClientGroupContext<Ext, P, R> clientGroupContext;
+	/**
+	 * @param args
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年11月15日 上午11:35:17
+	 * 
+	 */
+	public static void main(String[] args)
+	{
+	}
+
 	private AsynchronousChannelGroup channelGroup;
 
-	/**
-	 * @return the channelGroup
-	 */
-	public AsynchronousChannelGroup getChannelGroup()
-	{
-		return channelGroup;
-	}
+	private ClientGroupContext<Ext, P, R> clientGroupContext;
 
 	/**
 	 * @param ip 可以为空
@@ -83,87 +77,7 @@ public class AioClient<Ext, P extends Packet, R>
 		ExecutorService groupExecutor = clientGroupContext.getGroupExecutor();
 		this.channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
 
-		///////
-		final ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
-		final ClientAioHandler<Ext, P, R> aioHandler = (ClientAioHandler<Ext, P, R>) clientGroupContext.getClientAioHandler();
-		final long heartbeatTimeout = clientGroupContext.getHeartbeatTimeout();
-		final String id = clientGroupContext.getId();
-		new Thread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				while (true)
-				{
-					try
-					{
-						ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSet();
-						ReadLock readLock = objWithReadWriteLock.getLock().readLock();
-						try
-						{
-							readLock.lock();
-							Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
-							long currtime = SystemTimer.currentTimeMillis();
-							for (ChannelContext<Ext, P, R> entry : set)
-							{
-								ClientChannelContext<Ext, P, R> channelContext = (ClientChannelContext<Ext, P, R>) entry;
-
-								if (channelContext.isClosed()) //已经关闭了
-								{
-									if (channelContext.isAutoReconnect())
-									{
-										AioClient.this.reconnect(channelContext);
-									}
-								} else
-								{
-									Stat stat = channelContext.getStat();
-									long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-									long timeLatestSentMsg = stat.getTimeLatestSentMsg();
-									long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
-									long interval = (currtime - compareTime);
-									if (interval >= heartbeatTimeout / 2)
-									{
-										P packet = aioHandler.heartbeatPacket();
-										if (packet != null)
-										{
-											log.info("{}发送心跳包", channelContext.toString());
-											Aio.send(channelContext, packet);
-										}
-									}
-								}
-							}
-							log.info("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
-									clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
-									clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
-						} catch (Throwable e)
-						{
-							log.error("", e);
-						} finally
-						{
-							readLock.unlock();
-							Thread.sleep(heartbeatTimeout / 4);
-						}
-					} catch (Throwable e)
-					{
-						log.error("", e);
-					}
-				}
-			}
-		}, "t-aio-timer-heartbeat & reconnect-" + id).start();
-	}
-
-	/**
-	 * 重连
-	 * @param channelContext
-	 * @throws Exception
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2016年12月19日 下午5:43:35
-	 *
-	 */
-	public void reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
-	{
-		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.isAutoReconnect(), channelContext);
+		startTask();
 	}
 
 	/**
@@ -251,7 +165,7 @@ public class AioClient<Ext, P extends Packet, R>
 					return null;
 				}
 			}
-			
+
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
 			asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
@@ -263,14 +177,11 @@ public class AioClient<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * @param args
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2016年11月15日 上午11:35:17
-	 * 
+	 * @return the channelGroup
 	 */
-	public static void main(String[] args)
+	public AsynchronousChannelGroup getChannelGroup()
 	{
+		return channelGroup;
 	}
 
 	/**
@@ -282,10 +193,108 @@ public class AioClient<Ext, P extends Packet, R>
 	}
 
 	/**
+	 * 重连
+	 * @param channelContext
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2016年12月19日 下午5:43:35
+	 *
+	 */
+	public void reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
+	{
+		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.isAutoReconnect(), channelContext);
+	}
+
+	/**
 	 * @param clientGroupContext the clientGroupContext to set
 	 */
 	public void setClientGroupContext(ClientGroupContext<Ext, P, R> clientGroupContext)
 	{
 		this.clientGroupContext = clientGroupContext;
+	}
+
+	/**
+	 * 定时任务：发心跳，重连(待实现)
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月2日 下午6:01:06
+	 *
+	 */
+	private void startTask()
+	{
+		final ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
+		final ClientAioHandler<Ext, P, R> aioHandler = (ClientAioHandler<Ext, P, R>) clientGroupContext.getClientAioHandler();
+		final long heartbeatTimeout = clientGroupContext.getHeartbeatTimeout();
+		final String id = clientGroupContext.getId();
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				ReadLock readLock = null;
+				try
+				{
+					ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSet();
+					readLock = objWithReadWriteLock.getLock().readLock();
+					readLock.lock();
+					Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+					long currtime = SystemTimer.currentTimeMillis();
+					for (ChannelContext<Ext, P, R> entry : set)
+					{
+						ClientChannelContext<Ext, P, R> channelContext = (ClientChannelContext<Ext, P, R>) entry;
+
+						if (channelContext.isClosed()) //已经关闭了
+						{
+							if (channelContext.isAutoReconnect())
+							{
+								AioClient.this.reconnect(channelContext);
+							}
+						} else
+						{
+							Stat stat = channelContext.getStat();
+							long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
+							long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
+							long interval = (currtime - compareTime);
+							if (interval >= heartbeatTimeout / 2)
+							{
+								P packet = aioHandler.heartbeatPacket();
+								if (packet != null)
+								{
+									log.info("{}发送心跳包", channelContext.toString());
+									Aio.send(channelContext, packet);
+								}
+							}
+						}
+					}
+					if (log.isInfoEnabled())
+					{
+						log.info("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
+								clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
+								clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
+					}
+
+				} catch (Throwable e)
+				{
+					log.error("", e);
+				} finally
+				{
+					try
+					{
+						if (readLock != null)
+						{
+							readLock.unlock();
+						}
+						Thread.sleep(heartbeatTimeout / 4);
+					} catch (InterruptedException e)
+					{
+						log.error(e.toString(), e);
+					} finally
+					{
+						run();   //一直循环
+					}
+				}
+			}
+		}, "t-aio-timer-heartbeat & reconnect-" + id).start();
 	}
 }
