@@ -8,7 +8,7 @@
 <ol>
 	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty和mina，但极易掌握，不需要各种学习才能入门，只需要<strong>花上半天学习helloworld</strong>就能比较好地掌握并实现一个性能极好的即时应用，并且天生不会有粘包问题；talent-aio性能极好：<strong>可同时支持10万级tcp长连接，彻底甩开当年的c10K问题</strong>；<strong>每秒可收发处理70万以上条消息，每秒收发的消息大小可达70M以上</strong>
 	</li>
-	<li><strong>常见应用场景</strong>：即时通讯场景皆可，一般可用于以下场景的应用通讯层框架
+	<li><strong>应用场景</strong>：即时通讯场景皆可，常见有如下一些场景
 		<ul>
 			<li>RPC框架</li>
 			<li>点对点聊天</li>
@@ -162,10 +162,12 @@ public class HelloClientStarter
 </h4>
 <ol>
 	<li>
-	加入talent-aio技术群和一群技术大伽共同成长:
-	<a  target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459">
-    <img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术">
-	</a>
+	通过以下方式之一，加入talent-aio技术群
+		<ul>
+			<li>通过群号加入: 428058412</li>
+			<li>点击加入: <a  target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术"></a></li>
+			<li>扫码加入<div><img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/qq_group.png?dir=0&filepath=docs%2Fqq_group.png&oid=2de94f468c1620d601f374f20b1d75d884196b58&sha=bda60a7fdabad3fdd6b39571aa1dcd780382a79a'/></div></li>
+		</ul>
 	</li>
 	<li>
 	<a 
