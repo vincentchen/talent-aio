@@ -6,7 +6,7 @@
   关于talent-aio
 </h4>
 <ol>
-	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty和mina，但极易掌握，不需要各种学习才能入门，只需要<strong>花上半天学习helloworld</strong>就能比较好地掌握并实现一个性能极好的即时应用，并且天生不会有粘包问题；talent-aio性能极好：<strong>可同时支持10万级tcp长连接，彻底甩开当年的c10K问题</strong>；<strong>每秒可收发处理70万以上条消息，每秒收发的消息大小可达70M以上</strong>
+	<li><strong>talent-aio是什么</strong>：talent-aio是基于java aio实现的即时通讯框架，功能类似netty和mina，但极易掌握，不需要各种学习才能入门，只需要<strong>花上半天学习helloworld</strong>就能比较好地掌握并实现一个性能极好的即时应用，并且天生不会有粘包问题；talent-aio性能极好：<strong>可同时支持10万级tcp长连接，彻底甩开当年的c10K问题</strong>；<strong>每秒可收发处理138万以上条消息，每秒收发的消息大小可达137M以上，收发200万条消息，只需要1440毫秒</strong>
 	</li>
 	<li><strong>应用场景</strong>：即时通讯场景皆可，常见有如下一些场景
 		<ul>
@@ -17,22 +17,16 @@
 		</ul>
 	</li>
 
-	<li><strong>性能：</strong>请参考见下方的测试数据及截图，因为im客户端程序算法和界面有改动，所以截图样子略有不同(第二张图当时是循环所有连接并群聊，第三张是选一个连接出来群聊)
+	<li><strong>性能：</strong>请参考见下方的测试数据及截图
 		<table>
 			<tr>
 				<td>
-				<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step.png?dir=0&filepath=docs%2Fstep%2Faio-test-step.png&oid=708a4f2b1a92445a2286745f0a41036e8b07eb37&sha=0f4aee93cde52c3a481db88555edca4d2f8ee14f'>
+				<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step-1.png?dir=0&filepath=docs%2Fstep%2Faio-test-step-1.png&oid=6a4c1201f9a015152311762172e96dabb22f9fab&sha=04efebad716331bbe4643b8c10e863891e076ad6'>
 				</td>
 			</tr>
 			<tr>
 				<td>
-				<img  src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-8.png?dir=0&filepath=docs%2Fperformance%2Fclient-8.png&oid=0866934f6e636f33b357d907d7e1d20a2fd96f82&sha=cf5bfd7aa595d9698a61f8379c14a7857e8da188 '>
-				</img>
-				</td>
-			</tr>
-			<tr>
-				<td>
-				<img  src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-9.png?dir=0&filepath=docs%2Fperformance%2Fclient-9.png&oid=c6f5fbce1bf6a3f65d4a91207c65c4293c378cd6&sha=17e222a00b68dd4029fd5ed15e839cb340317554 '>
+				<img  src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/performance/client-10.png?dir=0&filepath=docs%2Fperformance%2Fclient-10.png&oid=a6311c568fe363f49834463b3f495304e54e2429&sha=8189c46410a1ce392470188a743ef47968c665d1 '>
 				</img>
 				</td>
 			</tr>
