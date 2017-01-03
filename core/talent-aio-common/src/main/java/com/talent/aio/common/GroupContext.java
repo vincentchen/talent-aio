@@ -53,7 +53,7 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	/** 
 	 * 默认的接收数据的buffer size
 	 */
-	public static final int READ_BUFFER_SIZE = 128;
+	public static final int READ_BUFFER_SIZE = 2048;
 
 	public static final int MAXIMUM_POOL_SIZE = CORE_POOL_SIZE * 4;
 
