@@ -54,7 +54,7 @@ public class ImClientStarter
 		aioClientHandler = new ImClientAioHandler();
 		aioListener = new ImClientAioListener();
 		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
-		clientGroupContext.setReadBufferSize(1024);
+		clientGroupContext.setReadBufferSize(2048);
 		aioClient = new AioClient<>(clientGroupContext);
 	}
 
