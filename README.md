@@ -160,7 +160,7 @@ public class HelloClientStarter
 		<ul>
 			<li>通过群号加入: 428058412</li>
 			<li>点击加入: <a  target="_blank" href="http://shang.qq.com/wpa/qunwpa?idkey=95588b929b2832f606f4deb74a423d61257f3c08b9790ac57c29aebd09364459"><img border="0" src="http://pub.idqqimg.com/wpa/images/group.png" alt="talent-aio技术" title="talent-aio技术"></a></li>
-			<li>扫码加入<div><img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/qq_group.png?dir=0&filepath=docs%2Fqq_group.png&oid=2de94f468c1620d601f374f20b1d75d884196b58&sha=bda60a7fdabad3fdd6b39571aa1dcd780382a79a'/></div></li>
+			<li>扫码加入<div><img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/qq_group-1.png?dir=0&filepath=docs%2Fqq_group-1.png&oid=312d980621fab8fe7ba790abb1381eda4cfea198&sha=3a23f5d8d7858329a6121c74adccd159bdf88c96'/></div></li>
 		</ul>
 	</li>
 	<li>
