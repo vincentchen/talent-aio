@@ -21,7 +21,7 @@
 		<table>
 			<tr>
 				<td>
-				<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step-1.png?dir=0&filepath=docs%2Fstep%2Faio-test-step-1.png&oid=6a4c1201f9a015152311762172e96dabb22f9fab&sha=04efebad716331bbe4643b8c10e863891e076ad6'>
+				<img src='https://git.oschina.net/tywo45/talent-aio/raw/master/docs/step/aio-test-step-2.png?dir=0&filepath=docs%2Fstep%2Faio-test-step-2.png&oid=5e03c477f7b9ff9c32b85e93cb520108075fb147&sha=0cf7086630dc611e1922fb0715616ece7f09752e'>
 				</td>
 			</tr>
 			<tr>
