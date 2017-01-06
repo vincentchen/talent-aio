@@ -8,6 +8,9 @@
 	<name>platform Maven Webapp</name>
 	<url>http://maven.apache.org</url>
 
+	<description>talent-aio is a aio framework for java</description>
+
+
 	<prerequisites>
 		<maven>3.3.9</maven>
 	</prerequisites>
@@ -411,7 +414,7 @@
 			<id>release</id>
 			<build>
 				<plugins>
-					<!-- Source 
+					<!-- Source -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
@@ -425,8 +428,8 @@
 							</execution>
 						</executions>
 					</plugin>
-					-->
-					<!-- Javadoc 
+
+					<!-- Javadoc -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
@@ -437,10 +440,13 @@
 								<goals>
 									<goal>jar</goal>
 								</goals>
+								<configuration>
+									<additionalparam>-Xdoclint:none</additionalparam><!-- 防止生成docs时报错 -->
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
-					-->
+
 					<!-- GPG -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
