@@ -12,6 +12,20 @@
 		<maven>3.3.9</maven>
 	</prerequisites>
 
+	<licenses>
+		<license>
+			<name>GNU LESSER GENERAL PUBLIC LICENSE Version 2.1</name>
+			<url>https://git.oschina.net/tywo45/talent-aio/blob/master/LICENSE</url>
+		</license>
+	</licenses>
+
+
+	<scm>
+		<connection>scm:svn://git.oschina.net/tywo45/talent-aio</connection>
+		<developerConnection>scm:svn://git.oschina.net/tywo45/talent-aio</developerConnection>
+		<url>svn://git.oschina.net/tywo45/talent-aio</url>
+	</scm>
+
 	<modules>
 		<module>../core/talent-aio-common</module>
 		<module>../core/talent-aio-server</module>
@@ -21,7 +35,7 @@
 		<module>../example/im/talent-aio-examples-im-common</module>
 		<module>../example/im/talent-aio-examples-im-server</module>
 		<module>../example/im/talent-aio-examples-im-client</module>
-		
+
 		<module>../example/helloworld/talent-aio-examples-helloworld-common</module>
 		<module>../example/helloworld/talent-aio-examples-helloworld-client</module>
 		<module>../example/helloworld/talent-aio-examples-helloworld-server</module>
@@ -44,6 +58,15 @@
 		<fastjson.version>1.2.23</fastjson.version>
 		<testng.version>6.10</testng.version>
 	</properties>
+
+	<developers>
+		<developer>
+			<id>tanyaowu</id>
+			<name>tanyaowu</name>
+			<email>tywo45@163.com</email>
+			<url>https://git.oschina.net/tywo45/talent-aio</url>
+		</developer>
+	</developers>
 
 	<repositories>
 
@@ -165,9 +188,8 @@
 						<target>${jdk.version}</target>
 						<encoding>UTF-8</encoding>
 						<forceJavacCompilerUse>true</forceJavacCompilerUse>
-						<compilerArguments>
-							<bootclasspath>${env.JAVA_HOME}\jre\lib\rt.jar;${env.JAVA_HOME}\jre\lib\jce.jar</bootclasspath>
-						</compilerArguments>
+						<!-- <compilerArguments> <bootclasspath>${env.JAVA_HOME}\jre\lib\rt.jar;${env.JAVA_HOME}\jre\lib\jce.jar</bootclasspath> 
+							</compilerArguments> -->
 						<compilerArgs>
 							<arg>-g</arg>
 
@@ -266,29 +288,11 @@
 					<artifactId>exec-maven-plugin</artifactId>
 				</plugin>
 
-				<!-- ant插件 -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-antrun-plugin</artifactId>
-					<version>1.8</version>
-				</plugin>
-
 				<!-- sonar插件 -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
 				</plugin>
-
-				<!-- war -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<configuration>
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-						<warName>${project.artifactId}</warName>
-					</configuration>
-				</plugin>
-
 
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
@@ -373,6 +377,8 @@
 
 	</build>
 
+
+
 	<reporting>
 		<plugins>
 			<plugin>
@@ -395,4 +401,70 @@
 			</plugin>
 		</plugins>
 	</reporting>
+
+
+
+
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+						<version>2.2.1</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar-no-fork</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- Javadoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.10.3</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<!-- GPG -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.5</version>
+						<executions>
+							<execution>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<distributionManagement>
+				<snapshotRepository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+				</snapshotRepository>
+				<repository>
+					<id>oss</id>
+					<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+				</repository>
+			</distributionManagement>
+		</profile>
+	</profiles>
 </project>
