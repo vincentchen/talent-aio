@@ -4,9 +4,9 @@
 	<name>talent-aio-examples-helloworld-client</name>
 
 	<parent>
-		<groupId>com.talent</groupId>
+		<groupId>com.talent-aio</groupId>
 		<artifactId>talent-parent</artifactId>
-		<version>1.0.0.ken</version>
+		<version>0.6.6-alpha</version>
 		<relativePath>../../../parent/pom.xml</relativePath>
 	</parent>
 
@@ -14,12 +14,12 @@
 		
 		
 		<dependency>
-			<groupId>com.talent</groupId>
+			<groupId>com.talent-aio</groupId>
 			<artifactId>talent-aio-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.talent</groupId>
+			<groupId>com.talent-aio</groupId>
 			<artifactId>talent-aio-examples-helloworld-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>

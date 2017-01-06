@@ -4,16 +4,16 @@
 	<name>talent-aio-client</name>
 
 	<parent>
-		<groupId>com.talent</groupId>
+		<groupId>com.talent-aio</groupId>
 		<artifactId>talent-parent</artifactId>
-		<version>1.0.0.ken</version>
+		<version>0.6.6-alpha</version>
 		<relativePath>../../parent/pom.xml</relativePath>
 	</parent>
 
 	<dependencies>
 		
 		<dependency>
-			<groupId>com.talent</groupId>
+			<groupId>com.talent-aio</groupId>
 			<artifactId>talent-aio-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
