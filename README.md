@@ -3,6 +3,10 @@
 </h3>
 
 <h4>
+  talent-aio官网上线了，地址：<a href="http://www.talent-aio.com/talent-aio" target="_blank">http://www.talent-aio.com/talent-aio</a>，上面有大家期待已久的入门文档。
+</h4>
+
+<h4>
   关于talent-aio
 </h4>
 <ol>
