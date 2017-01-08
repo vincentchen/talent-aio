@@ -29,26 +29,8 @@ import com.talent.aio.server.intf.ServerAioHandler;
  */
 public class HelloServerAioHandler extends HelloAbsAioHandler implements ServerAioHandler<Object, HelloPacket, Object>
 {
-	/**
-	 * 
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2016年11月18日 上午9:13:15
-	 * 
-	 */
-	public HelloServerAioHandler()
-	{
-	}
-
 	/** 
-	 * @see com.talent.aio.common.intf.AioHandler#handler(com.talent.aio.common.intf.Packet)
-	 * 
-	 * @param packet
-	 * @return
-	 * @throws Exception 
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月18日 上午9:37:44
-	 * 
+	 * 处理消息
 	 */
 	@Override
 	public Object handler(HelloPacket packet, ChannelContext<Object, HelloPacket, Object> channelContext) throws Exception
@@ -63,7 +45,6 @@ public class HelloServerAioHandler extends HelloAbsAioHandler implements ServerA
 			resppacket.setBody(("收到了你的消息，你的消息是:" + str).getBytes(HelloPacket.CHARSET));
 			Aio.send(channelContext, resppacket);
 		}
-
 		return null;
 	}
 }

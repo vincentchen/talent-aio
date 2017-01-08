@@ -28,26 +28,8 @@ import com.talent.aio.examples.helloworld.common.HelloPacket;
  */
 public class HelloClientAioHandler extends HelloAbsAioHandler implements ClientAioHandler<Object, HelloPacket, Object>
 {
-	/**
-	 * 
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2016年11月18日 上午9:13:15
-	 * 
-	 */
-	public HelloClientAioHandler()
-	{
-	}
-
 	/** 
-	 * @see com.talent.aio.common.intf.AioHandler#handler(com.talent.aio.common.intf.Packet)
-	 * 
-	 * @param packet
-	 * @return
-	 * @throws Exception 
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月18日 上午9:37:44
-	 * 
+	 * 处理消息
 	 */
 	@Override
 	public Object handler(HelloPacket packet, ChannelContext<Object, HelloPacket, Object> channelContext) throws Exception
@@ -65,17 +47,11 @@ public class HelloClientAioHandler extends HelloAbsAioHandler implements ClientA
 	private static HelloPacket heartbeatPacket = new HelloPacket();
 
 	/** 
-	 * @see com.talent.aio.client.intf.ClientAioHandler#heartbeatPacket()
-	 * 
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月6日 下午2:18:16
-	 * 
+	 * 此方法如果返回null，框架层面则不会发心跳；如果返回非null，框架层面会定时发本方法返回的消息包
 	 */
 	@Override
 	public HelloPacket heartbeatPacket()
 	{
 		return heartbeatPacket;
 	}
-
 }

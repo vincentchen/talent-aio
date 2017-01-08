@@ -11,8 +11,6 @@
  */
 package com.talent.aio.examples.helloworld.client;
 
-import java.io.IOException;
-
 import com.talent.aio.client.AioClient;
 import com.talent.aio.client.ClientChannelContext;
 import com.talent.aio.client.ClientGroupContext;
@@ -39,9 +37,6 @@ public class HelloClientStarter
 	private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
 	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
 	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
-
-	public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
-	public static int SERVER_PORT = 9321; //服务器的PORT
 
 	public static void main(String[] args) throws Exception
 	{

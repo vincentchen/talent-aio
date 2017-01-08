@@ -29,14 +29,8 @@ import com.talent.aio.common.intf.AioHandler;
  */
 public abstract class HelloAbsAioHandler implements AioHandler<Object, HelloPacket, Object>
 {
-	/** 
-	 * @see com.talent.aio.common.intf.AioHandler#encode(com.talent.aio.common.intf.Packet)
-	 * 
-	 * @param packet
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月18日 上午9:37:44
-	 * 
+	/**
+	 * 编码：把业务消息包编码为可以发送的ByteBuffer
 	 */
 	@Override
 	public ByteBuffer encode(HelloPacket packet, ChannelContext<Object, HelloPacket, Object> channelContext)
@@ -61,15 +55,8 @@ public abstract class HelloAbsAioHandler implements AioHandler<Object, HelloPack
 		return buffer;
 	}
 
-	/** 
-	 * @see com.talent.aio.common.intf.AioHandler#decode(java.nio.ByteBuffer)
-	 * 
-	 * @param buffer
-	 * @return
-	 * @throws AioDecodeException
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年11月18日 上午9:37:44
-	 * 
+	/**
+	 * 解码：把接收到的ByteBuffer，解码成应用可以识别的业务消息包
 	 */
 	@Override
 	public HelloPacket decode(ByteBuffer buffer, ChannelContext<Object, HelloPacket, Object> channelContext) throws AioDecodeException
@@ -104,6 +91,4 @@ public abstract class HelloAbsAioHandler implements AioHandler<Object, HelloPack
 			return imPacket;
 		}
 	}
-
-
 }
