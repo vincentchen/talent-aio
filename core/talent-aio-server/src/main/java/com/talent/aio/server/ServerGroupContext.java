@@ -110,50 +110,51 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 			@Override
 			public void run()
 			{
-				ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSet();
-				ReadLock readLock = objWithReadWriteLock.getLock().readLock();
-				try
+				while (true)
 				{
-					readLock.lock();
-					Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
-
-					for (ChannelContext<Ext, P, R> entry : set)
-					{
-						ChannelContext<Ext, P, R> channelContext = entry;
-						Stat stat = channelContext.getStat();
-						long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-						long timeLatestSentMsg = stat.getTimeLatestSentMsg();
-						long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
-						long currtime = SystemTimer.currentTimeMillis();
-						long interval = (currtime - compareTime);
-						if (interval > heartbeatTimeout)
-						{
-							Aio.close(channelContext, interval + "ms没有收发消息");
-						}
-					}
-
-					if (log.isInfoEnabled())
-					{
-						log.info("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
-								serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
-								serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
-								serverGroupStat.getSentBytes().get());
-					}
-
-				} catch (Throwable e)
-				{
-					log.error("", e);
-				} finally
-				{
+					ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSet();
+					ReadLock readLock = objWithReadWriteLock.getLock().readLock();
 					try
 					{
-						readLock.unlock();
-						Thread.sleep(heartbeatTimeout / 2);
-					} catch (Exception e)
+						readLock.lock();
+						Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+
+						for (ChannelContext<Ext, P, R> entry : set)
+						{
+							ChannelContext<Ext, P, R> channelContext = entry;
+							Stat stat = channelContext.getStat();
+							long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
+							long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
+							long currtime = SystemTimer.currentTimeMillis();
+							long interval = (currtime - compareTime);
+							if (interval > heartbeatTimeout)
+							{
+								Aio.close(channelContext, interval + "ms没有收发消息");
+							}
+						}
+
+						if (log.isInfoEnabled())
+						{
+							log.info("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id,
+									set.size(), serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
+									serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
+									serverGroupStat.getSentBytes().get());
+						}
+					} catch (Throwable e)
 					{
 						log.error("", e);
+					} finally
+					{
+						try
+						{
+							readLock.unlock();
+							Thread.sleep(heartbeatTimeout / 2);
+						} catch (Exception e)
+						{
+							log.error("", e);
+						}
 					}
-					run();
 				}
 			}
 		}, "t-aio-timer-checkheartbeat-" + id);
