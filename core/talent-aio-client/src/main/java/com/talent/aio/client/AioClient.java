@@ -231,67 +231,70 @@ public class AioClient<Ext, P extends Packet, R>
 			@Override
 			public void run()
 			{
-				ReadLock readLock = null;
-				try
+				while (true)
 				{
-					ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSet();
-					readLock = objWithReadWriteLock.getLock().readLock();
-					readLock.lock();
-					Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
-					long currtime = SystemTimer.currentTimeMillis();
-					for (ChannelContext<Ext, P, R> entry : set)
+					ReadLock readLock = null;
+					try
 					{
-						ClientChannelContext<Ext, P, R> channelContext = (ClientChannelContext<Ext, P, R>) entry;
+						ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSet();
+						readLock = objWithReadWriteLock.getLock().readLock();
+						readLock.lock();
+						Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+						long currtime = SystemTimer.currentTimeMillis();
+						for (ChannelContext<Ext, P, R> entry : set)
+						{
+							ClientChannelContext<Ext, P, R> channelContext = (ClientChannelContext<Ext, P, R>) entry;
 
-						if (channelContext.isClosed()) //已经关闭了
-						{
-							if (channelContext.isAutoReconnect())
+							if (channelContext.isClosed()) //已经关闭了
 							{
-								AioClient.this.reconnect(channelContext);
-							}
-						} else
-						{
-							Stat stat = channelContext.getStat();
-							long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-							long timeLatestSentMsg = stat.getTimeLatestSentMsg();
-							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
-							long interval = (currtime - compareTime);
-							if (interval >= heartbeatTimeout / 2)
-							{
-								P packet = aioHandler.heartbeatPacket();
-								if (packet != null)
+								if (channelContext.isAutoReconnect())
 								{
-									log.info("{}发送心跳包", channelContext.toString());
-									Aio.send(channelContext, packet);
+									AioClient.this.reconnect(channelContext);
+								}
+							} else
+							{
+								Stat stat = channelContext.getStat();
+								long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
+								long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+								long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
+								long interval = (currtime - compareTime);
+								if (interval >= heartbeatTimeout / 2)
+								{
+									P packet = aioHandler.heartbeatPacket();
+									if (packet != null)
+									{
+										log.info("{}发送心跳包", channelContext.toString());
+										Aio.send(channelContext, packet);
+									}
 								}
 							}
 						}
-					}
-					if (log.isInfoEnabled())
-					{
-						log.info("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
-								clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
-								clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
-					}
-
-				} catch (Throwable e)
-				{
-					log.error("", e);
-				} finally
-				{
-					try
-					{
-						if (readLock != null)
+						if (log.isInfoEnabled())
 						{
-							readLock.unlock();
+							log.info("[{}]: curr:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", id, set.size(), clientGroupStat.getClosed().get(),
+									clientGroupStat.getReceivedPacket().get(), clientGroupStat.getReceivedBytes().get(), clientGroupStat.getHandledPacket().get(),
+									clientGroupStat.getSentPacket().get(), clientGroupStat.getSentBytes().get());
 						}
-						Thread.sleep(heartbeatTimeout / 4);
-					} catch (Exception e)
+
+					} catch (Throwable e)
 					{
-						log.error(e.toString(), e);
+						log.error("", e);
 					} finally
 					{
-						run();   //一直循环
+						try
+						{
+							if (readLock != null)
+							{
+								readLock.unlock();
+							}
+							Thread.sleep(heartbeatTimeout / 4);
+						} catch (Exception e)
+						{
+							log.error(e.toString(), e);
+						} finally
+						{
+							
+						}
 					}
 				}
 			}
