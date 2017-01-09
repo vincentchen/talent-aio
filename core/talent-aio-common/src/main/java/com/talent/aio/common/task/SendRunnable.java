@@ -130,9 +130,9 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		{
 			return;
 		}
-		if (queueSize >= 200)
+		if (queueSize >= 2000)
 		{
-			queueSize = 100;
+			queueSize = 1000;
 		}
 
 		P packet = null;

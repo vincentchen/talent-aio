@@ -33,7 +33,7 @@ import com.talent.aio.common.intf.Packet;
 public class ClientChannelContext<Ext, P extends Packet, R> extends ChannelContext<Ext, P, R>
 {
 	
-	private boolean autoReconnect = false;
+	
 	
 	private String bindIp;
 	
@@ -78,22 +78,6 @@ public class ClientChannelContext<Ext, P extends Packet, R> extends ChannelConte
 		InetSocketAddress inetSocketAddress = (InetSocketAddress) asynchronousSocketChannel.getLocalAddress();
 		Node clientNode = new Node(inetSocketAddress.getHostString(), inetSocketAddress.getPort());
 		return clientNode;
-	}
-
-	/**
-	 * @return the autoReconnect
-	 */
-	public boolean isAutoReconnect()
-	{
-		return autoReconnect;
-	}
-
-	/**
-	 * @param autoReconnect the autoReconnect to set
-	 */
-	public void setAutoReconnect(boolean autoReconnect)
-	{
-		this.autoReconnect = autoReconnect;
 	}
 
 	/**

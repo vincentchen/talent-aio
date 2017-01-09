@@ -286,7 +286,7 @@ public class AioClient<Ext, P extends Packet, R>
 							readLock.unlock();
 						}
 						Thread.sleep(heartbeatTimeout / 4);
-					} catch (InterruptedException e)
+					} catch (Exception e)
 					{
 						log.error(e.toString(), e);
 					} finally

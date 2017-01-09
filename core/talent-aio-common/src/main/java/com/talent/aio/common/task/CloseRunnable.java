@@ -80,7 +80,19 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				log.error(e.toString());
 			}
 
+			
 			//删除集合中的维护信息 start
+			if (!channelContext.isAutoReconnect())
+			{
+				try
+				{
+					groupContext.getConnections().remove(channelContext);
+				} catch (Throwable e)
+				{
+					log.error(e.toString(), e);
+				}
+			}
+
 			try
 			{
 				groupContext.getClientNodes().remove(channelContext);
@@ -88,13 +100,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			{
 				log.error(e.toString(), e);
 			}
-			try
-			{
-				groupContext.getConnections().remove(channelContext);
-			} catch (Throwable e)
-			{
-				log.error(e.toString(), e);
-			}
+			
 			try
 			{
 				groupContext.getUsers().unbind(channelContext);
@@ -102,6 +108,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			{
 				log.error(e.toString(), e);
 			}
+			
 			try
 			{
 				groupContext.getGroups().unbind(channelContext);
@@ -109,6 +116,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			{
 				log.error(e.toString(), e);
 			}
+			
 			channelContext.setClosed(true);
 			channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
 			//删除集合中的维护信息 end

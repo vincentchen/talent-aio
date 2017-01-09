@@ -69,12 +69,8 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 
 	/** The accept executor. */
 	private ThreadPoolExecutor acceptExecutor = null;
-	//	ThreadPoolExecutor(int corePoolSize,
-	//            int maximumPoolSize,
-	//            long keepAliveTime,
-	//            TimeUnit unit,
-	//            BlockingQueue<Runnable> workQueue,
-	//            ThreadFactory threadFactory)
+
+	private Thread checkHeartbeatThread = null;
 
 	/**
 	 * Instantiates a new aio server config.
@@ -109,61 +105,61 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 
 		this.acceptExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), DefaultThreadFactory.getInstance("t-aio-server-accept"));
 
-		new Thread(new Runnable()
+		checkHeartbeatThread = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				while (true)
+				ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSet();
+				ReadLock readLock = objWithReadWriteLock.getLock().readLock();
+				try
+				{
+					readLock.lock();
+					Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+
+					for (ChannelContext<Ext, P, R> entry : set)
+					{
+						ChannelContext<Ext, P, R> channelContext = entry;
+						Stat stat = channelContext.getStat();
+						long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
+						long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+						long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
+						long currtime = SystemTimer.currentTimeMillis();
+						long interval = (currtime - compareTime);
+						if (interval > heartbeatTimeout)
+						{
+							Aio.close(channelContext, interval + "ms没有收发消息");
+						}
+					}
+
+					if (log.isInfoEnabled())
+					{
+						log.info("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id, set.size(),
+								serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
+								serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
+								serverGroupStat.getSentBytes().get());
+					}
+
+				} catch (Throwable e)
+				{
+					log.error("", e);
+				} finally
 				{
 					try
 					{
-						ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSet();
-						ReadLock readLock = objWithReadWriteLock.getLock().readLock();
-						try
-						{
-							readLock.lock();
-							Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
-
-							for (ChannelContext<Ext, P, R> entry : set)
-							{
-
-								ChannelContext<Ext, P, R> channelContext = entry;
-								Stat stat = channelContext.getStat();
-								long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-								long timeLatestSentMsg = stat.getTimeLatestSentMsg();
-								long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
-								long currtime = SystemTimer.currentTimeMillis();
-								long interval = (currtime - compareTime);
-								if (interval > heartbeatTimeout)
-								{
-									Aio.close(channelContext, interval + "ms没有收发消息");
-								}
-							}
-
-							if (log.isInfoEnabled())
-							{
-								log.info("[{}]:[{}]: curr:{}, accepted:{}, closed:{}, received:({}p)({}b), handled:{}, sent:({}p)({}b)", SystemTimer.currentTimeMillis(), id,
-										set.size(), serverGroupStat.getAccepted().get(), serverGroupStat.getClosed().get(), serverGroupStat.getReceivedPacket().get(),
-										serverGroupStat.getReceivedBytes().get(), serverGroupStat.getHandledPacket().get(), serverGroupStat.getSentPacket().get(),
-										serverGroupStat.getSentBytes().get());
-							}
-
-						} catch (Throwable e)
-						{
-							log.error("", e);
-						} finally
-						{
-							readLock.unlock();
-							Thread.sleep(heartbeatTimeout / 2);
-						}
-					} catch (Throwable e)
+						readLock.unlock();
+						Thread.sleep(heartbeatTimeout / 2);
+					} catch (Exception e)
 					{
 						log.error("", e);
 					}
+					run();
 				}
 			}
-		}, "t-aio-timer-checkheartbeat-" + id).start();
+		}, "t-aio-timer-checkheartbeat-" + id);
+		checkHeartbeatThread.setDaemon(true);
+		checkHeartbeatThread.setPriority(Thread.MIN_PRIORITY);
+		checkHeartbeatThread.start();
 	}
 
 	//	/**

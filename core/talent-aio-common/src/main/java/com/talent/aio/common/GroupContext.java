@@ -46,9 +46,9 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	public static final int CORE_POOL_SIZE = Runtime.getRuntime().availableProcessors() * 1;
 
 	/**
-	 * 心跳超时时间(单位: 毫秒)
+	 * 默认的心跳超时时间(单位: 毫秒)
 	 */
-	public static final long HEARTBEAT_TIMEOUT = 1000 * 60;
+	public static final long DEFAULT_HEARTBEAT_TIMEOUT = 1000 * 60;
 
 	/** 
 	 * 默认的接收数据的buffer size
@@ -64,7 +64,7 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	/**
 	 * 心跳超时时间(单位: 毫秒)
 	 */
-	protected long heartbeatTimeout = HEARTBEAT_TIMEOUT;
+	protected long heartbeatTimeout = DEFAULT_HEARTBEAT_TIMEOUT;
 
 	/**
 	 * 接收数据的buffer size

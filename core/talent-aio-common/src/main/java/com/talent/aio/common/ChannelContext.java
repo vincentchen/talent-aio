@@ -28,6 +28,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private static Logger log = LoggerFactory.getLogger(ChannelContext.class);
 
 	private static java.util.concurrent.atomic.AtomicLong idAtomicLong = new AtomicLong();
+	
+	private boolean autoReconnect = false;
 
 	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
 
@@ -413,6 +415,22 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setWriteCompletionHandler(WriteCompletionHandler<Ext, P, R> writeCompletionHandler)
 	{
 		this.writeCompletionHandler = writeCompletionHandler;
+	}
+
+	/**
+	 * @return the autoReconnect
+	 */
+	public boolean isAutoReconnect()
+	{
+		return autoReconnect;
+	}
+
+	/**
+	 * @param autoReconnect the autoReconnect to set
+	 */
+	public void setAutoReconnect(boolean autoReconnect)
+	{
+		this.autoReconnect = autoReconnect;
 	}
 
 	public static class Stat
