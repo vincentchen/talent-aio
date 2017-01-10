@@ -11,6 +11,8 @@
  */
 package com.talent.aio.common;
 
+import java.util.Objects;
+
 /**
  * 
  * 
@@ -94,7 +96,7 @@ public class Node implements Comparable<Node>
 		}
 		//		RemoteNode other = (RemoteNode) obj;
 
-		if (ip.equals(other.getIp()) && port == other.getPort())
+		if (Objects.equals(ip, other.getIp()) && Objects.equals(port, other.getPort()))
 		{
 			return 0;
 		} else
