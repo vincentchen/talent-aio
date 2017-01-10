@@ -12,6 +12,7 @@
 package com.talent.aio.examples.im.client;
 
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class ImClientStarter
 		aioListener = new ImClientAioListener();
 		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
 		clientGroupContext.setReadBufferSize(2048);
+		clientGroupContext.setByteOrder(ByteOrder.BIG_ENDIAN);
 		aioClient = new AioClient<>(clientGroupContext);
 	}
 
