@@ -25,6 +25,7 @@ import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
 import com.talent.aio.examples.im.server.handler.AuthHandler;
 import com.talent.aio.examples.im.server.handler.ChatHandler;
+import com.talent.aio.examples.im.server.handler.HeatbeatHandler;
 import com.talent.aio.examples.im.server.handler.ImBsAioHandlerIntf;
 import com.talent.aio.examples.im.server.handler.JoinHandler;
 import com.talent.aio.server.intf.ServerAioHandler;
@@ -50,6 +51,8 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		handlerMap.put(Command.AUTH_REQ, new AuthHandler());
 		handlerMap.put(Command.CHAT_REQ, new ChatHandler());
 		handlerMap.put(Command.JOIN_GROUP_REQ, new JoinHandler());
+		handlerMap.put(Command.HEARTBEAT_REQ, new HeatbeatHandler());
+		
 	}
 	
 	/**
