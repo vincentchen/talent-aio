@@ -119,7 +119,7 @@ public class AioServer<Ext, P extends Packet, R>
 		serverSocketChannel.accept(this, acceptCompletionHandler);
 
 		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		log.error("start listening on " + ipstr + ":" + port);
+		System.out.println("start listening on " + ipstr + ":" + port);
 	}
 
 }
