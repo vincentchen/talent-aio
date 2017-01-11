@@ -61,17 +61,7 @@ public class Aio
 
 	}
 
-	/**
-	 * Close.
-	 *
-	 * @param <Ext> the generic type
-	 * @param <P> the generic type
-	 * @param <R> the generic type
-	 * @param channelContext the channel context
-	 * @param t the t
-	 * @param remark the remark
-	 */
-	public static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark)
+	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, boolean isRemove)
 	{
 		channelContext.getDecodeRunnable().clearMsgQueue();
 		channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
@@ -97,6 +87,7 @@ public class Aio
 			{
 				return;
 			}
+			closeRunnable.setRemove(isRemove);
 			closeRunnable.setRemark(remark);
 			closeRunnable.setT(t);
 			closeRunnable.getExecutor().execute(closeRunnable);
@@ -105,23 +96,98 @@ public class Aio
 		//		closeRunnable.runTask();
 	}
 
+	/**
+	 * Close.
+	 *
+	 * @param <Ext> the generic type
+	 * @param <P> the generic type
+	 * @param <R> the generic type
+	 * @param channelContext the channel context
+	 * @param t the t
+	 * @param remark the remark
+	 */
+	public static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark)
+	{
+		close(channelContext, t, remark, false);
+	}
+
+	/**
+	 * 和close方法一样，只不过不再进行重连等维护性的操作
+	 * @param channelContext
+	 * @param t
+	 * @param remark
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午7:53:19
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void remove(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark)
+	{
+		close(channelContext, t, remark, true);
+	}
+
+	/**
+	 * 
+	 * @param channelContext
+	 * @param remark
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午7:53:48
+	 *
+	 */
 	public static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, String remark)
 	{
 		close(channelContext, null, remark);
 	}
 
 	/**
-	 * Close.
+	 * 和close方法一样，只不过不再进行重连等维护性的操作
+	 * @param channelContext
+	 * @param remark
 	 *
-	 * @param remoteip the remoteip
-	 * @param remoteport the remoteport
-	 * @param t the t
-	 * @param remark the remark
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午7:53:53
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void remove(ChannelContext<Ext, P, R> channelContext, String remark)
+	{
+		remove(channelContext, null, remark);
+	}
+
+	/**
+	 * 
+	 * @param groupContext
+	 * @param remoteip
+	 * @param remoteport
+	 * @param t
+	 * @param remark
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午7:53:59
+	 *
 	 */
 	public static <Ext, P extends Packet, R> void close(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport, Throwable t, String remark)
 	{
 		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(remoteip, remoteport);
 		close(channelContext, t, remark);
+	}
+
+	/**
+	 * 和close方法一样，只不过不再进行重连等维护性的操作
+	 * @param groupContext
+	 * @param remoteip
+	 * @param remoteport
+	 * @param t
+	 * @param remark
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午7:54:03
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void remove(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport, Throwable t, String remark)
+	{
+		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(remoteip, remoteport);
+		remove(channelContext, t, remark);
 	}
 
 	/**

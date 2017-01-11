@@ -32,6 +32,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	private ChannelContext<Ext, P, R> channelContext;
 	private String remark;
 	private Throwable t;
+	private boolean isRemove;
 	private boolean isWaitingExecute = false;
 	private static final AtomicLong closeCount = new AtomicLong();
 
@@ -205,5 +206,21 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	public void setWaitingExecute(boolean isWaitingExecute)
 	{
 		this.isWaitingExecute = isWaitingExecute;
+	}
+
+	/**
+	 * @return the isRemove
+	 */
+	public boolean isRemove()
+	{
+		return isRemove;
+	}
+
+	/**
+	 * @param isRemove the isRemove to set
+	 */
+	public void setRemove(boolean isRemove)
+	{
+		this.isRemove = isRemove;
 	}
 }
