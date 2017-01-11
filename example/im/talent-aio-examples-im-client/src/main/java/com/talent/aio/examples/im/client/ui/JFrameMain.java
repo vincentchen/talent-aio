@@ -116,7 +116,7 @@ public class JFrameMain extends javax.swing.JFrame
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("talent-im-client");
 
-        serverip.setText("118.178.88.70");
+        serverip.setText("127.0.0.1");
         serverip.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 serveripActionPerformed(evt);
