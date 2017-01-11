@@ -74,7 +74,7 @@ public class ImClientStarter
 
 	private ClientAioListener<Object, ImPacket, Object> aioListener = null;
 	
-	private static ReconnConf reconnConf = new ReconnConf(5000L);
+	private static ReconnConf<Object, ImPacket, Object> reconnConf = new ReconnConf<Object, ImPacket, Object>(5000L);
 
 	//--------------
 
