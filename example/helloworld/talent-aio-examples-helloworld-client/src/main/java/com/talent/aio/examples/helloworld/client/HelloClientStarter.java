@@ -38,7 +38,7 @@ public class HelloClientStarter
 	private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
 	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
 	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
-	private static ReconnConf<Object, HelloPacket, Object> reconnConf = new ReconnConf<Object, HelloPacket, Object>(5000L);
+	private static ReconnConf<Object, HelloPacket, Object> reconnConf = new ReconnConf<Object, HelloPacket, Object>(5000L);//用来自动连接的，不想自动连接请传null
 
 	public static void main(String[] args) throws Exception
 	{
@@ -46,7 +46,7 @@ public class HelloClientStarter
 		serverPort = com.talent.aio.examples.helloworld.common.Const.PORT;
 		aioClientHandler = new HelloClientAioHandler();
 		aioListener = null;
-		
+
 		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener, reconnConf);
 		aioClient = new AioClient<>(clientGroupContext);
 
@@ -54,7 +54,6 @@ public class HelloClientStarter
 		int bindPort = 0;
 		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort);
 
-		
 		//以下内容不是启动的过程，而是属于发消息的过程
 		HelloPacket packet = new HelloPacket();
 		packet.setBody("hello world".getBytes(HelloPacket.CHARSET));
