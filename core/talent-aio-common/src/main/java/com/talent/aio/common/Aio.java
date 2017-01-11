@@ -84,11 +84,11 @@ public class Aio
 		//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
 		channelContext.getSendRunnableNormPrior().setCanceled(true);
 		//		channelContext.getSendRunnableHighPrior().setCanceled(true);
-		
-		
+
 		CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
 		if (closeRunnable.isWaitingExecute())
 		{
+			log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t, closeRunnable.getT());
 			return;
 		}
 		synchronized (closeRunnable)

@@ -102,8 +102,9 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 					{
 						if (log.isDebugEnabled())
 						{
-							log.debug("数据不够，组不了包");
+							log.debug("{},数据不够，组不了包", channelContext.toString());
 						}
+//						log.error("{},数据不够，组不了包", channelContext.toString());
 						byteBuffer.position(initPosition);
 						lastByteBuffer = byteBuffer;
 						continue label_1;
@@ -124,13 +125,13 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						{
 							if (log.isDebugEnabled())
 							{
-								log.debug("组包后，还剩有数据:{}", byteBuffer.limit() - byteBuffer.position());
+								log.debug("{},组包后，还剩有数据:{}", channelContext, byteBuffer.limit() - byteBuffer.position());
 							}
 							continue label_2;
 						} else//组包后，数据刚好用完
 						{
 							lastByteBuffer = null;
-							log.debug("组包后，数据刚好用完");
+							log.debug("{},组包后，数据刚好用完", channelContext);
 							continue label_1;
 						}
 					}

@@ -55,6 +55,7 @@ public class ImClientStarter
 		aioClientHandler = new ImClientAioHandler();
 		aioListener = new ImClientAioListener();
 		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
+//		clientGroupContext.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		clientGroupContext.setReadBufferSize(2048);
 		clientGroupContext.setByteOrder(ByteOrder.BIG_ENDIAN);
 		aioClient = new AioClient<>(clientGroupContext);
@@ -74,7 +75,7 @@ public class ImClientStarter
 
 	//--------------
 
-	public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
+	public static String SERVER_IP = "118.178.88.70"; //服务器的IP地址
 
 	public static int SERVER_PORT = 9321; //服务器的PORT
 
