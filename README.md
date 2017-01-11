@@ -72,7 +72,7 @@
 public class HelloServerStarter
 {
 	static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
-	static AioServer<Object, HelloPacket, Object> aioServer = null; //可以为空
+	static AioServer<Object, HelloPacket, Object> aioServer = null;
 	static ServerAioHandler<Object, HelloPacket, Object> aioHandler = null;
 	static ServerAioListener<Object, HelloPacket, Object> aioListener = null;
 	static String ip = null;
