@@ -72,7 +72,7 @@
 public class HelloServerStarter
 {
 	static ServerGroupContext<Object, HelloPacket, Object> serverGroupContext = null;
-	static AioServer<Object, HelloPacket, Object> aioServer = null; //可以为空
+	static AioServer<Object, HelloPacket, Object> aioServer = null;
 	static ServerAioHandler<Object, HelloPacket, Object> aioHandler = null;
 	static ServerAioListener<Object, HelloPacket, Object> aioListener = null;
 	static String ip = null;
@@ -101,9 +101,7 @@ public class HelloClientStarter
 	private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
 	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
 	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
-
-	public static String SERVER_IP = "127.0.0.1"; //服务器的IP地址
-	public static int SERVER_PORT = 9321; //服务器的PORT
+	private static ReconnConf<Object, HelloPacket, Object> reconnConf = new ReconnConf<Object, HelloPacket, Object>(5000L);//用来自动连接的，不想自动连接请传null
 
 	public static void main(String[] args) throws Exception
 	{
@@ -111,15 +109,14 @@ public class HelloClientStarter
 		serverPort = com.talent.aio.examples.helloworld.common.Const.PORT;
 		aioClientHandler = new HelloClientAioHandler();
 		aioListener = null;
-		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
+
+		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener, reconnConf);
 		aioClient = new AioClient<>(clientGroupContext);
 
 		String bindIp = null;
 		int bindPort = 0;
-		boolean autoReconnect = false; //暂时不支持自动重连，需要业务自己实现，后续版本会支持此属性为true
-		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort, autoReconnect);
+		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort);
 
-		
 		//以下内容不是启动的过程，而是属于发消息的过程
 		HelloPacket packet = new HelloPacket();
 		packet.setBody("hello world".getBytes(HelloPacket.CHARSET));
