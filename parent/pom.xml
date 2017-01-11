@@ -33,6 +33,7 @@
 		<module>../core/talent-aio-common</module>
 		<module>../core/talent-aio-server</module>
 		<module>../core/talent-aio-client</module>
+		<module>../core/talent-aio-codec</module>
 
 
 		<module>../example/im/talent-aio-examples-im-common</module>

@@ -9,9 +9,9 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.examples.im.common.ImPacket;
 
 
-public class HeatbeatHandler implements ImBsAioHandlerIntf
+public class HeartbeatHandler implements ImBsAioHandlerIntf
 {
-	private static Logger log = LoggerFactory.getLogger(HeatbeatHandler.class);
+	private static Logger log = LoggerFactory.getLogger(HeartbeatHandler.class);
 
 	@PostConstruct
 	public void init()

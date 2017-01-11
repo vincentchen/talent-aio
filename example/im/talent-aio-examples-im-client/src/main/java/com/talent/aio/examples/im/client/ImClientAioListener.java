@@ -105,7 +105,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> channelContext)
+	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> newChannelContext, ChannelContext<Object, ImPacket, Object> initChannelContext)
 	{
 		return true;
 	}

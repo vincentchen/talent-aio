@@ -28,8 +28,6 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private static Logger log = LoggerFactory.getLogger(ChannelContext.class);
 
 	private static java.util.concurrent.atomic.AtomicLong idAtomicLong = new AtomicLong();
-	
-	private boolean autoReconnect = false;
 
 	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
 
@@ -417,22 +415,6 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		this.writeCompletionHandler = writeCompletionHandler;
 	}
 
-	/**
-	 * @return the autoReconnect
-	 */
-	public boolean isAutoReconnect()
-	{
-		return autoReconnect;
-	}
-
-	/**
-	 * @param autoReconnect the autoReconnect to set
-	 */
-	public void setAutoReconnect(boolean autoReconnect)
-	{
-		this.autoReconnect = autoReconnect;
-	}
-
 	public static class Stat
 	{
 		/**
@@ -444,6 +426,11 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		 * 最近一次发消息的时间
 		 */
 		private long timeLatestSentMsg = SystemTimer.currentTimeMillis();
+		
+		/**
+		 * 连接关闭的时间
+		 */
+		private long timeClosed = SystemTimer.currentTimeMillis();
 
 		/**
 		 * 本连接已发送的字节数
@@ -601,6 +588,22 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		public void setCountReceivedPacket(AtomicLong countReceivedPacket)
 		{
 			this.countReceivedPacket = countReceivedPacket;
+		}
+
+		/**
+		 * @return the timeClosed
+		 */
+		public long getTimeClosed()
+		{
+			return timeClosed;
+		}
+
+		/**
+		 * @param timeClosed the timeClosed to set
+		 */
+		public void setTimeClosed(long timeClosed)
+		{
+			this.timeClosed = timeClosed;
 		}
 
 	}

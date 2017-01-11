@@ -22,7 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.client.intf.ClientAioListener;
+import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
+import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
@@ -61,40 +63,68 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	private ClientGroupStat clientGroupStat = new ClientGroupStat();
 
 	/**
-	 * Instantiates a new aio server config.
+	 * 不重连
+	 * @param ip
+	 * @param port
+	 * @param aioHandler
+	 * @param aioListener
 	 *
-	 * @param ip the ip
-	 * @param port the port
-	 * @param aioHandler the aio handler
-	 * @param aioListener the send listener
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午5:01:50
+	 *
 	 */
 	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener)
 	{
-		this(ip, port, aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+		this(ip, port, aioHandler, aioListener, null, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-client-group")));
 	}
 
 	/**
-	 * Instantiates a new server group context.
+	 * 
+	 * @param ip
+	 * @param port
+	 * @param aioHandler
+	 * @param aioListener
+	 * @param reconnConf 不需要重连就为空
 	 *
-	 * @param ip the ip
-	 * @param port the port
-	 * @param aioHandler the aio handler
-	 * @param aioListener the send listener
-	 * @param groupExecutor the group executor
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午4:30:53
+	 *
 	 */
-	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ExecutorService groupExecutor)
+	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf)
+	{
+		this(ip, port, aioHandler, aioListener, reconnConf, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+				DefaultThreadFactory.getInstance("t-aio-client-group")));
+	}
+
+	/**
+	 * 
+	 * @param ip
+	 * @param port
+	 * @param aioHandler
+	 * @param aioListener
+	 * @param reconnConf 不需要重连就为空
+	 * @param groupExecutor
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午4:29:48
+	 *
+	 */
+	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf,
+			ExecutorService groupExecutor)
 	{
 		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port);
 
 		this.setClientAioHandler(aioHandler);
 		this.setClientAioListener(aioListener);
 
+		this.reconnConf = reconnConf;
 		this.ip = ip;
 		this.port = port;
 		this.groupExecutor = groupExecutor;
-
 	}
+
+	
 
 	//	/**
 	//	 * Instantiates a new server group context.
@@ -276,6 +306,14 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public AioListener<Ext, P, R> getAioListener()
 	{
 		return this.getClientAioListener();
+	}
+
+	/**
+	 * @param reconnConf the reconnConf to set
+	 */
+	public void setReconnConf(ReconnConf reconnConf)
+	{
+		this.reconnConf = reconnConf;
 	}
 
 }

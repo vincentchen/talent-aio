@@ -17,6 +17,7 @@ import com.talent.aio.client.ClientGroupContext;
 import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.Aio;
+import com.talent.aio.common.ReconnConf;
 import com.talent.aio.examples.helloworld.common.HelloPacket;
 
 /**
@@ -37,6 +38,7 @@ public class HelloClientStarter
 	private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
 	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
 	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
+	private static ReconnConf reconnConf = new ReconnConf(5000L);
 
 	public static void main(String[] args) throws Exception
 	{
@@ -44,13 +46,13 @@ public class HelloClientStarter
 		serverPort = com.talent.aio.examples.helloworld.common.Const.PORT;
 		aioClientHandler = new HelloClientAioHandler();
 		aioListener = null;
-		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
+		
+		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener, reconnConf);
 		aioClient = new AioClient<>(clientGroupContext);
 
 		String bindIp = null;
 		int bindPort = 0;
-		boolean autoReconnect = false; //暂时不支持自动重连，需要业务自己实现，后续版本会支持此属性为true
-		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort, autoReconnect);
+		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort);
 
 		
 		//以下内容不是启动的过程，而是属于发消息的过程

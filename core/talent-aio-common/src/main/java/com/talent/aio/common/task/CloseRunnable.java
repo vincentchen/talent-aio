@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
+import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractSynRunnable;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -80,17 +82,21 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				log.error(e.toString());
 			}
 
+			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+			
+			ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+			if (reconnConf != null && reconnConf.getInterval() > 0)
+			{
+				reconnConf.getQueue().put(channelContext);
+			}
 			
 			//删除集合中的维护信息 start
-			if (!channelContext.isAutoReconnect())
+			try
 			{
-				try
-				{
-					groupContext.getConnections().remove(channelContext);
-				} catch (Throwable e)
-				{
-					log.error(e.toString(), e);
-				}
+				groupContext.getConnections().remove(channelContext);
+			} catch (Throwable e)
+			{
+				log.error(e.toString(), e);
 			}
 
 			try

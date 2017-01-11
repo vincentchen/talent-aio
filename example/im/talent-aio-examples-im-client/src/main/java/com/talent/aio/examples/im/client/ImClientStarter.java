@@ -22,6 +22,7 @@ import com.talent.aio.client.AioClient;
 import com.talent.aio.client.ClientGroupContext;
 import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.client.intf.ClientAioListener;
+import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.examples.im.common.ImPacket;
 
@@ -54,7 +55,7 @@ public class ImClientStarter
 		this.serverPort = serverPort;
 		aioClientHandler = new ImClientAioHandler();
 		aioListener = new ImClientAioListener();
-		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener);
+		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener, reconnConf);
 //		clientGroupContext.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		clientGroupContext.setReadBufferSize(2048);
 		clientGroupContext.setByteOrder(ByteOrder.BIG_ENDIAN);
@@ -72,6 +73,8 @@ public class ImClientStarter
 	private ClientAioHandler<Object, ImPacket, Object> aioClientHandler = null;
 
 	private ClientAioListener<Object, ImPacket, Object> aioListener = null;
+	
+	private static ReconnConf reconnConf = new ReconnConf(5000L);
 
 	//--------------
 

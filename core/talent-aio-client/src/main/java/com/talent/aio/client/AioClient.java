@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -25,6 +26,7 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ChannelContext.Stat;
 import com.talent.aio.common.ObjWithReadWriteLock;
 import com.talent.aio.common.ReadCompletionHandler;
+import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.utils.SystemTimer;
 
@@ -77,32 +79,32 @@ public class AioClient<Ext, P extends Packet, R>
 		ExecutorService groupExecutor = clientGroupContext.getGroupExecutor();
 		this.channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
 
-		startTask();
+		startHeartbeatTask();
+		
+		startReconnTask();
 	}
 
-	/**
-	 * 
-	 * @param bindIp
-	 * @param bindPort
-	 * @param autoReconnect
-	 * @return
-	 * @throws Exception
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2016年12月19日 下午5:49:05
-	 *
-	 */
-	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, boolean autoReconnect) throws Exception
-	{
-		return connect(bindIp, bindPort, autoReconnect, null);
-	}
+	//	/**
+	//	 * 
+	//	 * @param bindIp
+	//	 * @param bindPort
+	//	 * @param autoReconnect
+	//	 * @return
+	//	 * @throws Exception
+	//	 *
+	//	 * @author: tanyaowu
+	//	 * @创建时间:　2016年12月19日 下午5:49:05
+	//	 *
+	//	 */
+	//	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, boolean autoReconnect) throws Exception
+	//	{
+	//		return connect(bindIp, bindPort, autoReconnect, null);
+	//	}
 
 	/**
 	 * 
 	 * @param bindIp 绑定本地ip
 	 * @param bindPort 绑定本地port
-	 * @param autoReconnect 是否自动重连
-	 * @param channelContext
 	 * @return
 	 * @throws Exception
 	 *
@@ -110,7 +112,7 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月19日 下午5:49:00
 	 *
 	 */
-	private ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, boolean autoReconnect, ClientChannelContext<Ext, P, R> channelContext) throws Exception
+	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort) throws Exception
 	{
 		String ip = clientGroupContext.getIp();
 		int port = clientGroupContext.getPort();
@@ -143,16 +145,15 @@ public class AioClient<Ext, P extends Packet, R>
 			future.get(5, TimeUnit.SECONDS);
 			log.info("connected to {}:{}", ip, port);
 
-			if (channelContext == null)
-			{
-				channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
-				channelContext.setBindIp(bindIp);
-				channelContext.setBindPort(bindPort);
-				channelContext.setAutoReconnect(autoReconnect);
-			} else
-			{
-				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
-			}
+			//			if (channelContext == null)
+			//			{
+			ClientChannelContext<Ext, P, R> channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+			channelContext.setBindIp(bindIp);
+			channelContext.setBindPort(bindPort);
+			//			} else
+			//			{
+			//				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
+			//			}
 
 			ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 			if (clientAioListener != null)
@@ -201,9 +202,16 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月19日 下午5:43:35
 	 *
 	 */
-	public void reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
+	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
 	{
-		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.isAutoReconnect(), channelContext);
+		ClientChannelContext<Ext, P, R> newChannelContext = connect(channelContext.getBindIp(), channelContext.getBindPort());
+		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
+		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
+		if (clientAioListener != null)
+		{
+			clientAioListener.onAfterReconnected(newChannelContext, channelContext);
+		}
+		return newChannelContext;
 	}
 
 	/**
@@ -220,7 +228,7 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @创建时间:　2017年1月2日 下午6:01:06
 	 *
 	 */
-	private void startTask()
+	private void startHeartbeatTask()
 	{
 		final ClientGroupStat clientGroupStat = clientGroupContext.getClientGroupStat();
 		final ClientAioHandler<Ext, P, R> aioHandler = (ClientAioHandler<Ext, P, R>) clientGroupContext.getClientAioHandler();
@@ -245,29 +253,29 @@ public class AioClient<Ext, P extends Packet, R>
 						{
 							ClientChannelContext<Ext, P, R> channelContext = (ClientChannelContext<Ext, P, R>) entry;
 
-							if (channelContext.isClosed()) //已经关闭了
+							//							if (channelContext.isClosed()) //已经关闭了
+							//							{
+							//								if (channelContext.isAutoReconnect())
+							//								{
+							//									AioClient.this.reconnect(channelContext);
+							//								}
+							//							} else
+							//							{
+							Stat stat = channelContext.getStat();
+							long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
+							long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
+							long interval = (currtime - compareTime);
+							if (interval >= heartbeatTimeout / 2)
 							{
-								if (channelContext.isAutoReconnect())
+								P packet = aioHandler.heartbeatPacket();
+								if (packet != null)
 								{
-									AioClient.this.reconnect(channelContext);
-								}
-							} else
-							{
-								Stat stat = channelContext.getStat();
-								long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-								long timeLatestSentMsg = stat.getTimeLatestSentMsg();
-								long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
-								long interval = (currtime - compareTime);
-								if (interval >= heartbeatTimeout / 2)
-								{
-									P packet = aioHandler.heartbeatPacket();
-									if (packet != null)
-									{
-										log.info("{}发送心跳包", channelContext.toString());
-										Aio.send(channelContext, packet);
-									}
+									log.info("{}发送心跳包", channelContext.toString());
+									Aio.send(channelContext, packet);
 								}
 							}
+							//							}
 						}
 						if (log.isInfoEnabled())
 						{
@@ -293,11 +301,95 @@ public class AioClient<Ext, P extends Packet, R>
 							log.error(e.toString(), e);
 						} finally
 						{
-							
+
 						}
 					}
 				}
 			}
-		}, "t-aio-timer-heartbeat & reconnect-" + id).start();
+		}, "t-aio-timer-heartbeat" + id).start();
+	}
+
+	/**
+	 * 启动重连任务
+	 * 
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午5:48:17
+	 *
+	 */
+	private void startReconnTask()
+	{
+		final ReconnConf<Ext, P, R> reconnConf = clientGroupContext.getReconnConf();
+		if (reconnConf == null || reconnConf.getInterval() <= 0)
+		{
+			return;
+		}
+
+		final String id = clientGroupContext.getId();
+		Thread thread = new Thread(new Runnable()
+		{
+
+			@Override
+			public void run()
+			{
+				LinkedBlockingQueue<ChannelContext<Ext, P, R>> queue = reconnConf.getQueue();
+				while (true)
+				{
+					ClientChannelContext<Ext, P, R> channelContext = null;
+					try
+					{
+						channelContext = (ClientChannelContext<Ext, P, R>) queue.take();
+					} catch (InterruptedException e1)
+					{
+						log.error(e1.toString(), e1);
+					}
+					if (channelContext == null)
+					{
+						continue;
+					}
+
+					try
+					{
+
+						ClientChannelContext<Ext, P, R> newChannelContext = null;
+						try
+						{
+							long currtime = SystemTimer.currentTimeMillis();
+							long closetime = channelContext.getStat().getTimeClosed();
+							long sleeptime = reconnConf.getInterval() - (currtime - closetime);
+							if (sleeptime > 0)
+							{
+								Thread.sleep(sleeptime);
+							}
+
+							newChannelContext = reconnect(channelContext);
+						} catch (java.lang.Throwable e)
+						{
+							log.error(e.toString(), e);
+						}
+						if (newChannelContext == null)
+						{
+							channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+							queue.put(channelContext);
+							continue;
+						}
+
+						ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
+						if (clientAioListener != null)
+						{
+							clientAioListener.onAfterReconnected(newChannelContext, channelContext);
+						}
+
+					} catch (java.lang.Throwable e)
+					{
+						log.error(e.toString(), e);
+					}
+				}
+			}
+		});
+		thread.setName("t-aio-timer-reconnect" + id);
+		thread.setDaemon(true);
+		thread.start();
+
 	}
 }

@@ -70,6 +70,8 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 * 接收数据的buffer size
 	 */
 	protected int readBufferSize = READ_BUFFER_SIZE;
+	
+	protected ReconnConf<Ext, P, R> reconnConf;//重连配置
 
 	//	private AioHandler<Ext, P, R> aioHandler;
 	//
@@ -440,5 +442,13 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 * 
 	 */
 	public abstract AioListener<Ext, P, R> getAioListener();
+
+	/**
+	 * @return the reconnConf
+	 */
+	public ReconnConf<Ext, P, R> getReconnConf()
+	{
+		return reconnConf;
+	}
 
 }

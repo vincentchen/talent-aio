@@ -116,7 +116,7 @@ public class JFrameMain extends javax.swing.JFrame
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("talent-im-client");
 
-        serverip.setText("127.0.0.1");
+        serverip.setText("118.178.88.70");
         serverip.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 serveripActionPerformed(evt);
@@ -314,7 +314,7 @@ public class JFrameMain extends javax.swing.JFrame
 			//                int count = end - start + 1;
 			for (int i = start; i < end; i++)
 			{
-				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(null, null, true);
+				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(null, null);
 
 				String key = ClientNodes.getKey(channelContext);
 				listModel.addElement(key);
