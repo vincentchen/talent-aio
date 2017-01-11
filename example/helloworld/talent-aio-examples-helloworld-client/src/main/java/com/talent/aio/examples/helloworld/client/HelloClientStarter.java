@@ -38,7 +38,7 @@ public class HelloClientStarter
 	private static ClientGroupContext<Object, HelloPacket, Object> clientGroupContext = null;
 	private static ClientAioHandler<Object, HelloPacket, Object> aioClientHandler = null;
 	private static ClientAioListener<Object, HelloPacket, Object> aioListener = null;
-	private static ReconnConf reconnConf = new ReconnConf(5000L);
+	private static ReconnConf<Object, HelloPacket, Object> reconnConf = new ReconnConf<Object, HelloPacket, Object>(5000L);
 
 	public static void main(String[] args) throws Exception
 	{
