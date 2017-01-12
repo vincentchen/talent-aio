@@ -5,7 +5,7 @@
  * @项目名称: talent-aio-client
  *
  * @author: tanyaowu 
- * @创建时间: 2017年1月11日 下午7:07:44
+ * @创建时间: 2017年1月11日 下午3:53:46
  *
  * **************************************************************************
  */
@@ -16,9 +16,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.talent.aio.common.intf.Packet;
 
 /**
- * 
+ * 目前只支持
  * @author tanyaowu 
- * @创建时间 2017年1月11日 下午7:07:44
+ * @创建时间 2017年1月11日 下午3:53:46
  *
  * @操作列表
  *  编号	| 操作时间	| 操作人员	 | 操作说明
@@ -27,33 +27,48 @@ import com.talent.aio.common.intf.Packet;
  */
 public class ReconnConf<Ext, P extends Packet, R>
 {
+
 	/**
-	 * @param interval
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2017年1月11日 下午7:13:28
-	 * 
+	 * 重连的间隔时间，单位毫秒
 	 */
-	public ReconnConf(long interval)
-	{
-		super();
-		this.interval = interval;
-	}
+	private long interval = 5000;
+
+	LinkedBlockingQueue<ChannelContext<Ext, P, R>> queue = new LinkedBlockingQueue<ChannelContext<Ext, P, R>>();
 
 	/**
 	 * 
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年1月11日 下午7:13:51
+	 * @创建时间:　2017年1月11日 下午3:53:46
 	 * 
 	 */
 	public ReconnConf()
 	{
-		super();
 	}
 
-	private long interval = 5000L;
-	private LinkedBlockingQueue<ChannelContext<Ext, P, R>> queue = new LinkedBlockingQueue<ChannelContext<Ext, P, R>>();
+	/**
+	 * @param interval
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午4:27:30
+	 * 
+	 */
+	public ReconnConf(long interval)
+	{
+		this();
+		this.setInterval(interval);
+	}
+
+	/**
+	 * @param args
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月11日 下午3:53:46
+	 * 
+	 */
+	public static void main(String[] args)
+	{
+	}
 
 	/**
 	 * @return the interval
