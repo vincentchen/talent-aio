@@ -32,7 +32,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	private ChannelContext<Ext, P, R> channelContext;
 	private String remark;
 	private Throwable t;
-	private boolean isRemove;
+	private boolean isRemove = false;
 	private boolean isWaitingExecute = false;
 	private static final AtomicLong closeCount = new AtomicLong();
 
@@ -85,11 +85,15 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 
 			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
 			
-			ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
-			if (reconnConf != null && reconnConf.getInterval() > 0)
+			if (!isRemove)
 			{
-				reconnConf.getQueue().put(channelContext);
+				ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+				if (reconnConf != null && reconnConf.getInterval() > 0)
+				{
+					reconnConf.getQueue().put(channelContext);
+				}
 			}
+			
 			
 			//删除集合中的维护信息 start
 			try
