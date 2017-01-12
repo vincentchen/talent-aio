@@ -23,6 +23,7 @@ import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.common.maintain.Connections;
 import com.talent.aio.common.maintain.Groups;
+import com.talent.aio.common.maintain.Syns;
 import com.talent.aio.common.maintain.Users;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.threadpool.DefaultThreadFactory;
@@ -108,6 +109,7 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	protected Connections<Ext, P, R> connections = new Connections<>();
 	protected Groups<Ext, P, R> groups = new Groups<>();
 	protected Users<Ext, P, R> users = new Users<>();
+	protected Syns<Ext, P, R> syns = new Syns<>();
 
 	protected String id;
 
@@ -449,6 +451,22 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	public ReconnConf<Ext, P, R> getReconnConf()
 	{
 		return reconnConf;
+	}
+
+	/**
+	 * @return the syns
+	 */
+	public Syns<Ext, P, R> getSyns()
+	{
+		return syns;
+	}
+
+	/**
+	 * @param syns the syns to set
+	 */
+	public void setSyns(Syns<Ext, P, R> syns)
+	{
+		this.syns = syns;
 	}
 
 }

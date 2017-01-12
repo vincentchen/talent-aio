@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.maintain.Syns;
 import com.talent.aio.common.task.CloseRunnable;
 import com.talent.aio.common.task.SendRunnable;
 import com.talent.aio.common.threadpool.SynThreadPoolExecutor;
@@ -390,7 +391,11 @@ public class Aio
 	}
 
 	/**
-	 * 同步发送消息.
+	 * 同步发送消息.<br>
+	 * 注意：<br>
+	 * 1、参数packet的synSeq不为空且大于0（null、等于小于0都不行）<br>
+	 * 2、对端收到此消息后，需要回一条synSeq一样的消息<br>
+	 * 3、对于同步发送，框架层面并不会帮应用去调用handler.handler(packet, channelContext)方法，应用需要自己去处理响应的消息包，参考：groupContext.getAioHandler().handler(packet, channelContext);<br>
 	 * @param channelContext
 	 * @param packet
 	 * @param timeout 超时时间，单位：毫秒
@@ -400,10 +405,54 @@ public class Aio
 	 * @创建时间:　2017年1月1日 下午12:52:11
 	 *
 	 */
+	@SuppressWarnings("finally")
 	public static <Ext, P extends Packet, R> P synSend(ChannelContext<Ext, P, R> channelContext, P packet, long timeout)
 	{
-		log.error("待实现");
-		return null;
+		if (channelContext == null)
+		{
+			throw new RuntimeException("channelContext == null");
+		}
+
+		Integer synSeq = packet.getSynSeq();
+		if (synSeq == null || synSeq <= 0)
+		{
+			throw new RuntimeException("synSeq必须大于0");
+		}
+
+		Syns<Ext, P, R> syns = channelContext.getGroupContext().getSyns();
+		try
+		{
+			syns.put(synSeq, packet);
+
+			synchronized (packet)
+			{
+				send(channelContext, packet);
+				try
+				{
+					packet.wait(timeout);
+				} catch (InterruptedException e)
+				{
+					log.error(e.toString(), e);
+				}
+			}
+		} catch (Exception e)
+		{
+			log.error(e.toString(), e);
+		} finally
+		{
+			P respPacket = syns.remove(synSeq);
+			if (respPacket == null)
+			{
+				log.error("respPacket == null,{}", channelContext);
+				return null;
+			}
+			if (respPacket == packet)
+			{
+				log.error("同步发送超时,{}", channelContext);
+				return null;
+			}
+			return respPacket;
+		}
 	}
 
 }

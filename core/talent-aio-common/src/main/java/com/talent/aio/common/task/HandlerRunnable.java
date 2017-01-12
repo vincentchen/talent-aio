@@ -5,6 +5,7 @@ package com.talent.aio.common.task;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.maintain.Syns;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 
 /**
@@ -85,6 +87,8 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 	//		}
 	//	}
 
+	private AtomicLong synFailCount = new AtomicLong();
+	
 	private int doPacket(P packet)
 	{
 		int ret = 0;
@@ -93,8 +97,29 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 			try
 			{
 				GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-				groupContext.getAioHandler().handler(packet, channelContext);
-				groupContext.getGroupStat().getHandledPacket().incrementAndGet();
+
+				Integer synSeq = packet.getSynSeq();
+				if (synSeq != null && synSeq > 0)
+				{
+					Syns<Ext, P, R> syns = channelContext.getGroupContext().getSyns();
+					P initPacket = syns.remove(synSeq);
+					if (initPacket != null)
+					{
+						synchronized (initPacket)
+						{
+							syns.put(synSeq, packet);
+							initPacket.notify();
+						}
+						groupContext.getGroupStat().getHandledPacket().incrementAndGet();
+					} else
+					{
+						log.error("[{}]同步消息失败, synSeq is {}, 但是同步集合中没有对应key值", synFailCount.incrementAndGet(), synSeq);
+					}
+				} else
+				{
+					groupContext.getAioHandler().handler(packet, channelContext);
+					groupContext.getGroupStat().getHandledPacket().incrementAndGet();
+				}
 				ret++;
 			} catch (Exception e)
 			{
