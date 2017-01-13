@@ -349,16 +349,16 @@ public class Aio
 	}
 
 	/**
-	 * 
+	 * 发消息到组
 	 * @param groupContext
 	 * @param groupid
 	 * @param packet
+	 * @param channelContextFilter filter方法返回为false的ChannelContext将会过滤掉(即不会把消息发给这个ChannelContext)
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2016年11月17日 下午5:40:24
 	 *
 	 */
-	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet)
+	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet, ChannelContextFilter<Ext, P, R> channelContextFilter)
 	{
 		ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = groupContext.getGroups().clients(groupid);
 		if (objWithReadWriteLock == null)
@@ -379,6 +379,14 @@ public class Aio
 			}
 			for (ChannelContext<Ext, P, R> channelContext : set)
 			{
+				if (channelContextFilter != null)
+				{
+					boolean isfilter = channelContextFilter.filter(channelContext);
+					if (!isfilter)
+					{
+						continue;
+					}
+				}
 				send(channelContext, packet);
 			}
 		} catch (Exception e)
@@ -388,6 +396,21 @@ public class Aio
 		{
 			lock.unlock();
 		}
+	}
+
+	/**
+	 * 
+	 * @param groupContext
+	 * @param groupid
+	 * @param packet
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月13日 下午3:33:54
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet)
+	{
+		sendToGroup(groupContext, groupid, packet, null);
 	}
 
 	/**

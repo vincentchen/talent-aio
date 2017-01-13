@@ -34,7 +34,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	private Throwable t;
 	private boolean isRemove = false;
 	private boolean isWaitingExecute = false;
-	private static final AtomicLong closeCount = new AtomicLong();
+	private static final AtomicLong closeCount = new AtomicLong();//总的关闭次数
 
 	public CloseRunnable(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, Executor executor)
 	{
@@ -84,17 +84,21 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			}
 
 			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
-			
+
 			if (!isRemove)
 			{
+
 				ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+
 				if (reconnConf != null && reconnConf.getInterval() > 0)
 				{
-					reconnConf.getQueue().put(channelContext);
+					if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReConnCount())
+					{
+						reconnConf.getQueue().put(channelContext);
+					}
 				}
 			}
-			
-			
+
 			//删除集合中的维护信息 start
 			try
 			{
@@ -111,7 +115,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			{
 				log.error(e.toString(), e);
 			}
-			
+
 			try
 			{
 				groupContext.getUsers().unbind(channelContext);
@@ -119,7 +123,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			{
 				log.error(e.toString(), e);
 			}
-			
+
 			try
 			{
 				groupContext.getGroups().unbind(channelContext);
@@ -127,7 +131,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 			{
 				log.error(e.toString(), e);
 			}
-			
+
 			channelContext.setClosed(true);
 			channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
 			//删除集合中的维护信息 end

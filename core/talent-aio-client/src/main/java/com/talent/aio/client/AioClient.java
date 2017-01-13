@@ -369,11 +369,21 @@ public class AioClient<Ext, P extends Packet, R>
 						}
 						if (newChannelContext == null)
 						{
+							channelContext.setReConnCount(channelContext.getReConnCount() + 1);
+							ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+
+//							if (reconnConf != null && reconnConf.getInterval() > 0)
+//							{
+								if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReConnCount())
+								{
+									queue.put(channelContext);
+								}
+//							}
 							channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
-							queue.put(channelContext);
 							continue;
 						}
 
+						channelContext.setReConnCount(0);
 						ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 						if (clientAioListener != null)
 						{

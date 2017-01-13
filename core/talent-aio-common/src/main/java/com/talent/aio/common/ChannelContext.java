@@ -44,6 +44,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
 	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>(this);
+	
+	private int reConnCount = 0;//重连次数，连接成功后，此值会被重置0
 
 	//	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>();
 
@@ -413,6 +415,22 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setWriteCompletionHandler(WriteCompletionHandler<Ext, P, R> writeCompletionHandler)
 	{
 		this.writeCompletionHandler = writeCompletionHandler;
+	}
+
+	/**
+	 * @return the reConnCount
+	 */
+	public int getReConnCount()
+	{
+		return reConnCount;
+	}
+
+	/**
+	 * @param reConnCount the reConnCount to set
+	 */
+	public void setReConnCount(int reConnCount)
+	{
+		this.reConnCount = reConnCount;
 	}
 
 	public static class Stat

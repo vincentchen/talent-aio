@@ -32,6 +32,11 @@ public class ReconnConf<Ext, P extends Packet, R>
 	 * 重连的间隔时间，单位毫秒
 	 */
 	private long interval = 5000;
+	
+	/**
+	 * 连续重连次数，当连续重连这么多次都失败时，不再重连。0和负数则一直重连
+	 */
+	private int retryCount = 0;
 
 	LinkedBlockingQueue<ChannelContext<Ext, P, R>> queue = new LinkedBlockingQueue<ChannelContext<Ext, P, R>>();
 
@@ -57,6 +62,21 @@ public class ReconnConf<Ext, P extends Packet, R>
 	{
 		this();
 		this.setInterval(interval);
+	}
+
+	/**
+	 * @param interval
+	 * @param retryCount
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月13日 下午3:00:45
+	 * 
+	 */
+	public ReconnConf(long interval, int retryCount)
+	{
+		super();
+		this.interval = interval;
+		this.retryCount = retryCount;
 	}
 
 	/**
@@ -92,6 +112,22 @@ public class ReconnConf<Ext, P extends Packet, R>
 	public LinkedBlockingQueue<ChannelContext<Ext, P, R>> getQueue()
 	{
 		return queue;
+	}
+
+	/**
+	 * @return the retryCount
+	 */
+	public int getRetryCount()
+	{
+		return retryCount;
+	}
+
+	/**
+	 * @param retryCount the retryCount to set
+	 */
+	public void setRetryCount(int retryCount)
+	{
+		this.retryCount = retryCount;
 	}
 
 }
