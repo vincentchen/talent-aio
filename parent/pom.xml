@@ -43,6 +43,10 @@
 		<module>../example/helloworld/talent-aio-examples-helloworld-common</module>
 		<module>../example/helloworld/talent-aio-examples-helloworld-client</module>
 		<module>../example/helloworld/talent-aio-examples-helloworld-server</module>
+		
+		<module>../example/http/talent-aio-examples-http-common</module>
+		<module>../example/http/talent-aio-examples-http-client</module>
+		<module>../example/http/talent-aio-examples-http-server</module>
 	</modules>
 
 	<properties>
