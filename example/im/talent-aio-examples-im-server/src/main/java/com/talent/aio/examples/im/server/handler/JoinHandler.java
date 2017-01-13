@@ -52,19 +52,20 @@ public class JoinHandler implements ImBsAioHandlerIntf
 		}
 		
 		JoinReqBody joinReqBody = Json.toBean(bodyStr, JoinReqBody.class);
-		String groupid = joinReqBody.getGroup();
-		if (StringUtils.isBlank(groupid))
+		String group = joinReqBody.getGroup();
+		if (StringUtils.isBlank(group))
 		{
 			log.error("group is null,{}", channelContext);
 			Aio.close(channelContext, "group is null when join group");
 			return null;
 		}
 
-		channelContext.getGroupContext().getGroups().bind(groupid, channelContext);
+//		channelContext.getGroupContext().getGroups().bind(groupid, channelContext);
+		com.talent.aio.common.Aio.bindGroup(channelContext, group);
 		
 		JoinGroupResultVo joinGroupResultVo = new JoinGroupResultVo();
 		joinGroupResultVo.setCode(com.talent.aio.examples.im.common.vo.JoinGroupResultVo.Code.OK);
-		JoinRespBody joinRespBody = new JoinRespBody(groupid, joinGroupResultVo);
+		JoinRespBody joinRespBody = new JoinRespBody(group, joinGroupResultVo);
 		
 		ImPacket respPacket = new ImPacket();
 		respPacket.setCommand(Command.JOIN_GROUP_RESP);
