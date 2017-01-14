@@ -4,7 +4,7 @@
 
 <ol>
 	<li><h4>简 介</h4></li>
-		 <strong>talent-aio</strong>是基于java aio实现的即时通讯框架，同类框架有netty和mina，官网地址：<a href="http://www.talent-aio.com/talent-aio" target="_blank">http://www.talent-aio.com/talent-aio</a>，上面有大家期待已久的<a href="http://www.talent-aio.com/talent-aio/quickstart.html" target="_blank">入门文档</a>。
+		 <strong>talent-aio</strong>是基于java aio实现的即时通讯框架，源于作者另一个久经考验的talent-nio框架，但在易用性、性能及代码可读性方面又远远超越了talent-nio（最好的东西才拿来分享，所以talent-nio并不会开源）。官网地址：<a href="http://www.talent-aio.com/talent-aio" target="_blank">http://www.talent-aio.com/talent-aio</a>，上面有大家期待已久的<a href="http://www.talent-aio.com/talent-aio/quickstart.html" target="_blank">入门文档</a>。同类框架有netty和mina。
 		 
 	<li><h4>应用场景</h4></li>
 		IM、实现各种网络应用层协议（如http、ftp等公有协议，也可以自定义私有协议）、实时监控、RPC等
@@ -62,13 +62,13 @@
 			某直播平台(视频直播+聊天)
 		  </li>
 		  <li>
-			某智能设备检测系统(数据采集)<!--小白-->
+			某智能设备检测系统(数据采集)
 		  </li>
 		  <li>
-			某物联网系统(服务端)<!--好像是jackkang-->
+			某物联网系统(服务端)
 		  </li>
 		  <li>
-			深圳市某在线技术发展有限公司(中银联投资)：某网络安全运营支撑平台<!--小宇-->
+			深圳市某在线技术发展有限公司(中银联投资)：某网络安全运营支撑平台
 		  </li>
 		  
 		  <li>
