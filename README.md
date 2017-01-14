@@ -4,7 +4,7 @@
 
 <ol>
 	<li><h4>简 介</h4></li>
-		 <strong>talent-aio</strong>是基于java aio实现的即时通讯框架，功能类似netty和mina，官网地址：<a href="http://www.talent-aio.com/talent-aio" target="_blank">http://www.talent-aio.com/talent-aio</a>，上面有大家期待已久的<a href="http://www.talent-aio.com/talent-aio/quickstart.html" target="_blank">入门文档</a>。
+		 <strong>talent-aio</strong>是基于java aio实现的即时通讯框架，同类框架有netty和mina，官网地址：<a href="http://www.talent-aio.com/talent-aio" target="_blank">http://www.talent-aio.com/talent-aio</a>，上面有大家期待已久的<a href="http://www.talent-aio.com/talent-aio/quickstart.html" target="_blank">入门文档</a>。
 		 
 	<li><h4>应用场景</h4></li>
 		IM、实现各种网络应用层协议（如http、ftp等公有协议，也可以自定义私有协议）、实时监控、RPC等
