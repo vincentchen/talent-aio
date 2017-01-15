@@ -314,7 +314,7 @@ public class JFrameMain extends javax.swing.JFrame
 			//                int count = end - start + 1;
 			for (int i = start; i < end; i++)
 			{
-				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect();
+				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(null, null);
 
 				String key = ClientNodes.getKey(channelContext);
 				listModel.addElement(key);
