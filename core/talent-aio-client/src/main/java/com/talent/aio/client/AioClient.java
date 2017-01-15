@@ -80,7 +80,7 @@ public class AioClient<Ext, P extends Packet, R>
 		this.channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
 
 		startHeartbeatTask();
-		
+
 		startReconnTask();
 	}
 
@@ -100,6 +100,20 @@ public class AioClient<Ext, P extends Packet, R>
 	//	{
 	//		return connect(bindIp, bindPort, autoReconnect, null);
 	//	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月15日 下午3:20:50
+	 *
+	 */
+	public ClientChannelContext<Ext, P, R> connect() throws Exception
+	{
+		return connect(null, 0);
+	}
 
 	/**
 	 * 
@@ -372,13 +386,13 @@ public class AioClient<Ext, P extends Packet, R>
 							channelContext.setReConnCount(channelContext.getReConnCount() + 1);
 							ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
 
-//							if (reconnConf != null && reconnConf.getInterval() > 0)
-//							{
-								if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReConnCount())
-								{
-									queue.put(channelContext);
-								}
-//							}
+							//							if (reconnConf != null && reconnConf.getInterval() > 0)
+							//							{
+							if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReConnCount())
+							{
+								queue.put(channelContext);
+							}
+							//							}
 							channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
 							continue;
 						}
