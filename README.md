@@ -79,6 +79,9 @@
 		  <li>
 			<a href='https://git.oschina.net/websterlu/redisx' target='_blank'>redisx</a>
 		  </li>
+		  <li>
+			<a href='https://git.oschina.net/kangjie1209/talent_dubbo' target='_blank'>talent_dubbo</a>
+		  </li>
 		  
 		  <li>
 			... ...
