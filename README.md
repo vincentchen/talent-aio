@@ -76,6 +76,9 @@
 		  <li>
 			深圳市某在线技术发展有限公司(中银联投资)：某网络安全运营支撑平台
 		  </li>
+		  <li>
+			<a href='https://git.oschina.net/websterlu/redisx' target='_blank'>redisx</a>
+		  </li>
 		  
 		  <li>
 			... ...
