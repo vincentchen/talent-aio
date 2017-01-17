@@ -114,6 +114,13 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 	@Override
 	public ByteBuffer encode(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext)
 	{
+		if (packet.getCommand() == Command.HEARTBEAT_REQ)
+		{
+			ByteBuffer buffer = ByteBuffer.allocate(1);
+			buffer.put(ImPacket.HEARTBEAT_BYTE);
+			return buffer;
+		}
+		
 		byte[] body = packet.getBody();
 		int bodyLen = 0;
 		if (body != null)
