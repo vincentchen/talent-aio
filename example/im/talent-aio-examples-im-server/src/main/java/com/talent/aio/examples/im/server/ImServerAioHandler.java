@@ -150,6 +150,8 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		}
 		return buffer;
 	}
+	
+	private static ImPacket heartbeatPacket = new ImPacket(Command.HEARTBEAT_REQ);
 
 	/** 
 	 * @see com.talent.aio.common.intf.AioHandler#decode(java.nio.ByteBuffer)
@@ -164,6 +166,13 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 	@Override
 	public ImPacket decode(ByteBuffer buffer, ChannelContext<Object, ImPacket, Object> channelContext) throws AioDecodeException
 	{
+		byte firstbyte = buffer.get();
+		if (ImPacket.HEARTBEAT_BYTE == firstbyte)
+		{
+			return heartbeatPacket;
+		}
+		buffer.position(buffer.position() - 1);//位置复元
+		
 		int readableLength = buffer.limit() - buffer.position();
 		if (readableLength < ImPacket.HEADER_LENGHT)
 		{
