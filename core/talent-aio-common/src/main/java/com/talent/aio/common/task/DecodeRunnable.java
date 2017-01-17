@@ -111,7 +111,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						continue label_1;
 					} else //组包成功
 					{
-						channelContext.getStat().setLatestTimeOfReceivingPacket(SystemTimer.currentTimeMillis());
+						channelContext.getStat().setLatestTimeOfReceivedPacket(SystemTimer.currentTimeMillis());
 						
 						int afterDecodePosition = byteBuffer.position();
 						int len = afterDecodePosition - initPosition;

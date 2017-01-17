@@ -45,7 +45,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
 	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>(this);
 	
-	private int reConnCount = 0;//重连次数，连接成功后，此值会被重置0
+	private int reconnCount = 0;//连续重连次数，连接成功后，此值会被重置0
 
 	//	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>();
 
@@ -420,17 +420,17 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	/**
 	 * @return the reConnCount
 	 */
-	public int getReConnCount()
+	public int getReconnCount()
 	{
-		return reConnCount;
+		return reconnCount;
 	}
 
 	/**
 	 * @param reConnCount the reConnCount to set
 	 */
-	public void setReConnCount(int reConnCount)
+	public void setReconnCount(int reconnCount)
 	{
-		this.reConnCount = reConnCount;
+		this.reconnCount = reconnCount;
 	}
 
 	public static class Stat
@@ -438,7 +438,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		/**
 		 * 最近一次收到业务消息包的时间(一个完整的业务消息包，一部分消息不算)
 		 */
-		private long latestTimeOfReceivingPacket = SystemTimer.currentTimeMillis();
+		private long latestTimeOfReceivedPacket = SystemTimer.currentTimeMillis();
 
 		/**
 		 * 最近一次发送业务消息包的时间(一个完整的业务消息包，一部分消息不算)
@@ -483,17 +483,17 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		/**
 		 * @return the timeLatestReceivedMsg
 		 */
-		public long getLatestTimeOfReceivingPacket()
+		public long getLatestTimeOfReceivedPacket()
 		{
-			return latestTimeOfReceivingPacket;
+			return latestTimeOfReceivedPacket;
 		}
 
 		/**
 		 * @param timeLatestReceivedMsg the timeLatestReceivedMsg to set
 		 */
-		public void setLatestTimeOfReceivingPacket(long latestTimeOfReceivingPacket)
+		public void setLatestTimeOfReceivedPacket(long latestTimeOfReceivedPacket)
 		{
-			this.latestTimeOfReceivingPacket = latestTimeOfReceivingPacket;
+			this.latestTimeOfReceivedPacket = latestTimeOfReceivedPacket;
 		}
 
 		/**

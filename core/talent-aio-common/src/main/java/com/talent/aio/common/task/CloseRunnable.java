@@ -92,7 +92,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 
 				if (reconnConf != null && reconnConf.getInterval() > 0)
 				{
-					if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReConnCount())
+					if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
 					{
 						reconnConf.getQueue().put(channelContext);
 					}

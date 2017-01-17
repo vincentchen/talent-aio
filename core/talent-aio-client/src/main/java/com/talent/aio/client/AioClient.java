@@ -276,7 +276,7 @@ public class AioClient<Ext, P extends Packet, R>
 							//							} else
 							//							{
 							Stat stat = channelContext.getStat();
-							long timeLatestReceivedMsg = stat.getLatestTimeOfReceivingPacket();
+							long timeLatestReceivedMsg = stat.getLatestTimeOfReceivedPacket();
 							long timeLatestSentMsg = stat.getLatestTimeOfSentPacket();
 							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
 							long interval = (currtime - compareTime);
@@ -383,12 +383,12 @@ public class AioClient<Ext, P extends Packet, R>
 						}
 						if (newChannelContext == null)
 						{
-							channelContext.setReConnCount(channelContext.getReConnCount() + 1);
+							channelContext.setReconnCount(channelContext.getReconnCount() + 1);
 							ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
 
 							//							if (reconnConf != null && reconnConf.getInterval() > 0)
 							//							{
-							if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReConnCount())
+							if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
 							{
 								queue.put(channelContext);
 							}
@@ -397,7 +397,7 @@ public class AioClient<Ext, P extends Packet, R>
 							continue;
 						}
 
-						channelContext.setReConnCount(0);
+						channelContext.setReconnCount(0);
 						ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 						if (clientAioListener != null)
 						{

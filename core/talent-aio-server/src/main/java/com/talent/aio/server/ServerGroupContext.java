@@ -123,7 +123,7 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 						{
 							ChannelContext<Ext, P, R> channelContext = entry;
 							Stat stat = channelContext.getStat();
-							long timeLatestReceivedMsg = stat.getLatestTimeOfReceivingPacket();
+							long timeLatestReceivedMsg = stat.getLatestTimeOfReceivedPacket();
 							long timeLatestSentMsg = stat.getLatestTimeOfSentPacket();
 							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
 							long currtime = SystemTimer.currentTimeMillis();
