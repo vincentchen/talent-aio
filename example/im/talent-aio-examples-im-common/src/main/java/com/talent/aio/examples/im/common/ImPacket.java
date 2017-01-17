@@ -33,6 +33,11 @@ public class ImPacket extends Packet
 
 	public static final int HEADER_LENGHT = 15;
 	
+	/**
+	 * 心跳字节
+	 */
+	public static final byte HEARTBEAT_BYTE = -47;
+	
 	public static final String CHARSET = "utf-8";
 	
 	/**
@@ -40,7 +45,7 @@ public class ImPacket extends Packet
 	 */
 	public final static byte VERSION = 1;
 	
-	public static final long MAX_LENGTH_OF_BODY = (long) (1024 * 1024 * 0.1); //只支持0.1M
+	public static final long MAX_LENGTH_OF_BODY = (long) (1024 * 1024 * 2.1); //只支持多少M数据
 	
 	private byte[] body;
 
