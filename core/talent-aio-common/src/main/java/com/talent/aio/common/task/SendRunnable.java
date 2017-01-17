@@ -16,6 +16,7 @@ import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -98,6 +99,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			log.error(e.toString(), e);
 		}
 		asynchronousSocketChannel.write(byteBuffer, packetCount, writeCompletionHandler);
+		channelContext.getStat().setLatestTimeOfSentPacket(SystemTimer.currentTimeMillis());
 	}
 
 	public void setChannelContext(ChannelContext<Ext, P, R> channelContext)

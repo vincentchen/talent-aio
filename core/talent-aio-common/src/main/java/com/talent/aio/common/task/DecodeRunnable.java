@@ -20,6 +20,7 @@ import com.talent.aio.common.threadpool.SynThreadPoolExecutor;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 import com.talent.aio.common.utils.AioUtils;
 import com.talent.aio.common.utils.ByteBufferUtils;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 解码
@@ -110,6 +111,8 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						continue label_1;
 					} else //组包成功
 					{
+						channelContext.getStat().setLatestTimeOfReceivingPacket(SystemTimer.currentTimeMillis());
+						
 						int afterDecodePosition = byteBuffer.position();
 						int len = afterDecodePosition - initPosition;
 						AioListener<Ext, P, R> aioListener = channelContext.getGroupContext().getAioListener();

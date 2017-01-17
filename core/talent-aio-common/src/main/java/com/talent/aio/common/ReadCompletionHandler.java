@@ -21,7 +21,6 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.task.DecodeRunnable;
 import com.talent.aio.common.utils.AioUtils;
-import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -80,7 +79,7 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 		if (result > 0)
 		{
-			channelContext.getStat().setTimeLatestReceivedMsg(SystemTimer.currentTimeMillis());
+//			channelContext.getStat().setTimeLatestReceivedMsg(SystemTimer.currentTimeMillis());
 			byteBuffer.limit(byteBuffer.position());
 			byteBuffer.position(0);
 			//			byteBuffer.flip();

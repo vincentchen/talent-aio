@@ -19,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.stat.GroupStat;
-import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * 
@@ -85,7 +84,7 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 
 			groupStat.getSentPacket().addAndGet(packetCount);//.incrementAndGet();
 			groupStat.getSentBytes().addAndGet(result);
-			channelContext.getStat().setTimeLatestSentMsg(SystemTimer.currentTimeMillis());
+//			channelContext.getStat().setLatestTimeOfSentPacket(SystemTimer.currentTimeMillis());
 		} else if (result == 0)
 		{
 			log.error("发送长度为{}", result);

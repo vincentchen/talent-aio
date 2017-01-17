@@ -276,8 +276,8 @@ public class AioClient<Ext, P extends Packet, R>
 							//							} else
 							//							{
 							Stat stat = channelContext.getStat();
-							long timeLatestReceivedMsg = stat.getTimeLatestReceivedMsg();
-							long timeLatestSentMsg = stat.getTimeLatestSentMsg();
+							long timeLatestReceivedMsg = stat.getLatestTimeOfReceivingPacket();
+							long timeLatestSentMsg = stat.getLatestTimeOfSentPacket();
 							long compareTime = Math.max(timeLatestReceivedMsg, timeLatestSentMsg);
 							long interval = (currtime - compareTime);
 							if (interval >= heartbeatTimeout / 2)

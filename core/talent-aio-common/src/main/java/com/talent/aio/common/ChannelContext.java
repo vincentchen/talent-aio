@@ -27,7 +27,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 {
 	private static Logger log = LoggerFactory.getLogger(ChannelContext.class);
 
-	private static java.util.concurrent.atomic.AtomicLong idAtomicLong = new AtomicLong();
+	private static final java.util.concurrent.atomic.AtomicLong ID = new AtomicLong();
 
 	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
 
@@ -71,7 +71,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 	private Ext ext;
 
-	private long id = idAtomicLong.incrementAndGet();
+	private long id = ID.incrementAndGet();
 
 	private Node clientNode;
 
@@ -436,14 +436,14 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public static class Stat
 	{
 		/**
-		 * 最近一次收消息的时间
+		 * 最近一次收到业务消息包的时间(一个完整的业务消息包，一部分消息不算)
 		 */
-		private long timeLatestReceivedMsg = SystemTimer.currentTimeMillis();
+		private long latestTimeOfReceivingPacket = SystemTimer.currentTimeMillis();
 
 		/**
-		 * 最近一次发消息的时间
+		 * 最近一次发送业务消息包的时间(一个完整的业务消息包，一部分消息不算)
 		 */
-		private long timeLatestSentMsg = SystemTimer.currentTimeMillis();
+		private long latestTimeOfSentPacket = SystemTimer.currentTimeMillis();
 		
 		/**
 		 * 连接关闭的时间
@@ -453,159 +453,159 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		/**
 		 * 本连接已发送的字节数
 		 */
-		private AtomicLong countSentByte = new AtomicLong();
+		private AtomicLong sentBytes = new AtomicLong();
 
 		/**
 		 * 本连接已发送的packet数
 		 */
-		private AtomicLong countSentPacket = new AtomicLong();
+		private AtomicLong sentPackets = new AtomicLong();
 
 		/**
 		 * 本连接已处理的字节数
 		 */
-		private AtomicLong countHandledByte = new AtomicLong();
+		private AtomicLong handledBytes = new AtomicLong();
 
 		/**
 		 * 本连接已处理的packet数
 		 */
-		private AtomicLong countHandledPacket = new AtomicLong();
+		private AtomicLong handledPackets = new AtomicLong();
 
 		/**
 		 * 本连接已接收的字节数
 		 */
-		private AtomicLong countReceivedByte = new AtomicLong();
+		private AtomicLong receivedBytes = new AtomicLong();
 
 		/**
 		 * 本连接已接收的packet数
 		 */
-		private AtomicLong countReceivedPacket = new AtomicLong();
+		private AtomicLong receivedPackets = new AtomicLong();
 
 		/**
 		 * @return the timeLatestReceivedMsg
 		 */
-		public long getTimeLatestReceivedMsg()
+		public long getLatestTimeOfReceivingPacket()
 		{
-			return timeLatestReceivedMsg;
+			return latestTimeOfReceivingPacket;
 		}
 
 		/**
 		 * @param timeLatestReceivedMsg the timeLatestReceivedMsg to set
 		 */
-		public void setTimeLatestReceivedMsg(long timeLatestReceivedMsg)
+		public void setLatestTimeOfReceivingPacket(long latestTimeOfReceivingPacket)
 		{
-			this.timeLatestReceivedMsg = timeLatestReceivedMsg;
+			this.latestTimeOfReceivingPacket = latestTimeOfReceivingPacket;
 		}
 
 		/**
 		 * @return the timeLatestSentMsg
 		 */
-		public long getTimeLatestSentMsg()
+		public long getLatestTimeOfSentPacket()
 		{
-			return timeLatestSentMsg;
+			return latestTimeOfSentPacket;
 		}
 
 		/**
 		 * @param timeLatestSentMsg the timeLatestSentMsg to set
 		 */
-		public void setTimeLatestSentMsg(long timeLatestSentMsg)
+		public void setLatestTimeOfSentPacket(long latestTimeOfSentPacket)
 		{
-			this.timeLatestSentMsg = timeLatestSentMsg;
+			this.latestTimeOfSentPacket = latestTimeOfSentPacket;
 		}
 
 		/**
 		 * @return the countSentByte
 		 */
-		public AtomicLong getCountSentByte()
+		public AtomicLong getSentBytes()
 		{
-			return countSentByte;
+			return sentBytes;
 		}
 
 		/**
 		 * @param countSentByte the countSentByte to set
 		 */
-		public void setCountSentByte(AtomicLong countSentByte)
+		public void setSentBytes(AtomicLong sentBytes)
 		{
-			this.countSentByte = countSentByte;
+			this.sentBytes = sentBytes;
 		}
 
 		/**
 		 * @return the countSentPacket
 		 */
-		public AtomicLong getCountSentPacket()
+		public AtomicLong getSentPackets()
 		{
-			return countSentPacket;
+			return sentPackets;
 		}
 
 		/**
 		 * @param countSentPacket the countSentPacket to set
 		 */
-		public void setCountSentPacket(AtomicLong countSentPacket)
+		public void setSentPackets(AtomicLong sentPackets)
 		{
-			this.countSentPacket = countSentPacket;
+			this.sentPackets = sentPackets;
 		}
 
 		/**
 		 * @return the countHandledByte
 		 */
-		public AtomicLong getCountHandledByte()
+		public AtomicLong getHandledBytes()
 		{
-			return countHandledByte;
+			return handledBytes;
 		}
 
 		/**
 		 * @param countHandledByte the countHandledByte to set
 		 */
-		public void setCountHandledByte(AtomicLong countHandledByte)
+		public void setHandledBytes(AtomicLong countHandledByte)
 		{
-			this.countHandledByte = countHandledByte;
+			this.handledBytes = countHandledByte;
 		}
 
 		/**
 		 * @return the countHandledPacket
 		 */
-		public AtomicLong getCountHandledPacket()
+		public AtomicLong getHandledPackets()
 		{
-			return countHandledPacket;
+			return handledPackets;
 		}
 
 		/**
 		 * @param countHandledPacket the countHandledPacket to set
 		 */
-		public void setCountHandledPacket(AtomicLong countHandledPacket)
+		public void setHandledPackets(AtomicLong handledPackets)
 		{
-			this.countHandledPacket = countHandledPacket;
+			this.handledPackets = handledPackets;
 		}
 
 		/**
 		 * @return the countReceivedByte
 		 */
-		public AtomicLong getCountReceivedByte()
+		public AtomicLong getReceivedBytes()
 		{
-			return countReceivedByte;
+			return receivedBytes;
 		}
 
 		/**
 		 * @param countReceivedByte the countReceivedByte to set
 		 */
-		public void setCountReceivedByte(AtomicLong countReceivedByte)
+		public void setReceivedBytes(AtomicLong receivedBytes)
 		{
-			this.countReceivedByte = countReceivedByte;
+			this.receivedBytes = receivedBytes;
 		}
 
 		/**
 		 * @return the countReceivedPacket
 		 */
-		public AtomicLong getCountReceivedPacket()
+		public AtomicLong getReceivedPackets()
 		{
-			return countReceivedPacket;
+			return receivedPackets;
 		}
 
 		/**
 		 * @param countReceivedPacket the countReceivedPacket to set
 		 */
-		public void setCountReceivedPacket(AtomicLong countReceivedPacket)
+		public void setReceivedPackets(AtomicLong receivedPackets)
 		{
-			this.countReceivedPacket = countReceivedPacket;
+			this.receivedPackets = receivedPackets;
 		}
 
 		/**
