@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.client.intf.ClientAioListener;
-import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.AioHandler;
@@ -46,12 +45,6 @@ import com.talent.aio.common.threadpool.DefaultThreadFactory;
 public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<Ext, P, R>
 {
 	static Logger log = LoggerFactory.getLogger(ClientGroupContext.class);
-
-	/** The ip. */
-	private String ip;
-
-	/** The port. */
-	private int port;
 
 	/** The group executor. */
 	private ExecutorService groupExecutor = null;
@@ -119,8 +112,8 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		this.setClientAioListener(aioListener);
 
 		this.reconnConf = reconnConf;
-		this.ip = ip;
-		this.port = port;
+		this.serverIp = ip;
+		this.serverPort = port;
 		this.groupExecutor = groupExecutor;
 	}
 
@@ -159,46 +152,6 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public static void main(String[] args)
 	{
 
-	}
-
-	/**
-	 * Gets the ip.
-	 *
-	 * @return the ip
-	 */
-	public String getIp()
-	{
-		return ip;
-	}
-
-	/**
-	 * Sets the ip.
-	 *
-	 * @param ip the ip to set
-	 */
-	public void setIp(String ip)
-	{
-		this.ip = ip;
-	}
-
-	/**
-	 * Gets the port.
-	 *
-	 * @return the port
-	 */
-	public int getPort()
-	{
-		return port;
-	}
-
-	/**
-	 * Sets the port.
-	 *
-	 * @param port the port to set
-	 */
-	public void setPort(int port)
-	{
-		this.port = port;
 	}
 
 	/**
@@ -311,7 +264,7 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	/**
 	 * @param reconnConf the reconnConf to set
 	 */
-	public void setReconnConf(ReconnConf reconnConf)
+	public void setReconnConf(ReconnConf<Ext, P, R> reconnConf)
 	{
 		this.reconnConf = reconnConf;
 	}

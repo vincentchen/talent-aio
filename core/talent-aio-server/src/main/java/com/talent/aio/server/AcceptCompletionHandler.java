@@ -130,9 +130,9 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 		AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
 		serverSocketChannel.accept(aioServer, this);
 
-		String ip = aioServer.getServerGroupContext().getIp();
+		String ip = aioServer.getServerGroupContext().getServerIp();
 		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		ipstr += ":" + aioServer.getServerGroupContext().getPort();
+		ipstr += ":" + aioServer.getServerGroupContext().getServerPort();
 		log.error("[" + ipstr + "]监听出现异常", exc);
 
 	}

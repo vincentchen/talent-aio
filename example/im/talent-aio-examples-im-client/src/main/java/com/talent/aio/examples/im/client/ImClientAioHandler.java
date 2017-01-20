@@ -178,6 +178,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 
 		@SuppressWarnings("unused")
 		byte version = buffer.get();
+		
 
 		int bodyLength = buffer.getInt();
 

@@ -56,9 +56,15 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 */
 	public static final int READ_BUFFER_SIZE = 2048;
 
-	public static final int MAXIMUM_POOL_SIZE = CORE_POOL_SIZE * 4;
+//	public static final int MAXIMUM_POOL_SIZE = CORE_POOL_SIZE * 4;
 
-	public static final long KEEP_ALIVE_TIME = 90L;
+	public static final long KEEP_ALIVE_TIME = 9000000L;
+	
+	/** The ip. */
+	protected String serverIp;
+
+	/** The port. */
+	protected int serverPort;
 
 	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
@@ -118,8 +124,8 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * @param ip
-	 * @param port
+	 * @param serverIp
+	 * @param serverPort
 	 * @param aioHandler
 	 *
 	 * @author: tanyaowu
@@ -467,6 +473,38 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	public void setSyns(Syns<Ext, P, R> syns)
 	{
 		this.syns = syns;
+	}
+
+	/**
+	 * @return the serverIp
+	 */
+	public String getServerIp()
+	{
+		return serverIp;
+	}
+
+	/**
+	 * @param serverIp the serverIp to set
+	 */
+	public void setServerIp(String serverIp)
+	{
+		this.serverIp = serverIp;
+	}
+
+	/**
+	 * @return the serverPort
+	 */
+	public int getServerPort()
+	{
+		return serverPort;
+	}
+
+	/**
+	 * @param serverPort the serverPort to set
+	 */
+	public void setServerPort(int serverPort)
+	{
+		this.serverPort = serverPort;
 	}
 
 }

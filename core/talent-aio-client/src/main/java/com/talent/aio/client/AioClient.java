@@ -61,8 +61,8 @@ public class AioClient<Ext, P extends Packet, R>
 	private ClientGroupContext<Ext, P, R> clientGroupContext;
 
 	/**
-	 * @param ip 可以为空
-	 * @param port 
+	 * @param serverIp 可以为空
+	 * @param serverPort 
 	 * @param aioDecoder
 	 * @param aioEncoder
 	 * @param aioHandler
@@ -128,8 +128,8 @@ public class AioClient<Ext, P extends Packet, R>
 	 */
 	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort) throws Exception
 	{
-		String ip = clientGroupContext.getIp();
-		int port = clientGroupContext.getPort();
+		String serverIp = clientGroupContext.getServerIp();
+		int serverPort = clientGroupContext.getServerPort();
 
 		AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(channelGroup);
 		asynchronousSocketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
@@ -153,11 +153,11 @@ public class AioClient<Ext, P extends Packet, R>
 			asynchronousSocketChannel.bind(bind);
 		}
 
-		Future<Void> future = asynchronousSocketChannel.connect(new InetSocketAddress(ip, port));
+		Future<Void> future = asynchronousSocketChannel.connect(new InetSocketAddress(serverIp, serverPort));
 		try
 		{
 			future.get(5, TimeUnit.SECONDS);
-			log.info("connected to {}:{}", ip, port);
+			log.info("connected to {}:{}", serverIp, serverPort);
 
 			//			if (channelContext == null)
 			//			{
@@ -180,7 +180,7 @@ public class AioClient<Ext, P extends Packet, R>
 					return null;
 				}
 			}
-
+			
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
 			asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);

@@ -93,8 +93,8 @@ public class AioServer<Ext, P extends Packet, R>
 
 	public void start() throws IOException
 	{
-		String ip = serverGroupContext.getIp();
-		int port = serverGroupContext.getPort();
+		String serverIp = serverGroupContext.getServerIp();
+		int serverPort = serverGroupContext.getServerPort();
 		ExecutorService groupExecutor = serverGroupContext.getGroupExecutor();
 
 		AsynchronousChannelGroup channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
@@ -105,12 +105,12 @@ public class AioServer<Ext, P extends Packet, R>
 
 		InetSocketAddress listenAddress = null;
 
-		if (StringUtils.isBlank(ip))
+		if (StringUtils.isBlank(serverIp))
 		{
-			listenAddress = new InetSocketAddress(port);
+			listenAddress = new InetSocketAddress(serverPort);
 		} else
 		{
-			listenAddress = new InetSocketAddress(ip, port);
+			listenAddress = new InetSocketAddress(serverIp, serverPort);
 		}
 
 		serverSocketChannel.bind(listenAddress, 0);
@@ -118,8 +118,8 @@ public class AioServer<Ext, P extends Packet, R>
 		AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = serverGroupContext.getAcceptCompletionHandler();
 		serverSocketChannel.accept(this, acceptCompletionHandler);
 
-		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		System.out.println("start listening on " + ipstr + ":" + port);
+		String ipstr = StringUtils.isNotBlank(serverIp) ? serverIp : "0.0.0.0";
+		System.out.println("start listening on " + ipstr + ":" + serverPort);
 	}
 
 }

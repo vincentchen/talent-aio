@@ -50,11 +50,7 @@ import com.talent.aio.server.intf.ServerAioListener;
 public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<Ext, P, R>
 {
 	static Logger log = LoggerFactory.getLogger(ServerGroupContext.class);
-	/** The ip. */
-	private String ip;
-
-	/** The port. */
-	private int port;
+	
 
 	/** The group executor. */
 	private ThreadPoolExecutor groupExecutor = null;
@@ -96,8 +92,8 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public ServerGroupContext(String ip, int port, ServerAioHandler<Ext, P, R> serverAioHandler, ServerAioListener<Ext, P, R> serverAioListener, ThreadPoolExecutor groupExecutor)
 	{
 		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port);
-		this.ip = ip;
-		this.port = port;
+		this.serverIp = ip;
+		this.serverPort = port;
 		this.groupExecutor = groupExecutor;
 		this.acceptCompletionHandler = new AcceptCompletionHandler<>();
 		this.setServerAioHandler(serverAioHandler);
@@ -196,46 +192,6 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public static void main(String[] args)
 	{
 
-	}
-
-	/**
-	 * Gets the ip.
-	 *
-	 * @return the ip
-	 */
-	public String getIp()
-	{
-		return ip;
-	}
-
-	/**
-	 * Sets the ip.
-	 *
-	 * @param ip the ip to set
-	 */
-	public void setIp(String ip)
-	{
-		this.ip = ip;
-	}
-
-	/**
-	 * Gets the port.
-	 *
-	 * @return the port
-	 */
-	public int getPort()
-	{
-		return port;
-	}
-
-	/**
-	 * Sets the port.
-	 *
-	 * @param port the port to set
-	 */
-	public void setPort(int port)
-	{
-		this.port = port;
 	}
 
 	/**
