@@ -79,6 +79,9 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	{
 		try
 		{
+			AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
+			serverSocketChannel.accept(aioServer, this);
+			
 			ServerGroupContext<Ext, P, R> serverGroupContext = aioServer.getServerGroupContext();
 			ServerGroupStat serverGroupStat = serverGroupContext.getServerGroupStat();
 			serverGroupStat.getAccepted().incrementAndGet();
@@ -110,8 +113,7 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			log.error("", e);
 		} finally
 		{
-			AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
-			serverSocketChannel.accept(aioServer, this);
+			
 		}
 	}
 
