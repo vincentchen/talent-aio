@@ -1,0 +1,4635 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)http://m.blog.itpub.net/28944233/viewspace-1665982/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<script type="text/javascript" src="./MySql协议分析-l86156117-ITPUB博客_files/jquery.min.js.下载"></script>
+<title>MySql协议分析-l86156117-ITPUB博客</title>
+<meta content="" name="keywords">
+<meta content="" name="description">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+<meta content="false" id="Meta1" name="twcClient">
+
+<link rel="stylesheet" href="./MySql协议分析-l86156117-ITPUB博客_files/style.css">
+
+</head>
+<body>
+<header>
+	<a href="http://m.blog.itpub.net/"><img src="./MySql协议分析-l86156117-ITPUB博客_files/logo.png" height="40" alt=""> </a>
+	<a id="fenlei" class="fenlei"> </a>
+</header>
+<div class="left_1" style=" display: none;" id="left_1"></div>
+<div class="left_2" style="display: none;" id="left_2">
+	<a href="http://m.blog.itpub.net/" class="here">全部分类</a>
+	<a href="http://m.blog.itpub.net/database/">数据库</a>
+	<a href="http://m.blog.itpub.net/bigdata/">大数据</a>
+	<a href="http://m.blog.itpub.net/develop/">开发技术</a>
+	<a href="http://m.blog.itpub.net/os/">操作系统</a>
+	<a href="http://m.blog.itpub.net/net/">网络技术</a>
+	<a href="http://m.blog.itpub.net/info/">信息化</a>
+	<a href="http://m.blog.itpub.net/it/">IT人生</a>
+	
+</div>
+<div class="box">
+  <h1>MySql协议分析</h1>
+  <p><span>1620阅读　0评论</span>2015-05-21　<a href="http://m.blog.itpub.net/28944233/">l86156117</a><br>
+    分类：<a href="http://m.blog.itpub.net/mysql/">MySQL</a></p>
+</div>
+<div class="main">
+ <p>
+	<span>Mysql</span><span style="font-family:宋体;">协议分析</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">实验环境：</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">客户端（</span><span>10.88.42.61</span><span style="font-family:宋体;">）环境：</span><span>MAC OSX+mysql</span><span style="font-family:宋体;">客户端</span><span>+wireshark</span> 
+</p>
+<p>
+	<span style="font-family:宋体;">服务器环境（</span><span>10.88.42.57</span><span style="font-family:宋体;">）：</span><span>Linux6+mysql5.6</span> 
+</p>
+<p>
+	<span style="font-family:宋体;">实验方案：使用抓包工具</span><span>Wireshark</span><span style="font-family:宋体;">，对</span><span>mysql</span><span style="font-family:宋体;">客户端从连接</span><span>mysql</span><span style="font-family:宋体;">服务器到执行各种命令的过程中进行抓包，并配和资料进行分析。以下是一些资料分析：</span><span></span> 
+</p>
+<p style="margin-left:18.0pt;text-indent:-18.0pt;">
+	<span><span>1.<span>&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><span style="font-family:宋体;">交互过程</span><span></span> 
+</p>
+<p style="margin-left:18.0pt;text-indent:0cm;">
+	<span>mysql</span><span style="font-family:宋体;">客户端与服务器的交互主要分为两个阶段：握手认证阶段和命令执行阶段。</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:-22.0pt;">
+	<span><span>1.1<span>&nbsp;&nbsp; </span></span></span><span style="font-family:宋体;">握手认证阶段</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">握手认证阶段为客户端与服务器建立连接后进行，交互过程如下</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">服务器</span><span>-&gt;</span><span style="font-family:宋体;">客户端：握手初始化消息</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">客户端</span><span>-&gt;</span><span style="font-family:宋体;">服务器：登陆认证消息</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">服务器</span><span>-&gt;</span><span style="font-family:宋体;">客户端：认证结果消息</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:-22.0pt;">
+	<span><span>1.2<span>&nbsp;&nbsp; </span></span></span><span style="font-family:宋体;">命令执行阶段</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">客户端认证成功后，进入命令执行阶段，交互过程如下：</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">客户端</span><span>-&gt;</span><span style="font-family:宋体;">服务器：执行命令消息</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">服务器</span><span>-&gt;</span><span style="font-family:宋体;">客户端：命令执行结果</span><span></span> 
+</p>
+<p>
+	<span>mysql</span><span style="font-family:宋体;">客户端与服务器的完整交互过程如下：</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432206364aDj6.png" alt="" height="481" width="444"><br>
+</span><span></span> 
+</p>
+<p>
+	<span>&nbsp;</span> 
+</p>
+<p>
+	<span style="font-family:宋体;">开始实验：</span><span></span> 
+</p>
+<p style="margin-left:18.0pt;text-indent:-18.0pt;">
+	<span><span>1.<span>&nbsp;&nbsp;&nbsp;&nbsp; </span></span></span><span style="font-family:宋体;">登陆认证交互报文</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:-22.0pt;">
+	<span><span>1.1<span>&nbsp;&nbsp; </span></span></span><span style="font-family:宋体;">握手初始化报文（服务器</span><span>-&gt;</span><span style="font-family:宋体;">客户端）</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">从</span><span>workbench</span><span style="font-family:宋体;">连接到服务的过程中抓到的</span><span>mysql</span><span style="font-family:宋体;">协议包如下所示</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_14322064831437.png" alt="" height="280" width="700"><br>
+</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span style="font-family:宋体;">通过</span><span>Wireshark</span><span style="font-family:宋体;">的分析很容易看出</span><span>mysql</span><span style="font-family:宋体;">协议是封装在</span><span>TCP</span><span style="font-family:宋体;">协议中</span><span>,</span><span style="font-family:宋体;">结合如下所示的其报文结构：</span><span></span> 
+</p>
+<p style="margin-left:40.0pt;text-indent:0cm;">
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432223664cI07.png" alt="" height="738.034682081" width="700"><br>
+</span><span></span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<strong><span style="font-family:宋体;">服务协议版本号</span></strong><span style="font-family:宋体;">：该值由</span><span> PROTOCOL_VERSION </span><span style="font-family:宋体;">宏定义决定（参考</span><span>MySQL</span><span style="font-family:宋体;">源代码</span><span>/include/mysql_version.h</span><span style="font-family:宋体;">头文件定义），抓包显示协议版本号为</span><span>10</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<strong><span style="font-family:宋体;">服务版本信息</span></strong><span style="font-family:宋体;">：该值为字符串，由</span><span> MYSQL_SERVER_VERSION </span><span style="font-family:宋体;">宏定义决定（参考</span><span>MySQL</span><span style="font-family:宋体;">源代码</span><span>/include/mysql_version.h</span><span style="font-family:宋体;">头文件定义），抓包显示</span><span>mysql</span><span style="font-family:宋体;">服务器版本为</span><span>5.6.22</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<strong><span style="font-family:宋体;">服务器线程</span></strong><strong><span style="font-family:Times;">ID</span></strong><span style="font-family:宋体;">：服务器为当前连接所创建的线程</span><span>ID</span><span style="font-family:宋体;">。因为客户端创连接到服务器，服务器分配给单独的进程，抓包显示进程号为</span><span>5</span><span style="font-family:宋体;">，可通过登陆键入</span><span>show process list</span><span style="font-family:宋体;">验证</span><span></span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>mysql&gt; show processlist;</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>+----+------+-------------------+---------+---------+------+-------+------------------+</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>| Id | User | Host<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>| db<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>| Command | Time | State | Info<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>|</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>+----+------+-------------------+---------+---------+------+-------+------------------+</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>|<span>&nbsp; </span>5 | lgs<span>&nbsp; </span>| 10.88.42.61:56326 | myworld | Sleep<span>&nbsp;&nbsp; </span>| 2736 |<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>| NULL<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>|</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>|<span>&nbsp; </span>6 | lgs<span>&nbsp; </span>| 10.88.42.61:56327 | myworld | Sleep<span>&nbsp;&nbsp; </span>| 2736 |<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>| NULL<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>|</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>|<span>&nbsp; </span>7 | root | localhost<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>| NULL<span>&nbsp;&nbsp;&nbsp; </span>| Query<span>&nbsp;&nbsp; </span>|<span>&nbsp;&nbsp;&nbsp; </span>0 | init<span>&nbsp; </span>| show processlist |</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<span>+----+------+-------------------+---------+---------+------+-------+------------------+</span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<strong><span style="font-family:宋体;">挑战随机数</span></strong><span style="font-family:宋体;">：</span><span>MySQL</span><span style="font-family:宋体;">数据库用户认证采用的是挑战</span><span>/</span><span style="font-family:宋体;">应答的方式，服务器生成该挑战数并发送给客户端，由客户端进行处理并返回相应结果，然后服务器检查是否与预期的结果相同，从而完成用户认证的过程。</span><span></span> 
+</p>
+<p style="text-indent:24.0pt;">
+	<strong><span style="font-family:宋体;">服务器权能标志</span></strong><span style="font-family:宋体;">：用于与客户端协商通讯方式，各标志位含义如下（参考</span><span>MySQL</span><span style="font-family:宋体;">源代码</span><span>/include/mysql_com.h</span><span style="font-family:宋体;">中的宏定义）：</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:;" "="">标志位名称</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:;" "="">标志位</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:;" "="">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_LONG_PASSWORD</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0001</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">new more secure passwords</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_FOUND_ROWS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0002</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Found instead of affected rows</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_LONG_FLAG</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0004</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Get all column flags</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_CONNECT_WITH_DB</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0008</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">One can specify db on connect</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_NO_SCHEMA</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0010</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Do not allow database.table.column</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_COMPRESS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0020</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Can use compression protocol</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_ODBC</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0040</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Odbc client</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_LOCAL_FILES</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0080</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Can use LOAD DATA LOCAL</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_IGNORE_SPACE</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0100</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Ignore spaces before '('</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_PROTOCOL_41</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0200</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">New 4.1 protocol</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_INTERACTIVE</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0400</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">This is an interactive client</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_SSL</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0800</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Switch to SSL after handshake</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_IGNORE_SIGPIPE</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x1000</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">IGNORE sigpipes</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_TRANSACTIONS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x2000</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Client knows about transactions</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_RESERVED</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x4000</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Old flag for 4.1 protocol</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_SECURE_CONNECTION</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x8000</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">New 4.1 authentication</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_MULTI_STATEMENTS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0001 0000</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Enable/disable multi-stmt support</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">CLIENT_MULTI_RESULTS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0002 0000</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">Enable/disable multi-results</span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">抓包显示服务器权能标志</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432223811IwT6.png" alt="" height="400.578034682" width="700"><br>
+</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">字符编码</span></b><span style="font-size:10.0pt;font-family:宋体;">：标识服务器所使用的字符集。</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:宋体;">抓包显示字符集</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432223857MMrN.png" alt="" height="27.5462962963" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">服务器状态</span></b><span style="font-size:10.0pt;font-family:宋体;">：状态值定义如下（参考</span><span style="font-size:10.0pt;font-family:Times;">MySQL</span><span style="font-size:10.0pt;font-family:宋体;">源代码</span><span style="font-size:10.0pt;font-family:Courier;">/include/mysql_com.h</span><span style="font-size:10.0pt;font-family:宋体;">中的宏定义）：</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td width="450">
+				<p>
+					<b><span style="font-size:10.0pt;font-family:;" "="">状态名称</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:;" "="">状态值</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_IN_TRANS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0001</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_AUTOCOMMIT</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0002</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_CURSOR_EXISTS</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0040</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_LAST_ROW_SENT</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0080</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_DB_DROPPED</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0100</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_NO_BACKSLASH_ESCAPES</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0200</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">SERVER_STATUS_METADATA_CHANGED</span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">0x0400</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">抓包显示服务器状态值：</span></b><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">&nbsp;</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432223899Pfg9.png" alt="" height="330.938586327" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">&nbsp;</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="450">
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:宋体;">结果显示只设置自动提交，自动提交指单独执行的查询语句都将自动提交其事务</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<span style="font-size:10.0pt;font-family:Times;">&nbsp;</span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.1.2 </span></b><b><span style="font-size:10.0pt;font-family:宋体;">登陆认证报文（客户端</span></b><b><span style="font-size:10.0pt;font-family:Times;"> -&gt; </span></b><b><span style="font-size:10.0pt;font-family:宋体;">服务器）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:宋体;">当客户端接收到服务端的初始化报文，那么客户端会接着向服务器发送登陆认证报文，抓去的报文如下，很明显可以看到用户名和加密后的密码：</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_143222395203BD.png" alt="" height="229.01734104" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:宋体;">下面是摘自官网的详细报文格式</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224061Av5L.png" alt="" height="696.76300578" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">客户端权能标志</span></b><span style="font-size:10.0pt;font-family:宋体;">：用于与客户端协商通讯方式，标志位含义与握手初始化报文中的相同。客户端收到服务器发来的初始化报文后，会对服务器发送的权能标志进行修改，保留自身所支持的功能，然后将权能标返回给服务器，从而保证服务器与客户端通讯的兼容性。<br>
+<img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224116Jf96.png" alt="" height="568.901734104" width="700"></span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">最大消息长度</span></b><span style="font-size:10.0pt;font-family:宋体;">：客户端发送请求报文时所支持的最大消息长度值。</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">字符编码</span></b><span style="font-size:10.0pt;font-family:宋体;">：标识通讯过程中使用的字符编码，与服务器在认证初始化报文中发送的相同。</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">用户名</span></b><span style="font-size:10.0pt;font-family:宋体;">：客户端登陆用户的用户名称。</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224151yjRn.png" alt="" height="59.8843930636" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">挑战认证数据</span></b><span style="font-size:10.0pt;font-family:宋体;">：客户端用户密码使用服务器发送的挑战随机数进行加密后，生成挑战认证数据，然后返回给服务器，用于对用户身份的认证。</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">数据库名称</span></b><span style="font-size:10.0pt;font-family:宋体;">：当客户端的权能标志位</span><span style="font-size:10.0pt;font-family:Times;"> CLIENT_CONNECT_WITH_DB </span><span style="font-size:10.0pt;font-family:宋体;">被置位时，该字段必须出现，如客户端权能显示连接数据库这个参数未被设置，因此抓取到的包中未能显示信息。</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;">4.2. </span><span style="font-size:10.0pt;font-family:宋体;">客户端命令请求报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:宋体;">要知道数据库作为作为一个业务核心的系统的软件，存储大量的数据，所有客户端会频繁向服务器发送命令请求报文，另外命令请求报文并没有其他的</span><span style="font-size:10.0pt;font-family:Times;">mysql</span><span style="font-size:10.0pt;font-family:宋体;">报文那么复杂，消息体如下：</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_143222418514p9.png" alt="" height="151.329479769" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">命令</span></b><span style="font-size:10.0pt;font-family:宋体;">：用于标识当前请求消息的类型，例如切换数据库（</span><span style="font-size:10.0pt;font-family:Times;">0x02</span><span style="font-size:10.0pt;font-family:宋体;">）、查询命令（</span><span style="font-size:10.0pt;font-family:Times;">0x03</span><span style="font-size:10.0pt;font-family:宋体;">）等。命令值<b>的取值范围及说明如下表（参考</b></span><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">源代码</span></b><b><span style="font-size:10.0pt;font-family:Times;">/include/mysql_com.h</span></b><b><span style="font-size:10.0pt;font-family:宋体;">头文件中的定义）：</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">值</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">命令</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">功能</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">关联函数</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x00</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_SLEEP</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（内部线程状态）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x01</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_QUIT</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">关闭连接</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_close</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x02</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_INIT_DB</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">切换数据库</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_select_db</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x03</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_QUERY</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">查询请求</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_real_query</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x04</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_FIELD_LIST</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">获取数据表字段信息</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_list_fields</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x05</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_CREATE_DB</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">创建数据库</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_create_db</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x06</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_DROP_DB</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">删除数据库</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_drop_db</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x07</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_REFRESH</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">清除缓存</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_refresh</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x08</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_SHUTDOWN</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">停止服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_shutdown</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x09</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STATISTICS</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">获取服务器统计信息</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stat</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x0A</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_PROCESS_INFO</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">获取当前连接的列表</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_list_processes</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x0B</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_CONNECT</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（内部线程状态）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x0C</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_PROCESS_KILL</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">中断某个连接</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_kill</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x0D</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_DEBUG</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">保存服务器调试信息</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_dump_debug_info</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x0E</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_PING</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">测试连通性</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_ping</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x0F</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_TIME</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（内部线程状态）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x10</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_DELAYED_INSERT</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（内部线程状态）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x11</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_CHANGE_USER</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">重新登陆（不断连接）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_change_user</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x12</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_BINLOG_DUMP</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">获取二进制日志信息</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x13</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_TABLE_DUMP</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">获取数据表结构信息</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x14</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_CONNECT_OUT</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（内部线程状态）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x15</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_REGISTER_SLAVE</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">从服务器向主服务器进行注册</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">（无）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x16</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STMT_PREPARE</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_prepare</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x17</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STMT_EXECUTE</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">执行预处理语句</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_execute</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x18</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STMT_SEND_LONG_DATA</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">发送</span></b><b><span style="font-size:10.0pt;font-family:Times;">BLOB</span></b><b><span style="font-size:10.0pt;font-family:宋体;">类型的数据</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_send_long_data</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x19</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STMT_CLOSE</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">销毁预处理语句</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_close</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x1A</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STMT_RESET</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">清除预处理语句参数缓存</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_reset</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x1B</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_SET_OPTION</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">设置语句选项</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_set_server_option</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x1C</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">COM_STMT_FETCH</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">获取预处理语句的执行结果</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_fetch</span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">参数：内容是用户在</span></b><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">客户端输入的命令（不包括每行命令结尾的</span></b><b><span style="font-size:10.0pt;font-family:Times;">";"</span></b><b><span style="font-size:10.0pt;font-family:宋体;">分号）。另外这个字段的字符串不是以</span></b><b><span style="font-size:10.0pt;font-family:Times;">NULL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">字符结尾，而是通过消息头中的长度值计算而来。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">例如：当我们在</span></b><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">客户端中执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">use test;</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时（切换到</span></b><b><span style="font-size:10.0pt;font-family:Times;">test</span></b><b><span style="font-size:10.0pt;font-family:宋体;">数据库），这里要注意的是虽然用户键入的只有</span></b><b><span style="font-size:10.0pt;font-family:Times;">use test</span></b><b><span style="font-size:10.0pt;font-family:宋体;">这一条命令，但是客户端发送的请求却是多条的为了说明命令类型特地挑出切换数据库命令和获取表的列信息，发送的数据库切换请求报文数据会是下面的样子：</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224223z1Y1.png" alt="" height="57.4051407589" width="700"><br>
+<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">其中，</span></b><b><span style="font-size:10.0pt;font-family:Times;">0x02</span></b><b><span style="font-size:10.0pt;font-family:宋体;">为请求类型值</span></b><b><span style="font-size:10.0pt;font-family:Times;">COM_INIT_DB</span></b><b><span style="font-size:10.0pt;font-family:宋体;">，后面的为</span></b><b><span style="font-size:10.0pt;font-family:Times;">ASCII</span></b><b><span style="font-size:10.0pt;font-family:宋体;">字符</span></b><b><span style="font-size:10.0pt;font-family:Times;">test</span></b><b><span style="font-size:10.0pt;font-family:宋体;">。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">另外客户自动请求数据库中表的列信息，请求报文是这样的：</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224255F7fb.png" alt="" height="67" width="609"><br>
+</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">其中，</span></b><b><span style="font-size:10.0pt;font-family:Times;">0x04</span></b><b><span style="font-size:10.0pt;font-family:宋体;">就是获取数据表字段命令，后面的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ASCII</span></b><b><span style="font-size:10.0pt;font-family:宋体;">就是指对应的表了。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">下面是能搜索到的命令信息：</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.1 COM_QUIT </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：关闭当前连接（客户端退出），无参数。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.2 COM_INIT_DB </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：切换数据库，对应的</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句为</span></b><b><span style="font-size:10.0pt;font-family:Times;">USE <database></database></span></b><b><span style="font-size:10.0pt;font-family:宋体;">。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">数据库名称（字符串到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.3 COM_QUERY </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：最常见的请求消息类型，当用户执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句时发送该消息。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span>SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句（字符串到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.4 COM_FIELD_LIST </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：查询某表的字段（列）信息，等同于</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">SHOW [FULL] FIELDS FROM ...</span></b><b><span style="font-size:10.0pt;font-family:宋体;">。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">表格名称（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Null-Terminated String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">字段（列）名称或通配符（可选）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.5 COM_CREATE_DB </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：创建数据库，该消息已过时，而被</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">CREATE DATABASE</span></b><b><span style="font-size:10.0pt;font-family:宋体;">代替。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">数据库名称（字符串到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.6 COM_DROP_DB </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：删除数据库，该消息已过时，而被</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">DROP DATABASE</span></b><b><span style="font-size:10.0pt;font-family:宋体;">代替。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">数据库名称（字符串到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.7 COM_REFRESH </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：清除缓存，等同于</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">FLUSH</span></b><b><span style="font-size:10.0pt;font-family:宋体;">，或是执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysqladmin flush-foo</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时发送该消息。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">1</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">清除缓存选项（位图方式存储，各标志位含义如下）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x01: REFRESH_GRANT</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x02: REFRESH_LOG</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x04: REFRESH_TABLES</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x08: REFRESH_HOSTS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x10: REFRESH_STATUS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x20: REFRESH_THREADS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x40: REFRESH_SLAVE</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x80: REFRESH_MASTER</span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.8 COM_SHUTDOWN </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：停止</span></b><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">服务。执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysqladmin shutdown</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时发送该消息。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">1</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">停止服务选项</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x00: SHUTDOWN_DEFAULT</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x01: SHUTDOWN_WAIT_CONNECTIONS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x02: SHUTDOWN_WAIT_TRANSACTIONS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x08: SHUTDOWN_WAIT_UPDATES</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x10: SHUTDOWN_WAIT_ALL_BUFFERS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x11: SHUTDOWN_WAIT_CRITICAL_BUFFERS</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0xFE: KILL_QUERY</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0xFF: KILL_CONNECTION</span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.9 COM_STATISTICS </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：查看</span></b><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">服务的统计信息（例如运行时间、每秒查询次数等）。执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysqladmin status</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时发送该消息，无参数。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.10 COM_PROCESS_INFO </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：获取当前活动的线程（连接）列表。等同于</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">SHOW PROCESSLIST</span></b><b><span style="font-size:10.0pt;font-family:宋体;">，或是执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysqladmin processlist</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时发送该消息，无参数。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.11 COM_PROCESS_KILL </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：要求服务器中断某个连接。等同于</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">KILL <id></id></span></b><b><span style="font-size:10.0pt;font-family:宋体;">。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;&nbsp;&nbsp; </span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">连接</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">号（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.12 COM_DEBUG </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：要求服务器将调试信息保存下来，保存的信息多少依赖于编译选项设置（</span></b><b><span style="font-size:10.0pt;font-family:Times;">debug=no|yes|full</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）。执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysqladmin debug</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时发送该消息，无参数。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.13 COM_PING </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：该消息用来测试连通性，同时会将服务器的无效连接（超时）计数器清零。执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysqladmin ping</span></b><b><span style="font-size:10.0pt;font-family:宋体;">命令时发送该消息，无参数。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.14 COM_CHANGE_USER </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：在不断连接的情况下重新登陆，该操作会销毁</span></b><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">服务器端的会话上下文（包括临时表、会话变量等）。有些连接池用这种方法实现清除会话上下文。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">用户名（字符串以</span></b><b><span style="font-size:10.0pt;font-family:Times;">NULL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">结尾）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">密码（挑战数）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">MySQL 3.23 </span></b><b><span style="font-size:10.0pt;font-family:宋体;">版本：</span></b><b><span style="font-size:10.0pt;font-family:Times;">Null-Terminated String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">（长度</span></b><b><span style="font-size:10.0pt;font-family:Times;">9</span></b><b><span style="font-size:10.0pt;font-family:宋体;">字节）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">MySQL 4.1 </span></b><b><span style="font-size:10.0pt;font-family:宋体;">版本：</span></b><b><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">（长度</span></b><b><span style="font-size:10.0pt;font-family:Times;">1+21</span></b><b><span style="font-size:10.0pt;font-family:宋体;">字节）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据库名称（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Null-Terminated String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">2</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字符编码</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.15 COM_BINLOG_DUMP </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：该消息是备份连接时由从服务器向主服务器发送的最后一个请求，主服务器收到后，会响应一系列的报文，每个报文都包含一个二进制日志事件。如果主服务器出现故障时，会发送一个</span></b><b><span style="font-size:10.0pt;font-family:Times;">EOF</span></b><b><span style="font-size:10.0pt;font-family:宋体;">报文。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">二进制日志数据的起始位置（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">二进制日志数据标志位（目前未使用，永远为</span></b><b><span style="font-size:10.0pt;font-family:Times;">0x00</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">从服务器的服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">二进制日志的文件名称（可选，默认值为主服务器上第一个有效的文件名）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.16 COM_TABLE_DUMP </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：将数据表从主服务器复制到从服务器中，执行</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句</span></b><b><span style="font-size:10.0pt;font-family:Times;">LOAD TABLE ... FROM MASTER</span></b><b><span style="font-size:10.0pt;font-family:宋体;">时发送该消息。目前该消息已过时，不再使用。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据库名称（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据表名称（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.17 COM_REGISTER_SLAVE </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：在从服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">report_host</span></b><b><span style="font-size:10.0pt;font-family:宋体;">变量设置的情况下，当备份连接时向主服务器发送的注册消息。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">从服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">主服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">IP</span></b><b><span style="font-size:10.0pt;font-family:宋体;">地址（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">主服务器用户名（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">主服务器密码（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">2</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">主服务器端口号</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">安全备份级别（由</span></b><b><span style="font-size:10.0pt;font-family:Times;">MySQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">rpl_recovery_rank</span></b><b><span style="font-size:10.0pt;font-family:宋体;">变量设置，暂时未使用）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">主服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（值恒为</span></b><b><span style="font-size:10.0pt;font-family:Times;">0x00</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.18 COM_PREPARE </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：预处理</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句，使用带有</span></b><b><span style="font-size:10.0pt;font-family:Times;">"?"</span></b><b><span style="font-size:10.0pt;font-family:宋体;">占位符的</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句时发送该消息。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">带有</span></b><b><span style="font-size:10.0pt;font-family:Times;">"?"</span></b><b><span style="font-size:10.0pt;font-family:宋体;">占位符的</span></b><b><span style="font-size:10.0pt;font-family:Times;">SQL</span></b><b><span style="font-size:10.0pt;font-family:宋体;">语句（字符串到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.19 COM_EXECUTE </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：执行预处理语句。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理语句的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">1</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">标志位</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x00: CURSOR_TYPE_NO_CURSOR</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x01: CURSOR_TYPE_READ_ONLY</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x02: CURSOR_TYPE_FOR_UPDATE</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<br>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">0x04: CURSOR_TYPE_SCROLLABLE</span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">保留（值恒为</span></b><b><span style="font-size:10.0pt;font-family:Times;">0x01</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">如果参数数量大于</span></b><b><span style="font-size:10.0pt;font-family:Times;">0</span></b> 
+				</p>
+			</td>
+			<td>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">空位图（</span></b><b><span style="font-size:10.0pt;font-family:Times;">Null-Bitmap</span></b><b><span style="font-size:10.0pt;font-family:宋体;">，长度</span></b><b><span style="font-size:10.0pt;font-family:Times;"> = (</span></b><b><span style="font-size:10.0pt;font-family:宋体;">参数数量</span></b><b><span style="font-size:10.0pt;font-family:Times;"> + 7) / 8 </span></b><b><span style="font-size:10.0pt;font-family:宋体;">字节）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">1</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">参数分隔标志</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">如果参数分隔标志值为</span></b><b><span style="font-size:10.0pt;font-family:Times;">1</span></b> 
+				</p>
+			</td>
+			<td>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">每个参数的类型值（长度</span></b><b><span style="font-size:10.0pt;font-family:Times;"> = </span></b><b><span style="font-size:10.0pt;font-family:宋体;">参数数量</span></b><b><span style="font-size:10.0pt;font-family:Times;"> * 2 </span></b><b><span style="font-size:10.0pt;font-family:宋体;">字节）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">每个参数的值</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.20 COM_LONG_DATA </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">该消息报文有两种形式，一种用于发送二进制数据，另一种用于发送文本数据。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：用于发送二进制（</span></b><b><span style="font-size:10.0pt;font-family:Times;">BLOB</span></b><b><span style="font-size:10.0pt;font-family:宋体;">）类型的数据（调用</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysql_stmt_send_long_data</span></b><b><span style="font-size:10.0pt;font-family:宋体;">函数）。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理语句的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">2</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">参数序号（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据负载（数据到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：用于发送超长字符串类型的数据（调用</span></b><b><span style="font-size:10.0pt;font-family:Times;">mysql_send_long_data</span></b><b><span style="font-size:10.0pt;font-family:宋体;">函数）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理语句的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">2</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">参数序号（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">2</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据类型（未使用）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">n</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据负载（数据到达消息尾部时结束，无结束符）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.21 COM_CLOSE_STMT </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：销毁预处理语句。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理语句的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.22 COM_RESET_STMT </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：将预处理语句的参数缓存清空。多数情况和</span></b><b><span style="font-size:10.0pt;font-family:Times;">COM_LONG_DATA</span></b><b><span style="font-size:10.0pt;font-family:宋体;">一起使用。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理语句的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.23 COM_SET_OPTION </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：设置语句选项，选项值为</span></b><b><span style="font-size:10.0pt;font-family:Times;">/include/mysql_com.h</span></b><b><span style="font-size:10.0pt;font-family:宋体;">头文件中定义的</span></b><b><span style="font-size:10.0pt;font-family:Times;">enum_mysql_set_option</span></b><b><span style="font-size:10.0pt;font-family:宋体;">枚举类型：</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<ul>
+	<li style="text-align:left;">
+		<b><span style="font-size:10.0pt;font-family:Times;">MYSQL_OPTION_MULTI_STATEMENTS_ON</span></b> 
+	</li>
+	<li style="text-align:left;">
+		<b><span style="font-size:10.0pt;font-family:Times;">MYSQL_OPTION_MULTI_STATEMENTS_OFF</span></b> 
+	</li>
+</ul>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">2</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">选项值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.2.24 COM_FETCH_STMT </span></b><b><span style="font-size:10.0pt;font-family:宋体;">消息报文</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">功能：获取预处理语句的执行结果（一次可以获取多行数据）。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<b><span style="font-size:10.0pt;font-family:宋体;">字节</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<b><span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span></b><b><span style="font-size:10.0pt;font-family:宋体;">说明</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">预处理语句的</span></b><b><span style="font-size:10.0pt;font-family:Times;">ID</span></b><b><span style="font-size:10.0pt;font-family:宋体;">值（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:Times;">4</span></b> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:left;" align="left">
+					<b><span style="font-size:10.0pt;font-family:宋体;">数据的行数（小字节序）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:Times;">4.3</span></b><b><span style="font-size:10.0pt;font-family:宋体;">服务器响应报文（服务器</span></b><b><span style="font-size:10.0pt;font-family:Times;">-&gt;</span></b><b><span style="font-size:10.0pt;font-family:宋体;">客户端）</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p style="text-align:left;" align="left">
+	<b><span style="font-size:10.0pt;font-family:宋体;">当接收到客户端的命令或者认证请求后，服务器会执行结果给客户端，而返回的报文种类是多样的，客户端是通过判断第一个字节来区分响应报文类型。</span></b><b><span style="font-size:10.0pt;font-family:Times;"></span></b> 
+</p>
+<p>
+	<span style="font-family:宋体;">当客户端发起认证请求或命令请求后，服务器会返回相应的执行结果给客户端。客户端在收到响应报文后，需要首先检查第</span><span>1</span><span style="font-family:宋体;">个字节的值，来区分响应报文的类型。</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">响应报文类型</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">第</span><span style="font-size:10.0pt;font-family:Times;">1</span><span style="font-size:10.0pt;font-family:宋体;">个字节取值范围</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">OK </span><span style="font-size:10.0pt;font-family:宋体;">响应报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x00</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">Error </span><span style="font-size:10.0pt;font-family:宋体;">响应报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFF</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">Result Set </span><span style="font-size:10.0pt;font-family:宋体;">报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x01 - 0xFA</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">Field </span><span style="font-size:10.0pt;font-family:宋体;">报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x01 - 0xFA</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">Row Data </span><span style="font-size:10.0pt;font-family:宋体;">报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x01 - 0xFA</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">EOF </span><span style="font-size:10.0pt;font-family:宋体;">报文</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFE</span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<span style="font-family:宋体;">注：响应报文的第</span><span>1</span><span style="font-family:宋体;">个字节在不同类型中含义不同，比如在</span><span>OK</span><span style="font-family:宋体;">报文中，该字节并没有实际意义，值恒为</span><span>0x00</span><span style="font-family:宋体;">；而在</span><span>Result Set</span><span style="font-family:宋体;">报文中，该字节又是长度编码的二进制数据结构（</span><span>Length Coded Binary</span><span style="font-family:宋体;">）中的第</span><span>1</span><span style="font-family:宋体;">字节。</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">下面实验的表结构是这样的：</span><span></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">mysql&gt; desc student;</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">+-------+-------------+------+-----+---------+-------+</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">| Field | Type<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>| Null | Key | Default | Extra |</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">+-------+-------------+------+-----+---------+-------+</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">| id<span>&nbsp;&nbsp;&nbsp; </span>|
+int(11)<span>&nbsp;&nbsp;&nbsp;&nbsp; </span>| NO<span>&nbsp;&nbsp; </span>| PRI | NULL<span>&nbsp;&nbsp;&nbsp; </span>|<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>|</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">| name<span>&nbsp; </span>|
+varchar(10) | YES<span>&nbsp; </span>|<span>&nbsp;&nbsp;&nbsp;&nbsp; </span>| NULL<span>&nbsp;&nbsp;&nbsp; </span>|<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span>|</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">+-------+-------------+------+-----+---------+-------+</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">2 rows in set (0.00 sec)</span> 
+</p>
+<p>
+	<span>&nbsp;</span> 
+</p>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.1 OK </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">响应报文</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span style="font-family:宋体;">客户端的命令执行正确时，服务器会返回</span><span>OK</span><span style="font-family:宋体;">响应报文。</span><span></span> 
+</p>
+<p>
+	<b><span>MySQL 4.1 </span></b><b><span style="font-family:宋体;">及之后的版本</span></b><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">OK</span><span style="font-size:10.0pt;font-family:宋体;">报文，值恒为</span><span style="font-size:10.0pt;font-family:Times;">0x00</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1-9</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">受影响行数（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded Binary</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1-9</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">索引</span><span style="font-size:10.0pt;font-family:Times;">ID</span><span style="font-size:10.0pt;font-family:宋体;">值（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded Binary</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">服务器状态</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">告警计数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">服务器消息（字符串到达消息尾部时结束，无结束符，可选）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">受影响行数</span></b><span style="font-family:宋体;">：当执行</span><span>INSERT/UPDATE/DELETE</span><span style="font-family:宋体;">语句时所影响的数据行数。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">索引</span><span>ID</span></b><b><span style="font-family:宋体;">值</span></b><span style="font-family:宋体;">：该值为</span><span>AUTO_INCREMENT</span><span style="font-family:宋体;">索引字段生成，如果没有索引字段，则为</span><span>0x00</span><span style="font-family:宋体;">。注意：当</span><span>INSERT</span><span style="font-family:宋体;">插入语句为多行数据时，该索引</span><span>ID</span><span style="font-family:宋体;">值为第一个插入的数据行索引值，而非最后一个。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">服务器状态</span></b><span style="font-family:宋体;">：客户端可以通过该值检查命令是否在事务处理中。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">告警计数</span></b><span style="font-family:宋体;">：告警发生的次数。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">服务器消息</span></b><span style="font-family:宋体;">：服务器返回给客户端的消息，一般为简单的描述性字符串，可选字段。</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">现在往实验表中插入数据：</span><span></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">mysql&gt; insert into student values(3,'kate');</span> 
+</p>
+<p>
+	<span style="font-family:" color:#2fff12;"="">Query OK, 1 row affected (0.00 sec)</span> 
+</p>
+<h4>
+	<span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">返回的报文过滤出</span><span style="font-size:10.0pt;font-weight:normal;">OK</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">包</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224324lyK1.png" alt="" height="37.3117033604" width="700"><br>
+</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">包长（</span><span style="font-size:10.0pt;font-weight:normal;">07 00</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）＋包号（</span><span style="font-size:10.0pt;font-weight:normal;">00 01</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）＋报文类型（</span><span style="font-size:10.0pt;font-weight:normal;">00<span>&nbsp; </span>OK</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">包）＋影响行数（</span><span style="font-size:10.0pt;font-weight:normal;">01</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）＋索引</span><span style="font-size:10.0pt;font-weight:normal;">id</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">值（</span><span style="font-size:10.0pt;font-weight:normal;">00 </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">自增长索引未设置）＋服务器状态（</span><span style="font-size:10.0pt;font-weight:normal;">02 00</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）＋无警告＋服务器状态（</span><span style="font-size:10.0pt;font-weight:normal;">00 00</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）＋无计数＋消息未选</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">具体如下：</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224337zKII.png" alt="" height="336.647398844" width="700"><br>
+</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">&nbsp;</span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.2 Error </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">响应报文</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<b><span>MySQL 4.1 </span></b><b><span style="font-family:宋体;">及之后的版本</span></b><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">Error</span><span style="font-size:10.0pt;font-family:宋体;">报文，值恒为</span><span style="font-size:10.0pt;font-family:Times;">0xFF</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">错误编号（小字节序）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">服务器状态标志，恒为</span><span style="font-size:10.0pt;font-family:Times;">'#'</span><span style="font-size:10.0pt;font-family:宋体;">字符</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">5</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">服务器状态（</span><span style="font-size:10.0pt;font-family:Times;">5</span><span style="font-size:10.0pt;font-family:宋体;">个字符）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">服务器消息</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">错误编号</span></b><span style="font-family:宋体;">：错误编号值定义在源代码</span><span>/include/mysqld_error.h</span><span style="font-family:宋体;">头文件中。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">服务器状态</span></b><span style="font-family:宋体;">：服务器将错误编号通过</span><span>mysql_errno_to_sqlstate</span><span style="font-family:宋体;">函数转换为状态值，状态值由</span><span>5</span><span style="font-family:宋体;">字节的</span><span>ASCII</span><span style="font-family:宋体;">字符组成，定义在源代码</span><span>/include/sql_state.h</span><span style="font-family:宋体;">头文件中。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">服务器消息</span></b><span style="font-family:宋体;">：错误消息字符串到达消息尾时结束，长度可以由消息头中的长度值计算得出。消息长度为</span><span>0-512</span><span style="font-family:宋体;">字节。</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">实验中插入上一条一样的数据，造成违反主键唯一性约束的错误。</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">抓取到包如下：</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224399VCyC.png" alt="" height="110.99537037" width="700"><br>
+</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">详细看第五个字节为</span><span>ff</span><span style="font-family:宋体;">也证明来这是一个错误包，详细的报文对照分析如下：</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224416NbtG.png" alt="" height="189.36416185" width="700"><br>
+</span><span></span> 
+</p>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.3 Result Set </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">消息（重要）</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span style="font-family:宋体;">当客户端发送查询请求后，在没有错误的情况下，服务器会返回结果集（</span><span>Result Set</span><span style="font-family:宋体;">）给客户端。</span><span></span> 
+</p>
+<p>
+	<span>Result Set </span><span style="font-family:宋体;">消息分为五部分，结构如下：</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">结构</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[Result Set
+  Header]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列数量</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[Field]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列信息（多个）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[EOF]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列结束</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[Row Data]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">行数据（多个）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[EOF]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">数据结束</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<h4>
+	<span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">实验中执行如下进行抓包分析：</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">mysql&gt; select * from student;</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">+----+------+</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">| id | name |</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">+----+------+</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">|<span>&nbsp; </span>1 | jack |</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">|<span>&nbsp; </span>2 | tom<span>&nbsp; </span>|</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">|<span>&nbsp; </span>3 | kate |</span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-family:" color:#2fff12;"="">+----+------+</span> 
+</p>
+<h4>
+	<span style="font-family:" color:#2fff12;"="">3 rows in set (0.00 sec)</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">抓到的包如下显示</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_14322244581WLC.png" alt="" height="484.739884393" width="700"><br>
+</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">显示有八个报文，由上以及</span><span style="font-size:10.0pt;font-weight:normal;">student</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">表结构分析，是</span><span style="font-size:10.0pt;font-weight:normal;">1</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">个结果集头包＋</span><span style="font-size:10.0pt;font-weight:normal;">2</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">个列信息包＋</span><span style="font-size:10.0pt;font-weight:normal;">1</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">个列结束包＋</span><span style="font-size:10.0pt;font-weight:normal;">3</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">个行数据包＋</span><span style="font-size:10.0pt;font-weight:normal;">1</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">个数据结束包</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.4 Result Set Header </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">结构</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1-9</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">Field</span><span style="font-size:10.0pt;font-family:宋体;">结构计数（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded Binary</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1-9</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">额外信息（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded Binary</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span>Field</span></b><b><span style="font-family:宋体;">结构计数</span></b><span style="font-family:宋体;">：用于标识</span><span>Field</span><span style="font-family:宋体;">结构的数量，取值范围</span><span>0x00-0xFA</span><span style="font-family:宋体;">。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">额外信息</span></b><span style="font-family:宋体;">：可选字段，一般情况下不应该出现。只有像</span><span>SHOW COLUMNS</span><span style="font-family:宋体;">这种语句的执行结果才会用到额外信息（标识表格的列数量）。</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224528X2X3.png" alt="" height="63" width="475"><br>
+</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_14322245437Bar.png" alt="" height="225.780346821" width="700"><br>
+</span><span></span> 
+</p>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.5 Field </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">结构</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span>Field</span><span style="font-family:宋体;">为数据表的列信息，在</span><span>Result Set</span><span style="font-family:宋体;">中，</span><span>Field</span><span style="font-family:宋体;">会连续出现多次，次数由</span><span>Result Set Header</span><span style="font-family:宋体;">结构中的</span><span>IField</span><span style="font-family:宋体;">结构计数值决定。</span><span></span> 
+</p>
+<p>
+	<b><span>MySQL 4.1 </span></b><b><span style="font-family:宋体;">及之后的版本</span></b><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">目录名称（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">数据库名称（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">数据表名称（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">数据表原始名称（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列（字段）名称（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">4</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列（字段）原始名称（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">填充值</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">字符编码</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">4</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列（字段）长度</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列（字段）类型</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列（字段）标志</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">整型值精度</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">填充值（</span><span style="font-size:10.0pt;font-family:Times;">0x00</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">默认值（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">目录名称</span></b><span style="font-family:宋体;">：在</span><span>4.1</span><span style="font-family:宋体;">及之后的版本中，该字段值为</span><span>"def"</span><span style="font-family:宋体;">。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">数据库名称</span></b><span style="font-family:宋体;">：数据库名称标识。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">数据表名称</span></b><span style="font-family:宋体;">：数据表的别名（</span><span>AS</span><span style="font-family:宋体;">之后的名称）。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">数据表原始名称</span></b><span style="font-family:宋体;">：数据表的原始名称（</span><span>AS</span><span style="font-family:宋体;">之前的名称）。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">列（字段）名称</span></b><span style="font-family:宋体;">：列（字段）的别名（</span><span>AS</span><span style="font-family:宋体;">之后的名称）。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">列（字段）原始名称</span></b><span style="font-family:宋体;">：列（字段）的原始名称（</span><span>AS</span><span style="font-family:宋体;">之前的名称）。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">字符编码</span></b><span style="font-family:宋体;">：列（字段）的字符编码值。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">列（字段）长度</span></b><span style="font-family:宋体;">：列（字段）的长度值，真实长度可能小于该值，例如</span><span>VARCHAR(2)</span><span style="font-family:宋体;">类型的字段实际只能存储</span><span>1</span><span style="font-family:宋体;">个字符。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">列（字段）类型</span></b><span style="font-family:宋体;">：列（字段）的类型值，取值范围如下（参考源代码</span><span>/include/mysql_com.h</span><span style="font-family:宋体;">头文件中的</span><span>enum_field_type</span><span style="font-family:宋体;">枚举类型定义）：</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">类型值</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">名称</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x00</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_DECIMAL</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x01</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_TINY</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x02</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_SHORT</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x03</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_LONG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x04</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_FLOAT</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x05</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_DOUBLE</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x06</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_NULL</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x07</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_TIMESTAMP</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x08</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_LONGLONG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x09</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_INT24</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0A</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_DATE</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0B</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_TIME</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0C</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_DATETIME</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0D</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_YEAR</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0E</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_NEWDATE</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0F</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_VARCHAR
+  (new in MySQL 5.0)</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x10</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_BIT
+  (new in MySQL 5.0)</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xF6</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_NEWDECIMAL
+  (new in MYSQL 5.0)</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xF7</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_ENUM</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xF8</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_SET</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xF9</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_TINY_BLOB</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFA</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_MEDIUM_BLOB</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFB</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_LONG_BLOB</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFC</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_BLOB</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFD</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_VAR_STRING</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFE</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_STRING</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0xFF</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">FIELD_TYPE_GEOMETRY</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224607516O.png" alt="" height="100" width="640"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+<br>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">&nbsp;</span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224628ISF9.png" alt="" height="358.497109827" width="700"><br>
+</span><span></span></b> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">对应进制码的结尾可以</span><span>fd</span></b><b><span style="font-family:宋体;">对应</span><span>FIELD_TYPE_VAR_STTING,</span></b><b><span style="font-family:宋体;">其他的不做赘述，大家对号入座。</span><span></span></b> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">列（字段）标志</span></b><span style="font-family:宋体;">：各标志位定义如下（参考源代码</span><span>/include/mysql_com.h</span><span style="font-family:宋体;">头文件中的宏定义）：</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">标志位</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">名称</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0001</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">NOT_NULL_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0002</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">PRI_KEY_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0004</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">UNIQUE_KEY_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0008</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">MULTIPLE_KEY_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0010</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">BLOB_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0020</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">UNSIGNED_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0040</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">ZEROFILL_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0080</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">BINARY_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0100</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">ENUM_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0200</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">AUTO_INCREMENT_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0400</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">TIMESTAMP_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">0x0800</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">SET_FLAG</span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">数值精度</span></b><span style="font-family:宋体;">：该字段对</span><span>DECIMAL</span><span style="font-family:宋体;">和</span><span>NUMERIC</span><span style="font-family:宋体;">类型的数值字段有效，用于标识数值的精度（小数点位置）。</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">抓包的进制码显示的列标志，实际上说明的是列的属性</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">默认值</span></b><span style="font-family:宋体;">：该字段用在数据表定义中，普通的查询结果中不会出现。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">附</span></b><span style="font-family:宋体;">：</span><span>Field</span><span style="font-family:宋体;">结构的相关处理函数：</span><span></span> 
+</p>
+<ul>
+	<li style="text-align:left;">
+		<span style="font-size:10.0pt;font-family:宋体;">客户端：</span><span style="font-family:Times;">/client/client.c</span><span style="font-size:10.0pt;font-family:宋体;">源文件中的</span><span style="font-family:Times;">unpack_fields</span><span style="font-size:10.0pt;font-family:宋体;">函数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+	</li>
+	<li style="text-align:left;">
+		<span style="font-size:10.0pt;font-family:宋体;">服务器：</span><span style="font-family:Times;">/sql/sql_base.cc</span><span style="font-size:10.0pt;font-family:宋体;">源文件中的</span><span style="font-family:Times;">send_fields</span><span style="font-size:10.0pt;font-family:宋体;">函数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+	</li>
+</ul>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.6 EOF </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">结构</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span>EOF</span><span style="font-family:宋体;">结构用于标识</span><span>Field</span><span style="font-family:宋体;">和</span><span>Row Data</span><span style="font-family:宋体;">的结束，在预处理语句中，</span><span>EOF</span><span style="font-family:宋体;">也被用来标识参数的结束。</span><span></span> 
+</p>
+<p>
+	<b><span>MySQL 4.1 </span></b><b><span style="font-family:宋体;">及之后的版本</span></b><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">EOF</span><span style="font-size:10.0pt;font-family:宋体;">值（</span><span style="font-size:10.0pt;font-family:Times;">0xFE</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">告警计数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">状态标志位</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">告警计数</span></b><span style="font-family:宋体;">：服务器告警数量，在所有数据都发送给客户端后该值才有效。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">状态标志位</span></b><span style="font-family:宋体;">：包含类似</span><span>SERVER_MORE_RESULTS_EXISTS</span><span style="font-family:宋体;">这样的标志位。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">注</span></b><span style="font-family:宋体;">：由于</span><span>EOF</span><span style="font-family:宋体;">值与其它</span><span>Result Set</span><span style="font-family:宋体;">结构共用</span><span>1</span><span style="font-family:宋体;">字节，所以在收到报文后需要对</span><span>EOF</span><span style="font-family:宋体;">包的真实性进行校验，校验条件为：</span><span></span> 
+</p>
+<ul>
+	<li style="text-align:left;">
+		<span style="font-size:10.0pt;font-family:宋体;">第</span><span style="font-size:10.0pt;font-family:Times;">1</span><span style="font-size:10.0pt;font-family:宋体;">字节值为</span><span style="font-size:10.0pt;font-family:Times;">0xFE</span> 
+	</li>
+	<li style="text-align:left;">
+		<span style="font-size:10.0pt;font-family:宋体;">包长度小于</span><span style="font-size:10.0pt;font-family:Times;">9</span><span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+	</li>
+</ul>
+<p>
+	<b><span style="font-family:宋体;">附</span></b><span style="font-family:宋体;">：</span><span>EOF</span><span style="font-family:宋体;">结构的相关处理函数：</span><span></span> 
+</p>
+<ul>
+	<li style="text-align:left;">
+		<span style="font-size:10.0pt;font-family:宋体;">服务器：</span><span style="font-family:Times;">protocol.cc</span><span style="font-size:10.0pt;font-family:宋体;">源文件中的</span><span style="font-family:Times;">send_eof</span><span style="font-size:10.0pt;font-family:宋体;">函数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+	</li>
+</ul>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:宋体;">列信息的</span><span style="font-size:10.0pt;font-family:Times;">EOF</span><span style="font-size:10.0pt;font-family:宋体;">包</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_14322247304699.png" alt="" height="76.1574074074" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224743X6FF.png" alt="" height="318.034682081" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:宋体;">行数据的</span><span style="font-size:10.0pt;font-family:Times;">EOF</span><span style="font-size:10.0pt;font-family:宋体;">包</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224759TkPt.png" alt="" height="38.0787037037" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;"><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_1432224773Xxg4.png" alt="" height="326.12716763" width="700"><br>
+</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+</p>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.7 Row Data </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">结构</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span style="font-family:宋体;">在</span><span>Result Set</span><span style="font-family:宋体;">消息中，会包含多个</span><span>Row Data</span><span style="font-family:宋体;">结构，每个</span><span>Row Data</span><span style="font-family:宋体;">结构又包含多个字段值，这些字段值组成一行数据。</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;"><span>&nbsp;</span></span><span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">字段值（</span><span style="font-size:10.0pt;font-family:Times;">Length Coded String</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">...</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">（一行数据中包含多个字段值）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">字段值</span></b><span style="font-family:宋体;">：行数据中的字段值，字符串形式。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">附</span></b><span style="font-family:宋体;">：</span><span>Row Data</span><span style="font-family:宋体;">结构的相关处理函数：</span><span></span> 
+</p>
+<ul>
+	<li style="text-align:left;">
+		<span style="font-size:10.0pt;font-family:宋体;">客户端：</span><span style="font-family:Times;">/client/client.c</span><span style="font-size:10.0pt;font-family:宋体;">源文件中的</span><span style="font-family:Times;">read_rows</span><span style="font-size:10.0pt;font-family:宋体;">函数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+	</li>
+</ul>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.8 Row Data </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">结构（二进制数据）</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span style="font-family:宋体;">该结构用于传输二进制的字段值，既可以是服务器返回的结果，也可以是由客户端发送的（当执行预处理语句时，客户端使用</span><span>Result Set</span><span style="font-family:宋体;">消息来发送参数及数据）。</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">结构头（</span><span style="font-size:10.0pt;font-family:Times;">0x00</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">(</span><span style="font-size:10.0pt;font-family:宋体;">列数量</span><span style="font-size:10.0pt;font-family:Times;"> + 7 + 2) / 8</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">空位图</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">n</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">字段值</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">...</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">（一行数据中包含多个字段值）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">空位图</span></b><span style="font-family:宋体;">：前</span><span>2</span><span style="font-family:宋体;">个比特位被保留，值分别为</span><span>0</span><span style="font-family:宋体;">和</span><span>1</span><span style="font-family:宋体;">，以保证不会和</span><span>OK</span><span style="font-family:宋体;">、</span><span>Error</span><span style="font-family:宋体;">包的首字节冲突。在</span><span>MySQL
+5.0</span><span style="font-family:宋体;">及之后的版本中，这</span><span>2</span><span style="font-family:宋体;">个比特位的值都为</span><span>0</span><span style="font-family:宋体;">。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">字段值</span></b><span style="font-family:宋体;">：行数据中的字段值，二进制形式。</span><span></span> 
+</p>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.9 PREPARE_OK </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">响应报文（</span><span style="font-size:10.0pt;font-weight:normal;">Prepared Statement</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span style="font-family:宋体;">用于响应客户端发起的预处理语句报文，组成结构如下：</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">结构</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[PREPARE_OK]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">PREPARE_OK</span><span style="font-size:10.0pt;font-family:宋体;">结构</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">如果参数数量大于</span><span style="font-size:10.0pt;font-family:Times;">0</span> 
+				</p>
+			</td>
+			<td>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[Field]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">与</span><span style="font-size:10.0pt;font-family:Times;">Result Set</span><span style="font-size:10.0pt;font-family:宋体;">消息结构相同</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[EOF]</span> 
+				</p>
+			</td>
+			<td>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">如果列数大于</span><span style="font-size:10.0pt;font-family:Times;">0</span> 
+				</p>
+			</td>
+			<td>
+				<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[Field]</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">与</span><span style="font-size:10.0pt;font-family:Times;">Result Set</span><span style="font-size:10.0pt;font-family:宋体;">消息结构相同</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">[EOF]</span> 
+				</p>
+			</td>
+			<td>
+				<br>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<span style="font-family:宋体;">其中</span><span> PREPARD_OK </span><span style="font-family:宋体;">的结构如下：</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">OK</span><span style="font-size:10.0pt;font-family:宋体;">报文，值为</span><span style="font-size:10.0pt;font-family:Times;">0x00</span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">4</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">预处理语句</span><span style="font-size:10.0pt;font-family:Times;">ID</span><span style="font-size:10.0pt;font-family:宋体;">值</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">列数量</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">参数数量</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">填充值（</span><span style="font-size:10.0pt;font-family:Times;">0x00</span><span style="font-size:10.0pt;font-family:宋体;">）</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">告警计数</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<h4>
+	<span style="font-size:10.0pt;font-weight:normal;">4.3.10 Parameter </span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">响应报文（</span><span style="font-size:10.0pt;font-weight:normal;">Prepared Statement</span><span style="font-size:10.0pt;font-family:宋体;font-weight:normal;">）</span><span style="font-size:10.0pt;font-weight:normal;"></span> 
+</h4>
+<p>
+	<span style="font-family:宋体;">预处理语句的值与参数正确对应后，服务器会返回</span><span> Parameter </span><span style="font-family:宋体;">报文。</span><span></span> 
+</p>
+<table class="ke-zeroborder" border="0" cellpadding="0">
+	<tbody>
+		<tr>
+			<td>
+				<p style="text-align:center;" align="center">
+					<span style="font-size:10.0pt;font-family:宋体;">字节</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">说明</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+	<tbody>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">类型</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">2</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">标志</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">1</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">数值精度</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:Times;">4</span> 
+				</p>
+			</td>
+			<td>
+				<p>
+					<span style="font-size:10.0pt;font-family:宋体;">字段长度</span><span style="font-size:10.0pt;font-family:Times;"></span> 
+				</p>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	<b><span style="font-family:宋体;">类型</span></b><span style="font-family:宋体;">：与</span><span> Field </span><span style="font-family:宋体;">结构中的字段类型相同。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">标志</span></b><span style="font-family:宋体;">：与</span><span> Field </span><span style="font-family:宋体;">结构中的字段标志相同。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">数值精度</span></b><span style="font-family:宋体;">：与</span><span> Field </span><span style="font-family:宋体;">结构中的数值精度相同。</span><span></span> 
+</p>
+<p>
+	<b><span style="font-family:宋体;">字段长度</span></b><span style="font-family:宋体;">：与</span><span> Field </span><span style="font-family:宋体;">结构中的字段长度相同。</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_14322248318HHN.png" alt="" height="42.0809248555" width="700"><br>
+</span><span></span> 
+</p>
+<p>
+	<span style="font-family:宋体;">报文长度（</span><span>07 00 00</span><span style="font-family:宋体;">）＋报文序列号（</span><span>05</span><span style="font-family:宋体;">）＋报文类型（</span><span>01</span><span style="font-family:宋体;">）</span><span></span> 
+</p>
+<p>
+	<span><img src="./MySql协议分析-l86156117-ITPUB博客_files/28944233_143222484954nl.png" alt="" height="852.947976879" width="700"><br>
+</span><span></span> 
+</p>
+<h2>
+	<span style="font-size:10.0pt;line-height:173%;font-family:Times;font-weight:normal;">5 </span><span style="font-size:10.0pt;line-height:173%;font-family:宋体;font-weight:normal;">参考资料</span><span style="font-size:10.0pt;line-height:173%;font-family:Times;font-weight:normal;"></span> 
+</h2>
+<p>
+	<span style="font-family:宋体;">《</span><span><a href="http://dev.mysql.com/doc/internals/en/index.html"><span style="color:windowtext;text-decoration:none;">MySQL
+Internals Manual</span></a>: <a href="http://dev.mysql.com/doc/internals/en/client-server-protocol.html"><span style="color:windowtext;text-decoration:none;">MySQL
+Client/Server Protocol</span></a></span><span style="font-family:宋体;">》</span><span></span> 
+</p>
+<p style="text-align:left;" align="left">
+	<span style="font-size:10.0pt;font-family:Times;">&nbsp;</span> 
+</p>
+<br>
+<div id="xunlei_com_thunder_helper_plugin_d462f475-c18e-46be-bd10-327458d045bd">
+</div>
+<div id="xunlei_com_thunder_helper_plugin_d462f475-c18e-46be-bd10-327458d045bd">
+</div>
+<div id="xunlei_com_thunder_helper_plugin_d462f475-c18e-46be-bd10-327458d045bd">
+</div>
+</div>
+<div class="page">上一篇：<a href="http://m.blog.itpub.net/28944233/viewspace-1664439/">数据库中间件OneProxy系列一：部署和启动</a><br>
+  下一篇：<a href="http://m.blog.itpub.net/28944233/viewspace-1667465/">数据库中间件OneProxy系列二：透明连接池</a></div>
+<footer>
+ <a href="http://www.itpub.net/">ITPUB论坛</a> | <a href="http://blog.chinaunix.net/">chinaunix博客</a> | <a href="http://bbs.chinaunix.net/">chinaunix论坛</a><br>
+
+ 北京皓辰网域网络信息技术有限公司. 版权所有
+</footer>
+<script>
+ $(function(){	 		
+	
+		$("#fenlei").click(function(){
+				  $("#left_1").show();
+				  $("#left_2").show();
+		});
+
+})		
+</script>		
+
+
+<script language="javascript" src="./MySql协议分析-l86156117-ITPUB博客_files/pv.js.下载"></script>
+<script>
+function sendPV(){
+    var pvTrack = new PvTrack();
+    pvTrack.type = 35; // 频道类别ID
+    pvTrack.channel = 532; // 频道ID
+    pvTrack.pageType = 0;
+    pvTrack.track();
+}
+window.setTimeout("sendPV()", 1000);
+</script></body></html>

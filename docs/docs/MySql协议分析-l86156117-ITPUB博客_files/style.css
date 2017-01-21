@@ -1,0 +1,70 @@
+body, p, h1, h2, h3, h4, h5, h6, ul, ol, li, dl, dt, dd, table, th, td, form, fieldset, legend, input, textarea, button, select {margin:0;padding:0;}
+body, input, textarea, select, button, table {font-size:16px;line-height:1.25em;}
+body {min-width:320px;font-family:'microsoft yahei', Verdana, Arial, Helvetica, sans-serif;color:#000;-webkit-text-size-adjust: none;}
+img,fieldset {border:0;}
+ul,ol{list-style:none;}
+em,i,address {font-style: normal;}
+a{color: #000;text-decoration: none;}
+table {border-collapse:collapse;}
+
+header{ background:#c6171f; height:40px; overflow:hidden; width:100%; position:relative;}
+header a.fenlei{ display:block; position:absolute; right:0; top:0; background:url(../images/fenlei.png) no-repeat; width:45px; height:40px; background-size:45px 40px;}
+.tit{ background:#f2f2f2; border-bottom:1px solid #e7e7e7; height:25px; padding:10px 15px 0;}
+.tit h2{ font-size:16px; border-left:3px solid #e60012; height:18px; overflow:hidden; line-height:1; padding-left:8px;}
+.list{ padding:0 10px;}
+.list ul{ width:100%;}
+.list li{ width:100%; border-top:1px dashed #ccc;}
+.list li a{ padding:10px 0; font-size:14px; color:#666;}
+.list li a span{ color:#000;}
+.list li a i{ color:#e60012;}
+.list li:first-child{ border:0;}
+.list2{ padding:0 10px;}
+.list2 ul{ width:100%;}
+.list2 li{ width:100%; border-top:1px dashed #ccc;}
+.list2 li a{ padding:10px 0; clear:both; overflow:hidden; display:block;}
+.list2 li img{ float:left; margin-right:8px; padding:1px; border:1px solid #ccc;}
+.list2 li b{ font-size:18px; display:block; color:#000; padding-bottom:4px;}
+.list2 li p{ color:#666; font-size:12px; line-height:1.2;}
+.list2 li:first-child{ border:0;}
+.more{ margin:0 10px;border-top:1px dashed #ccc;}
+.more a{ width:100%; display:block; padding:10px 0; text-align:center;}
+footer{ background:#373737; width:100%; padding:10px 0; line-height:1.4; text-align:center; color:#666; font-size:12px;}
+footer a{color:#666;}
+.left_1{ width:100%; position:absolute; left:0; top:0;background:rgba(102, 102, 102, 0.95); height:1000px; z-index:10;}
+.left_2{ width:75%; position:absolute; left:0; top:0;background:#000; height:1000px; z-index:11;}
+.left_2 a{ display:block; padding-left:30%; margin:10px 0; height:50px; color:#676765; line-height:50px;}
+.left_2 a.here{ font-size:24px; color:#fff; background:#424242;}
+.bor{ border-top:1px solid #ccc;}
+.box{ padding:15px;border-bottom:1px solid #ccc;}
+.box h1{ font-size:20px; display:block; padding-bottom:5px;}
+.box p{ font-size:12px; line-height:18px; color:#666;}
+.box p span{ float:right;}
+.box a{ color:#e60012;}
+.main{ border-top:1px solid #fff; padding:5px 15px 15px;word-wrap:break-word;word-break:break-all;}
+.main p{padding-top:10px;line-height:1.5;font-size:16px;word-wrap:break-word;word-break:break-all;}
+.main img{ display:block; width:100%;}
+.page{ padding:12px 15px; border-bottom:1px solid #ccc; border-top:1px solid #ccc; line-height:1.5; font-size:14px;}
+.page a{ color:#e60012;}
+.list3{ padding:0 10px;}
+.list3 ul{ width:100%;}
+.list3 li{ width:100%; border-top:1px dashed #ccc; font-size:14px; padding:15px 0;}
+.list3 li div{ height:25px; line-height:25px; overflow:hidden;}
+.list3 li div span{ float:right; color:#666;}
+.list3 li p{ color:#4b4b4b; line-height:1.4;}
+.list3 li:first-child{ border:0;}
+.list3 li a{ color:#e60012;}
+
+
+
+.list4{ padding:0 10px;}
+.list4 ul{ width:100%;}
+.list4 li{ width:100%; border-top:1px dashed #ccc;}
+.list4 li a{font-size:14px;color:#666; padding:10px 0;}
+.list4 li a.fenlei2{ display:inline-block; color:#e60012;}
+.list4 li:first-child{ border:0;}
+
+.list li a.fenlei2 {
+    color: #e60012;
+    display: inline-block;
+}
+
