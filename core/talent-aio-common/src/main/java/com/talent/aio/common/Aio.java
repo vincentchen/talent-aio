@@ -202,7 +202,7 @@ public class Aio
 	 * @创建时间:　2016年12月29日 下午2:42:25
 	 *
 	 */
-	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByRemote(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport)
+	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByClientNode(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport)
 	{
 		return groupContext.getClientNodes().find(remoteip, remoteport);
 	}
