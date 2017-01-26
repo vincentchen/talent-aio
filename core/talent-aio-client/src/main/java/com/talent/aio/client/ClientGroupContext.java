@@ -57,8 +57,8 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 
 	/**
 	 * 不重连
-	 * @param ip
-	 * @param port
+	 * @param serverIp
+	 * @param serverPort
 	 * @param aioHandler
 	 * @param aioListener
 	 *
@@ -66,16 +66,16 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @创建时间:　2017年1月11日 下午5:01:50
 	 *
 	 */
-	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener)
+	public ClientGroupContext(String serverIp, int serverPort, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener)
 	{
-		this(ip, port, aioHandler, aioListener, null, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+		this(serverIp, serverPort, aioHandler, aioListener, null, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-client-group")));
 	}
 
 	/**
 	 * 
-	 * @param ip
-	 * @param port
+	 * @param serverIp
+	 * @param serverPort
 	 * @param aioHandler
 	 * @param aioListener
 	 * @param reconnConf 不需要重连就为空
@@ -84,16 +84,16 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @创建时间:　2017年1月11日 下午4:30:53
 	 *
 	 */
-	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf)
+	public ClientGroupContext(String serverIp, int serverPort, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf)
 	{
-		this(ip, port, aioHandler, aioListener, reconnConf, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+		this(serverIp, serverPort, aioHandler, aioListener, reconnConf, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-client-group")));
 	}
 
 	/**
 	 * 
-	 * @param ip
-	 * @param port
+	 * @param serverIp
+	 * @param serverPort
 	 * @param aioHandler
 	 * @param aioListener
 	 * @param reconnConf 不需要重连就为空
@@ -103,17 +103,17 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @创建时间:　2017年1月11日 下午4:29:48
 	 *
 	 */
-	public ClientGroupContext(String ip, int port, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf,
+	public ClientGroupContext(String serverIp, int serverPort, ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf,
 			ExecutorService groupExecutor)
 	{
-		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port);
+		super((StringUtils.isBlank(serverIp) ? "0.0.0.0" : serverIp) + ":" + serverPort);
 
 		this.setClientAioHandler(aioHandler);
 		this.setClientAioListener(aioListener);
 
 		this.reconnConf = reconnConf;
-		this.serverIp = ip;
-		this.serverPort = port;
+		this.serverIp = serverIp;
+		this.serverPort = serverPort;
 		this.groupExecutor = groupExecutor;
 	}
 
