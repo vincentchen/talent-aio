@@ -7,12 +7,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import org.apache.commons.lang3.StringUtils;
@@ -154,41 +152,52 @@ public class AioClient<Ext, P extends Packet, R>
 		}
 
 		Future<Void> future = asynchronousSocketChannel.connect(new InetSocketAddress(serverIp, serverPort));
+
+		ClientChannelContext<Ext, P, R> channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+		channelContext.setBindIp(bindIp);
+		channelContext.setBindPort(bindPort);
+		
 		try
 		{
 			future.get(5, TimeUnit.SECONDS);
-			log.info("connected to {}:{}", serverIp, serverPort);
-
-			//			if (channelContext == null)
-			//			{
-			ClientChannelContext<Ext, P, R> channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
-			channelContext.setBindIp(bindIp);
-			channelContext.setBindPort(bindPort);
-			//			} else
-			//			{
-			//				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
-			//			}
-
-			ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
-			if (clientAioListener != null)
+			channelContext.setReconnCount(0);
+			channelContext.setClosed(false);
+		} catch (Exception e)
+		{
+			log.error(e.toString(), e);
+			ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+			if (reconnConf != null && reconnConf.getInterval() > 0)
 			{
-				boolean f = clientAioListener.onAfterConnected(channelContext);
-				if (!f)
+				if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
 				{
-					log.warn("不允许连接:{}", channelContext);
-					Aio.close(channelContext, "不允许连接");
-					return null;
+					reconnConf.getQueue().put(channelContext);
 				}
 			}
-			
-			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-			ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
-			asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
-			return channelContext;
-		} catch (InterruptedException | ExecutionException | TimeoutException e)
-		{
-			throw e;
+			channelContext.setClosed(true);
+			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+			return null;
 		}
+		log.info("connected to {}:{}", serverIp, serverPort);
+		
+		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
+		if (clientAioListener != null)
+		{
+			boolean f = clientAioListener.onAfterConnected(channelContext);
+			if (!f)
+			{
+				log.warn("不允许连接:{}", channelContext);
+				Aio.close(channelContext, "不允许连接");
+				return null;
+			}
+		}
+		
+		ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
+		ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
+		asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
+	
+		
+		return channelContext;
+	
 	}
 
 	/**
@@ -219,6 +228,12 @@ public class AioClient<Ext, P extends Packet, R>
 	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
 	{
 		ClientChannelContext<Ext, P, R> newChannelContext = connect(channelContext.getBindIp(), channelContext.getBindPort());
+		
+		if (newChannelContext == null)
+		{
+			return null;
+		}
+		
 		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
 		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 		if (clientAioListener != null)
@@ -384,20 +399,16 @@ public class AioClient<Ext, P extends Packet, R>
 						if (newChannelContext == null)
 						{
 							channelContext.setReconnCount(channelContext.getReconnCount() + 1);
-							ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
-
-							//							if (reconnConf != null && reconnConf.getInterval() > 0)
-							//							{
-							if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
-							{
-								queue.put(channelContext);
-							}
-							//							}
-							channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+//							ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+//
+//							if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
+//							{
+//								queue.put(channelContext);
+//							}
+							
 							continue;
 						}
-
-						channelContext.setReconnCount(0);
+						
 						ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 						if (clientAioListener != null)
 						{
