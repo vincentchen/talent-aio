@@ -177,10 +177,6 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		buffer.position(buffer.position() - 1);//位置复元
 		
 		int readableLength = buffer.limit() - buffer.position();
-//		if (readableLength < ImPacket.LEAST_HEADER_LENGHT)
-//		{
-//			return null;
-//		}
 
 		int headerLength = ImPacket.LEAST_HEADER_LENGHT;
 		ImPacket imPacket = null;
@@ -215,19 +211,8 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 //		@SuppressWarnings("unused")
 //		int reserve = buffer.getInt();//保留字段
 
-		if (command < 0)
-		{
-			throw new AioDecodeException("command [" + command + "] is not right");
-		}
-
-		Boolean printbodylength = Boolean.getBoolean("tt_nio_printbodylength");
-		if (printbodylength == true)
-		{
-			log.error("command:{}, bodylength:{}", command, bodyLength);
-		}
-
 		//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
-		int neededLength = ImPacket.LEAST_HEADER_LENGHT + bodyLength;
+		int neededLength = headerLength + bodyLength;
 		int test = readableLength - neededLength;
 		if (test < 0) // 不够消息体长度(剩下的buffe组不了消息体)
 		{

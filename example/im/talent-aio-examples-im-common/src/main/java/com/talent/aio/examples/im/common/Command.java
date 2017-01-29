@@ -28,10 +28,6 @@ import java.util.Set;
  */
 public class Command
 {
-
-	public static final String IM_HANDLER_BEAN_PREFIX_SERVER = "im-server-";
-	public static final String IM_HANDLER_BEAN_PREFIX_CLIENT = "im-client-";
-
 	public static final Map<Byte, String> COMMAND_DESC = new HashMap<>();
 
 	public static final short START_INDEXOF_INNERCOMMAND = 20000;
@@ -45,7 +41,7 @@ public class Command
 	/**
 	 * 鉴权响应
 	 */
-	public static final byte AUTH_RESP = 101;
+	public static final byte AUTH_RESP = -1;
 
 	
 	/**
@@ -55,11 +51,11 @@ public class Command
 	/**
 	 * 进入房间后，服务器发给该客户端的响应的响应
 	 */
-	public static final byte JOIN_GROUP_RESP = 102;
+	public static final byte JOIN_GROUP_RESP = -2;
 	/**
 	 * 进入房间通知，成员进入房间后，要向其它成员发送通知
 	 */
-	public static final byte JOIN_GROUP_NOTIFY_RESP = 103;
+	public static final byte JOIN_GROUP_NOTIFY_RESP = -3;
 
 	/**
 	 * 聊天请求
@@ -68,7 +64,7 @@ public class Command
 	/**
 	 * 聊天响应
 	 */
-	public static final byte CHAT_RESP = 104;
+	public static final byte CHAT_RESP = -4;
 	
 	
 	/**
@@ -78,7 +74,7 @@ public class Command
 	/**
 	 * 开播响应
 	 */
-	public static final byte STARTSHOW_RESP = 105;
+	public static final byte STARTSHOW_RESP = -5;
 	
 	/**
 	 * 停播请求
@@ -87,13 +83,13 @@ public class Command
 	/**
 	 * 停播通知
 	 */
-	public static final byte ENDSHOW_NOTIFY_RESP = 106;
+	public static final byte ENDSHOW_NOTIFY_RESP = -6;
 
 	
 	/**
 	 * 心跳请求
 	 */
-	public static final byte HEARTBEAT_REQ = 127;
+	public static final byte HEARTBEAT_REQ = 99;
 	
 
 	public static final Set<Byte> PRIORITY_HANDLER_COMMANDS = new HashSet<>();
