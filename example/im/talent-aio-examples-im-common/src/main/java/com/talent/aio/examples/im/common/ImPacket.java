@@ -29,34 +29,127 @@ import com.talent.aio.common.intf.Packet;
  */
 public class ImPacket extends Packet
 {
-	private static Logger log = LoggerFactory.getLogger(ImPacket.class);
 
-	public static final int HEADER_LENGHT = 15;
+	private static Logger log = LoggerFactory.getLogger(ImPacket.class);
 	
 	/**
 	 * 心跳字节
 	 */
-	public static final byte HEARTBEAT_BYTE = -47;
-	
+	public static final byte HEARTBEAT_BYTE = -128;
+
 	public static final String CHARSET = "utf-8";
-	
+
 	/**
 	 * 协议版本号
 	 */
 	public final static byte VERSION = 1;
+
+	/**
+	 * 消息体最多为多少
+	 */
+	public static final int MAX_LENGTH_OF_BODY =  (int) (1024 * 1024 * 2.1); //只支持多少M数据
 	
-	public static final long MAX_LENGTH_OF_BODY = (long) (1024 * 1024 * 2.1); //只支持多少M数据
 	
+	/**
+	 * 消息头最少为多少个字节
+	 */
+	public static final int LEAST_HEADER_LENGHT = 6;//1+1+4 + (4)
+
+	/**
+	 * 压缩标识位mask，1为压缩，否则不压缩
+	 */
+	public static final byte FIRST_BYTE_MASK_COMPRESS = 0B01000000;
+
+	/**
+	 * 是否有同步序列号标识位mask，如果有同步序列号，则消息头会带有同步序列号，否则不带
+	 */
+	public static final byte FIRST_BYTE_HAS_SYNSEQ_COMPRESS = 0B00100000;
+
+	/**
+	 * 版本号mask
+	 */
+	public static final byte FIRST_BYTE_VERSION_COMPRESS = 0B00001111;
+
+	/**
+	 * 是否压缩消息体
+	 */
+	private boolean isCompress = false;
+
+	/**
+	 * 是否带有同步序列号
+	 */
+	private boolean hasSynSeq = false;
+
+	public static boolean decodeCompress(byte version)
+	{
+		return (FIRST_BYTE_MASK_COMPRESS & version) != 0;
+	}
+
+	public static byte encodeCompress(byte bs, boolean isCompress)
+	{
+		if (isCompress)
+		{
+			return (byte) (bs | FIRST_BYTE_MASK_COMPRESS);
+		} else
+		{
+			return (byte) (bs & (FIRST_BYTE_MASK_COMPRESS ^ 0b01111111));
+		}
+	}
+
+	public static boolean decodeHasSynSeq(byte firstByte)
+	{
+		return (FIRST_BYTE_HAS_SYNSEQ_COMPRESS & firstByte) != 0;
+	}
+
+	public static byte encodeHasSynSeq(byte bs, boolean isCompress)
+	{
+		if (isCompress)
+		{
+			return (byte) (bs | FIRST_BYTE_HAS_SYNSEQ_COMPRESS);
+		} else
+		{
+			return (byte) (bs & (FIRST_BYTE_HAS_SYNSEQ_COMPRESS ^ 0b01111111));
+		}
+	}
+
+	public static byte decodeVersion(byte version)
+	{
+		return (byte) (FIRST_BYTE_VERSION_COMPRESS & version);
+	}
+
+	public int calcHeaderLength()
+	{
+		int ret = LEAST_HEADER_LENGHT;
+		if (this.hasSynSeq)
+		{
+			ret += 4;
+		}
+		return ret;
+	}
+
+	//	public static byte encodeVersion(byte firstByte, byte version)
+	//	{
+	//		if (isCompress)
+	//		{
+	//			return (byte) (firstByte | FIRST_BYTE_HAS_SYNSEQ_COMPRESS);
+	//		} else
+	//		{
+	//			return (byte) (firstByte & (FIRST_BYTE_HAS_SYNSEQ_COMPRESS ^ 0b01111111));
+	//		}
+	//	}
+
+
+
 	private byte[] body;
 
-	public ImPacket(byte[] body, short command)
+	public ImPacket(byte[] body, byte command)
 	{
 		super();
 		this.body = body;
 		this.setCommand(command);
 	}
 
-	public ImPacket(short command)
+	public ImPacket(byte command)
 	{
 		super();
 		this.setCommand(command);
@@ -67,68 +160,82 @@ public class ImPacket extends Packet
 
 	}
 
-
-
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args)
 	{
+		int xx2x = Integer.MAX_VALUE;
+		byte b = Byte.MAX_VALUE;
+		short fd = Short.MAX_VALUE;
+		final int fdsfd = (int) Math.pow(2, 23);
+		System.out.println("Math.pow(2, 23):" + Math.pow(2, 23));
+		System.out.println("Math.pow(2, 24):" + Math.pow(2, 24));
+		System.out.println("Math.pow(2, 8):" + Math.pow(2, 8));
+		System.out.println("Math.pow(2, 7):" + Math.pow(2, 7));
+		
+		
+		byte xx = FIRST_BYTE_MASK_COMPRESS ^ 0b01111111;
+		String xxx = Integer.toBinaryString(xx);
+		System.out.println(xxx);
 
+		byte yy = 0b01111111;
+		boolean isCompress = true;
+		xxx = Integer.toBinaryString(encodeCompress(yy, isCompress));
+		System.out.println(xxx);
+
+		isCompress = false;
+		xxx = Integer.toBinaryString(encodeCompress(yy, isCompress));
+		System.out.println(xxx);
 	}
 
-	
 	@JSONField(serialize = false)
 	private int bodyLen;
 
-	private short command;
-
-	
+	private byte command;
 
 	public int getBodyLen()
 	{
 		return bodyLen;
 	}
 
-	public short getCommand()
+	public byte getCommand()
 	{
 		return command;
 	}
-	
-//	public final static AtomicInteger seq = new AtomicInteger();
-//
-//	private Integer seqNo = null;
-//
-//	@Override
-//	public String getSeqNo()
-//	{
-//		if (this.seqNo == null)
-//		{
-//			return null;
-//		}
-//		return String.valueOf(this.seqNo);
-//	}
-//
-//	@Override
-//	public void setSeqNo(String seqNo)
-//	{
-//		this.seqNo = seqNo;
-//	}
 
-	
+	//	public final static AtomicInteger seq = new AtomicInteger();
+	//
+	//	private Integer seqNo = null;
+	//
+	//	@Override
+	//	public String getSeqNo()
+	//	{
+	//		if (this.seqNo == null)
+	//		{
+	//			return null;
+	//		}
+	//		return String.valueOf(this.seqNo);
+	//	}
+	//
+	//	@Override
+	//	public void setSeqNo(String seqNo)
+	//	{
+	//		this.seqNo = seqNo;
+	//	}
 
 	public void setBodyLen(int bodyLen)
 	{
 		this.bodyLen = bodyLen;
 	}
 
-	public void setCommand(short type)
+	public void setCommand(byte type)
 	{
 		this.command = type;
-//		if (com.talent.im.common.command.Command.PRIORITY_HANDLER_COMMANDS.contains(type))
-//		{
-//			this.setPriority(PRIORITY_MAX);
-//		}
+		//		if (com.talent.im.common.command.Command.PRIORITY_HANDLER_COMMANDS.contains(type))
+		//		{
+		//			this.setPriority(PRIORITY_MAX);
+		//		}
 	}
 
 	/**
@@ -147,7 +254,36 @@ public class ImPacket extends Packet
 		this.body = body;
 	}
 
+	/**
+	 * @return the isCompress
+	 */
+	public boolean isCompress()
+	{
+		return isCompress;
+	}
 
+	/**
+	 * @param isCompress the isCompress to set
+	 */
+	public void setCompress(boolean isCompress)
+	{
+		this.isCompress = isCompress;
+	}
 
+	/**
+	 * @return the hasSynSeq
+	 */
+	public boolean isHasSynSeq()
+	{
+		return hasSynSeq;
+	}
+
+	/**
+	 * @param hasSynSeq the hasSynSeq to set
+	 */
+	public void setHasSynSeq(boolean hasSynSeq)
+	{
+		this.hasSynSeq = hasSynSeq;
+	}
 
 }

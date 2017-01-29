@@ -45,7 +45,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 	private static Logger log = LoggerFactory.getLogger(ImServerAioHandler.class);
 	
 	
-	private static Map<Short, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
+	private static Map<Byte, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
 	static
 	{
 		handlerMap.put(Command.AUTH_REQ, new AuthHandler());
@@ -88,7 +88,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-		Short command = packet.getCommand();
+		Byte command = packet.getCommand();
 		ImBsAioHandlerIntf handler = handlerMap.get(command);
 		if (handler != null)
 		{
@@ -123,26 +123,29 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 			bodyLen = body.length;
 		}
 
-		int allLen = ImPacket.HEADER_LENGHT + bodyLen;
+		int allLen = packet.calcHeaderLength() + bodyLen;
+
 		ByteBuffer buffer = ByteBuffer.allocate(allLen);
 		buffer.order(channelContext.getGroupContext().getByteOrder());
-		
 
-		buffer.put(ImPacket.VERSION);
-
+		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, packet.isCompress());
+		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.isHasSynSeq());
+		buffer.put(firstbyte);
+		buffer.put(packet.getCommand());
 		buffer.putInt(bodyLen);
 
-		buffer.putShort(packet.getCommand());
+		
 
 		if (packet.getSynSeq() != null && packet.getSynSeq() > 0)
 		{
 			buffer.putInt(packet.getSynSeq());
-		} else
-		{
-			buffer.putInt(0);
-		}
-
-		buffer.putInt(0);
+		} 
+//		else
+//		{
+//			buffer.putInt(0);
+//		}
+//
+//		buffer.putInt(0);
 
 		if (body != null)
 		{
@@ -174,16 +177,26 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		buffer.position(buffer.position() - 1);//位置复元
 		
 		int readableLength = buffer.limit() - buffer.position();
-		if (readableLength < ImPacket.HEADER_LENGHT)
+//		if (readableLength < ImPacket.LEAST_HEADER_LENGHT)
+//		{
+//			return null;
+//		}
+
+		int headerLength = ImPacket.LEAST_HEADER_LENGHT;
+		ImPacket imPacket = null;
+		byte version = buffer.get();
+		version = ImPacket.decodeVersion(version);
+		boolean isCompress = ImPacket.decodeCompress(version);
+		boolean hasSynSeq = ImPacket.decodeHasSynSeq(version);
+		if (hasSynSeq)
+		{
+			headerLength += 4;
+		}
+		if (readableLength < headerLength)
 		{
 			return null;
 		}
-
-		ImPacket imPacket = null;
-
-		@SuppressWarnings("unused")
-		byte version = buffer.get();
-		
+		Byte command = buffer.get();
 		int bodyLength = buffer.getInt();
 
 		if (bodyLength > ImPacket.MAX_LENGTH_OF_BODY || bodyLength < 0)
@@ -191,12 +204,16 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 			throw new AioDecodeException("bodyLength [" + bodyLength + "] is not right, remote:" + channelContext.getClientNode());
 		}
 
-		short command = buffer.getShort();
 		
-		int seq = buffer.getInt();
-		
-		@SuppressWarnings("unused")
-		int reserve = buffer.getInt();//保留字段
+
+		int seq = 0;
+		if (hasSynSeq)
+		{
+			seq = buffer.getInt();
+		}
+
+//		@SuppressWarnings("unused")
+//		int reserve = buffer.getInt();//保留字段
 
 		if (command < 0)
 		{
@@ -209,12 +226,12 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 			log.error("command:{}, bodylength:{}", command, bodyLength);
 		}
 
-//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
-		int neededLength = ImPacket.HEADER_LENGHT + bodyLength;
+		//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
+		int neededLength = ImPacket.LEAST_HEADER_LENGHT + bodyLength;
 		int test = readableLength - neededLength;
 		if (test < 0) // 不够消息体长度(剩下的buffe组不了消息体)
 		{
-//			packetMeta.setNeededLength(neededLength);
+			//			packetMeta.setNeededLength(neededLength);
 			return null;
 		} else
 		{
@@ -233,7 +250,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 				imPacket.setBody(dst);
 			}
 
-//			packetMeta.setPacket(imPacket);
+			//			packetMeta.setPacket(imPacket);
 			return imPacket;
 
 		}

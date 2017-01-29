@@ -43,7 +43,7 @@
 		<module>../example/helloworld/talent-aio-examples-helloworld-common</module>
 		<module>../example/helloworld/talent-aio-examples-helloworld-client</module>
 		<module>../example/helloworld/talent-aio-examples-helloworld-server</module>
-		
+
 		<module>../example/http/talent-aio-examples-http-common</module>
 		<module>../example/http/talent-aio-examples-http-client</module>
 		<module>../example/http/talent-aio-examples-http-server</module>
@@ -65,6 +65,7 @@
 		<commons-codec.version>1.10</commons-codec.version>
 		<fastjson.version>1.2.23</fastjson.version>
 		<testng.version>6.10</testng.version>
+		<protobuf-java.version>3.1.0</protobuf-java.version>
 	</properties>
 
 	<developers>
@@ -175,6 +176,11 @@
 				<groupId>org.testng</groupId>
 				<artifactId>testng</artifactId>
 				<version>${testng.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${protobuf-java.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

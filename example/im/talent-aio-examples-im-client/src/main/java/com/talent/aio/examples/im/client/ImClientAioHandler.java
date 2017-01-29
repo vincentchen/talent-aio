@@ -43,7 +43,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 {
 	private static Logger log = LoggerFactory.getLogger(ImClientAioHandler.class);
 
-	private static Map<Short, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
+	private static Map<Byte, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
 	static
 	{
 		handlerMap.put(Command.AUTH_RESP, new AuthRespHandler());
@@ -86,7 +86,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-		Short command = packet.getCommand();
+		Byte command = packet.getCommand();
 		ImBsAioHandlerIntf handler = handlerMap.get(command);
 		if (handler != null)
 		{
@@ -120,7 +120,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 			buffer.put(ImPacket.HEARTBEAT_BYTE);
 			return buffer;
 		}
-		
+
 		byte[] body = packet.getBody();
 		int bodyLen = 0;
 		if (body != null)
@@ -128,25 +128,29 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 			bodyLen = body.length;
 		}
 
-		int allLen = ImPacket.HEADER_LENGHT + bodyLen;
+		int allLen = packet.calcHeaderLength() + bodyLen;
+
 		ByteBuffer buffer = ByteBuffer.allocate(allLen);
 		buffer.order(channelContext.getGroupContext().getByteOrder());
 
-		buffer.put(ImPacket.VERSION);
-
+		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, packet.isCompress());
+		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.isHasSynSeq());
+		buffer.put(firstbyte);
+		buffer.put(packet.getCommand());
 		buffer.putInt(bodyLen);
 
-		buffer.putShort(packet.getCommand());
+		
 
 		if (packet.getSynSeq() != null && packet.getSynSeq() > 0)
 		{
 			buffer.putInt(packet.getSynSeq());
-		} else
-		{
-			buffer.putInt(0);
-		}
-
-		buffer.putInt(0);
+		} 
+//		else
+//		{
+//			buffer.putInt(0);
+//		}
+//
+//		buffer.putInt(0);
 
 		if (body != null)
 		{
@@ -169,17 +173,26 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 	public ImPacket decode(ByteBuffer buffer, ChannelContext<Object, ImPacket, Object> channelContext) throws AioDecodeException
 	{
 		int readableLength = buffer.limit() - buffer.position();
-		if (readableLength < ImPacket.HEADER_LENGHT)
+//		if (readableLength < ImPacket.LEAST_HEADER_LENGHT)
+//		{
+//			return null;
+//		}
+
+		int headerLength = ImPacket.LEAST_HEADER_LENGHT;
+		ImPacket imPacket = null;
+		byte version = buffer.get();
+		version = ImPacket.decodeVersion(version);
+		boolean isCompress = ImPacket.decodeCompress(version);
+		boolean hasSynSeq = ImPacket.decodeHasSynSeq(version);
+		if (hasSynSeq)
+		{
+			headerLength += 4;
+		}
+		if (readableLength < headerLength)
 		{
 			return null;
 		}
-
-		ImPacket imPacket = null;
-
-		@SuppressWarnings("unused")
-		byte version = buffer.get();
-		
-
+		Byte command = buffer.get();
 		int bodyLength = buffer.getInt();
 
 		if (bodyLength > ImPacket.MAX_LENGTH_OF_BODY || bodyLength < 0)
@@ -187,12 +200,16 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 			throw new AioDecodeException("bodyLength [" + bodyLength + "] is not right, remote:" + channelContext.getClientNode());
 		}
 
-		short command = buffer.getShort();
+		
 
-		int seq = buffer.getInt();
+		int seq = 0;
+		if (hasSynSeq)
+		{
+			seq = buffer.getInt();
+		}
 
-		@SuppressWarnings("unused")
-		int reserve = buffer.getInt();//保留字段
+//		@SuppressWarnings("unused")
+//		int reserve = buffer.getInt();//保留字段
 
 		if (command < 0)
 		{
@@ -206,7 +223,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		}
 
 		//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
-		int neededLength = ImPacket.HEADER_LENGHT + bodyLength;
+		int neededLength = ImPacket.LEAST_HEADER_LENGHT + bodyLength;
 		int test = readableLength - neededLength;
 		if (test < 0) // 不够消息体长度(剩下的buffe组不了消息体)
 		{

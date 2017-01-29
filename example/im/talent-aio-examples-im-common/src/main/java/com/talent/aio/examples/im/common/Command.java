@@ -32,7 +32,7 @@ public class Command
 	public static final String IM_HANDLER_BEAN_PREFIX_SERVER = "im-server-";
 	public static final String IM_HANDLER_BEAN_PREFIX_CLIENT = "im-client-";
 
-	public static final Map<Short, String> COMMAND_DESC = new HashMap<>();
+	public static final Map<Byte, String> COMMAND_DESC = new HashMap<>();
 
 	public static final short START_INDEXOF_INNERCOMMAND = 20000;
 
@@ -41,62 +41,62 @@ public class Command
 	/**
 	 * 鉴权请求
 	 */
-	public static final short AUTH_REQ = 1;
+	public static final byte AUTH_REQ = 1;
 	/**
 	 * 鉴权响应
 	 */
-	public static final short AUTH_RESP = 1001;
+	public static final byte AUTH_RESP = 101;
 
 	
 	/**
 	 * 请求进入房间
 	 */
-	public static final short JOIN_GROUP_REQ = 2;
+	public static final byte JOIN_GROUP_REQ = 2;
 	/**
 	 * 进入房间后，服务器发给该客户端的响应的响应
 	 */
-	public static final short JOIN_GROUP_RESP = 1002;
+	public static final byte JOIN_GROUP_RESP = 102;
 	/**
 	 * 进入房间通知，成员进入房间后，要向其它成员发送通知
 	 */
-	public static final short JOIN_GROUP_NOTIFY_RESP = 1003;
+	public static final byte JOIN_GROUP_NOTIFY_RESP = 103;
 
 	/**
 	 * 聊天请求
 	 */
-	public static final short CHAT_REQ = 4;
+	public static final byte CHAT_REQ = 4;
 	/**
 	 * 聊天响应
 	 */
-	public static final short CHAT_RESP = 1004;
+	public static final byte CHAT_RESP = 104;
 	
 	
 	/**
 	 * 开播请求
 	 */
-	public static final short STARTSHOW_REQ = 5;
+	public static final byte STARTSHOW_REQ = 5;
 	/**
 	 * 开播响应
 	 */
-	public static final short STARTSHOW_RESP = 1005;
+	public static final byte STARTSHOW_RESP = 105;
 	
 	/**
 	 * 停播请求
 	 */
-	public static final short ENDSHOW_REQ = 6;
+	public static final byte ENDSHOW_REQ = 6;
 	/**
 	 * 停播通知
 	 */
-	public static final short ENDSHOW_NOTIFY_RESP = 1006;
+	public static final byte ENDSHOW_NOTIFY_RESP = 106;
 
 	
 	/**
 	 * 心跳请求
 	 */
-	public static final short HEARTBEAT_REQ = 9999;
+	public static final byte HEARTBEAT_REQ = 127;
 	
 
-	public static final Set<Short> PRIORITY_HANDLER_COMMANDS = new HashSet<>();
+	public static final Set<Byte> PRIORITY_HANDLER_COMMANDS = new HashSet<>();
 
 	static
 	{
