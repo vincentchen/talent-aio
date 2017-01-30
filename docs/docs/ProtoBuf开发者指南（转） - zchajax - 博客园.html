@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)http://www.cnblogs.com/zchajax/p/5783258.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProtoBuf开发者指南（转） - zchajax - 博客园</title>
+<link type="text/css" rel="stylesheet" href="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/bundle-AnotherEon001.css">
+<link id="mobile-style" media="only screen and (max-width: 768px)" type="text/css" rel="stylesheet" href="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/bundle-AnotherEon001-mobile.css">
+<link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/zchajax/rss">
+<link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/zchajax/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/zchajax/wlwmanifest.xml">
+<script src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/jquery.js.下载" type="text/javascript"></script>  
+<script type="text/javascript">var currentBlogApp = 'zchajax', cb_enable_mathjax=false;var isLogined=false;</script>
+<script src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/blog-common.js.下载" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+
+<div id="wrapper">
+<div id="header">
+
+<div id="top">
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="http://www.cnblogs.com/zchajax/">狼行天下</a></h1>
+<div id="subtitle">狼行天下，吃肉</div>
+</div>
+<div id="sub"><div id="blog_stats">
+<div class="BlogStats">随笔 - 10, 文章 - 0, 评论 - 28, 引用 - 0</div>
+</div></div>
+
+
+
+</div>
+<div id="main_container">
+<div id="main_content">
+<div id="content">
+	
+<div id="post_detail">
+	<div class="post">
+		<h2>
+			<a id="cb_post_title_url" href="http://www.cnblogs.com/zchajax/p/5783258.html">ProtoBuf开发者指南（转）</a>
+		</h2>
+		<div class="postbody">
+		<div id="cnblogs_post_body"><div id="$_divTopLink" class="top fc03 bdwb bdc0 bds2 clearfix">
+<div class="pleft thide">原文地址：http://blog.csdn.net/menuconfig/article/details/12837173</div>
+<div class="pleft thide">目录</div>
+</div>
+<div class="mcnt ztag">
+<div class="nbw-bitm bdwb bds2 bdc0 ">
+<div class="bct fc05 fc11 nbw-blog ztag js-fs2">
+<ul>
+<li>1&nbsp;&nbsp; 概览
+<ul>
+<li>1.1&nbsp;&nbsp; 什么是protocol buffer</li>
+<li>1.2&nbsp;&nbsp; 他们如何工作</li>
+<li>1.3&nbsp;&nbsp; 为什么不用XML?</li>
+<li>1.4&nbsp;&nbsp; 听起来像是为我的解决方案，如何开始?</li>
+<li>1.5&nbsp;&nbsp; 一点历史</li>
+</ul>
+</li>
+<li>2&nbsp;&nbsp; 语言指导
+<ul>
+<li>2.1&nbsp;&nbsp; 定义一个消息类型</li>
+<li>2.2&nbsp;&nbsp; 值类型</li>
+<li>2.3&nbsp;&nbsp; 可选字段与缺省值</li>
+<li>2.4&nbsp;&nbsp; 枚举</li>
+<li>2.5&nbsp;&nbsp; 使用其他消息类型</li>
+<li>2.6&nbsp;&nbsp; 嵌套类型</li>
+<li>2.7&nbsp;&nbsp; 更新一个数据类型</li>
+<li>2.8&nbsp;&nbsp; 扩展</li>
+<li>2.9&nbsp;&nbsp; 包</li>
+<li>2.10&nbsp;&nbsp; 定义服务</li>
+<li>2.11&nbsp;&nbsp; 选项</li>
+<li>2.12&nbsp;&nbsp; 生成你的类</li>
+</ul>
+</li>
+<li>3&nbsp;&nbsp; 代码风格指导
+<ul>
+<li>3.1&nbsp;&nbsp; 消息与字段名</li>
+<li>3.2&nbsp;&nbsp; 枚举</li>
+<li>3.3&nbsp;&nbsp; 服务</li>
+</ul>
+</li>
+<li>4&nbsp;&nbsp; 编码
+<ul>
+<li>4.1&nbsp;&nbsp; 一个简单的消息</li>
+<li>4.2&nbsp;&nbsp; 基于128的Varints</li>
+<li>4.3&nbsp;&nbsp; 消息结构</li>
+<li>4.4&nbsp;&nbsp; 更多的值类型</li>
+<li>4.5&nbsp;&nbsp; 内嵌消息</li>
+<li>4.6&nbsp;&nbsp; 可选的和重复的元素</li>
+<li>4.7&nbsp;&nbsp; 字段顺序</li>
+</ul>
+</li>
+<li>5&nbsp;&nbsp; ProtocolBuffer基础：C++</li>
+<li>6 ProtocolBuffer基础：Java</li>
+<li>7&nbsp;&nbsp; ProtocolBuffer基础：Python
+<ul>
+<li>7.1&nbsp;&nbsp; 为什么使用ProtocolBuffer?</li>
+<li>7.2&nbsp;&nbsp; 哪里可以找到例子代码</li>
+<li>7.3&nbsp;&nbsp; 定义你的协议格式</li>
+<li>7.4&nbsp;&nbsp; 编译你的ProtocolBuffer</li>
+<li>7.5&nbsp;&nbsp; ProtocolBuffer API
+<ul>
+<li>7.5.1&nbsp;&nbsp; 枚举</li>
+<li>7.5.2&nbsp;&nbsp; 标准消息方法</li>
+<li>7.5.3&nbsp;&nbsp; 解析与串行化</li>
+</ul>
+</li>
+<li>7.6&nbsp;&nbsp; 写消息</li>
+<li>7.7&nbsp;&nbsp; 读消息</li>
+<li>7.8&nbsp;&nbsp; 扩展ProtocolBuffer</li>
+<li>7.9&nbsp;&nbsp; 高级使用</li>
+</ul>
+</li>
+<li>8&nbsp;&nbsp; 参考概览</li>
+<li>9&nbsp;&nbsp; C++代码生成</li>
+<li>10&nbsp;&nbsp; C++ API</li>
+<li>11&nbsp;&nbsp; Java代码生成</li>
+<li>12&nbsp;&nbsp; Java API</li>
+<li>13&nbsp;&nbsp; Python代码生成
+<ul>
+<li>13.1&nbsp;&nbsp; 编译器的使用</li>
+<li>13.2&nbsp;&nbsp; 包</li>
+<li>13.3&nbsp;&nbsp; 消息</li>
+<li>13.4&nbsp;&nbsp; 字段
+<ul>
+<li>13.4.1&nbsp;&nbsp; 简单字段</li>
+<li>13.4.2&nbsp;&nbsp; 简单消息字段</li>
+<li>13.4.3&nbsp;&nbsp; 重复字段</li>
+<li>13.4.4&nbsp;&nbsp; 重复消息字段</li>
+<li>13.4.5&nbsp;&nbsp; 枚举类型</li>
+<li>13.4.6&nbsp;&nbsp; 扩展</li>
+</ul>
+</li>
+<li>13.5&nbsp;&nbsp; 服务
+<ul>
+<li>13.5.1&nbsp;&nbsp; 接口</li>
+<li>13.5.2&nbsp;&nbsp; 存根(Stub)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>14&nbsp;&nbsp; Python API</li>
+<li>15&nbsp;&nbsp; 其他语言</li>
+</ul>
+<h1><a name="t1"></a>1&nbsp;&nbsp; 概览</h1>
+<p>欢迎来到protocol buffer的开发者指南文档，一种语言无关、平台无关、扩展性好的用于通信协议、数据存储的结构化数据串行化方法。</p>
+<p>本文档面向希望使用protocol buffer的Java、C++或Python开发者。这个概览介绍了protocol buffer，并告诉你如何开始，你随后可以跟随编程指导( http://code.google.com/apis/protocolbuffers/docs/tutorials.html )深入了解protocol buffer编码方式( http://code.google.com/apis/protocolbuffers/docs/encoding.html )。API参考文档( http://code.google.com/apis/protocolbuffers/docs/reference/overview.html )同样也是提供了这三种编程语言的版本，不够协议语言( http://code.google.com/apis/protocolbuffers/docs/proto.html )和样式( http://code.google.com/apis/protocolbuffers/docs/style.html )指导都是编写 .proto 文件。</p>
+<h2><a name="t2"></a></h2>
+<h2><a name="t3"></a>1.1&nbsp;&nbsp; 什么是protocol buffer</h2>
+<p>ProtocolBuffer是用于结构化数据串行化的灵活、高效、自动的方法，有如XML，不过它更小、更快、也更简单。你可以定义自己的数据结构，然后使用代码生成器生成的代码来读写这个数据结构。你甚至可以在无需重新部署程序的情况下更新数据结构。</p>
+<h2><a name="t4"></a></h2>
+<h2><a name="t5"></a>1.2&nbsp;&nbsp; 他们如何工作</h2>
+<p>你首先需要在一个 .proto 文件中定义你需要做串行化的数据结构信息。每个ProtocolBuffer信息是一小段逻辑记录，包含一系列的键值对。这里有个非常简单的 .proto 文件定义了个人信息:</p>
+<pre>message Person {
+    required string name=1;
+    required int32 id=2;
+    optional string email=3;
+
+    enum PhoneType {
+        MOBILE=0;
+        HOME=1;
+        WORK=2;
+    }
+
+    message PhoneNumber {
+        required string number=1;
+        optional PhoneType type=2 [default=HOME];
+    }
+
+    repeated PhoneNumber phone=4;
+}</pre>
+<p>有如你所见，消息格式很简单，每个消息类型拥有一个或多个特定的数字字段，每个字段拥有一个名字和一个值类型。值类型可以是数字(整数或浮点)、布尔型、字符串、原始字节或者其他ProtocolBuffer类型，还允许数据结构的分级。你可以指定可选字段，必选字段和重复字段。你可以在( http://code.google.com/apis/protocolbuffers/docs/proto.html )找到更多关于如何编写 .proto 文件的信息。</p>
+<p>一旦你定义了自己的报文格式(message)，你就可以运行ProtocolBuffer编译器，将你的 .proto 文件编译成特定语言的类。这些类提供了简单的方法访问每个字段(像是 query() 和 set_query() )，像是访问类的方法一样将结构串行化或反串行化。例如你可以选择C++语言，运行编译如上的协议文件生成类叫做 Person 。随后你就可以在应用中使用这个类来串行化的读取报文信息。你可以这么写代码:</p>
+<pre>Person person;
+person.set_name("John Doe");
+person.set_id(1234);
+person.set_email("jdoe@example.com");
+fstream.output("myfile",ios::out | ios::binary);
+person.SerializeToOstream(&amp;output);</pre>
+<p>然后，你可以读取报文中的数据:</p>
+<pre>fstream input("myfile",ios::in | ios:binary);
+Person person;
+person.ParseFromIstream(&amp;input);
+cout &lt;&lt; "Name: " &lt;&lt; person.name() &lt;&lt; endl;
+cout &lt;&lt; "E-mail: " &lt;&lt; person.email() &lt;&lt; endl;</pre>
+<p>你可以在不影响向后兼容的情况下随意给数据结构增加字段，旧有的数据会忽略新的字段。所以如果使用ProtocolBuffer作为通信协议，你可以无须担心破坏现有代码的情况下扩展协议。</p>
+<p>你可以在API参考( http://code.google.com/apis/protocolbuffers/docs/reference/overview.html )中找到完整的参考，而关于ProtocolBuffer的报文格式编码则可以在( http://code.google.com/apis/protocolbuffers/docs/encoding.html )中找到。</p>
+<h2><a name="t6"></a></h2>
+<h2><a name="t7"></a>1.3&nbsp;&nbsp; 为什么不用XML?</h2>
+<p>ProtocolBuffer拥有多项比XML更高级的串行化结构数据的特性，ProtocolBuffer：</p>
+<blockquote>
+<ul>
+<li>更简单</li>
+<li>小3-10倍</li>
+<li>快20-100倍</li>
+<li>更少的歧义</li>
+<li>可以方便的生成数据存取类</li>
+</ul>
+</blockquote>
+<p>例如，让我们看看如何在XML中建模Person的name和email字段:</p>
+<pre>&lt;person&gt;
+    &lt;name&gt;John Doe&lt;/name&gt;
+    &lt;email&gt;jdoe@example.com&lt;/email&gt;
+&lt;/person&gt;</pre>
+<p>对应的ProtocolBuffer报文则如下:</p>
+<pre>#ProtocolBuffer的文本表示
+#这不是正常时使用的二进制数据
+person {
+    name: "John Doe"
+    email: "jdoe@example.com"
+}</pre>
+<p>当这个报文编码到ProtocolBuffer的二进制格式( http://code.google.com/apis/protocolbuffers/docs/encoding.html )时(上面的文本仅用于调试和编辑)，它只需要28字节和100-200ns的解析时间。而XML的版本需要69字节(除去空白)和 5000-10000ns的解析时间。</p>
+<p>当然，操作ProtocolBuffer也很简单:</p>
+<pre>cout &lt;&lt; "Name: " &lt;&lt; person.name() &lt;&lt; endl;
+cout &lt;&lt; "E-mail: " &lt;&lt; person.email() &lt;&lt; endl;</pre>
+<p>而XML的你需要:</p>
+<pre>cout &lt;&lt; "Name: "
+     &lt;&lt; person.getElementsByTagName("name")-&gt;item(0)-&gt;innerText()
+     &lt;&lt; endl;
+cout &lt;&lt; "E-mail: "
+     &lt;&lt; person.getElementsByTagName("email")-&gt;item(0)-&gt;innerText()
+     &lt;&lt; end;</pre>
+<p>当然，ProtocolBuffer并不是在任何时候都比XML更合适，例如ProtocolBuffer无法对一个基于标记文本的文档建模，因为你根本没法方便的在文本中插入结构。另外，XML是便于人类阅读和编辑的，而ProtocolBuffer则不是。还有XML是自解释的，而 ProtocolBuffer仅在你拥有报文格式定义的 .proto 文件时才有意义。</p>
+<h2><a name="t8"></a></h2>
+<h2><a name="t9"></a>1.4&nbsp;&nbsp; 听起来像是为我的解决方案，如何开始?</h2>
+<p>下载包( http://code.google.com/p/protobuf/downloads/ )，包含了Java、Python、C++的ProtocolBuffer编译器，用于生成你需要的IO类。构建和安装你的编译器，跟随README的指令就可以做到。</p>
+<p>一旦你安装好了，就可以跟着编程指导( http://code.google.com/apis/protocolbuffers/docs/tutorials.html )来选择语言-随后就是使用ProtocolBuffer创建一个简单的应用了。</p>
+<h2><a name="t10"></a></h2>
+<h2><a name="t11"></a>1.5&nbsp;&nbsp; 一点历史</h2>
+<p>ProtocolBuffer最初是在Google开发的，用以解决索引服务器的请求、响应协议。在使用ProtocolBuffer之前，有一种格式用以处理请求和响应数据的编码和解码，并且支持多种版本的协议。而这最终导致了丑陋的代码，有如:</p>
+<pre>if (version==3) {
+    ...
+}else if (version&gt;4) {
+    if (version==5) {
+        ...
+    }
+    ...
+}</pre>
+<p>通信协议因此变得越来越复杂，因为开发者必须确保，发出请求的人和接受请求的人必须同时兼容，并且在一方开始使用新协议时，另外一方也要可以接受。</p>
+<p>ProtocolBuffer设计用于解决这一类问题：</p>
+<blockquote>
+<ul>
+<li>很方便引入新字段，而中间服务器可以忽略这些字段，直接传递过去而无需理解所有的字段。</li>
+<li>格式可以自描述，并且可以在多种语言中使用(C++、Java等)</li>
+</ul>
+</blockquote>
+<p>然而用户仍然需要手写解析代码。</p>
+<p>随着系统的演化，他需要一些其他的功能：</p>
+<blockquote>
+<ul>
+<li>自动生成编码和解码代码，而无需自己编写解析器。</li>
+<li>除了用于简短的RPC(Remote Procedure Call)请求，人们使用ProtocolBuffer来做数据存储格式(例如BitTable)。</li>
+<li>RPC服务器接口可以作为 .proto 文件来描述，而通过ProtocolBuffer的编译器生成存根(stub)类供用户实现服务器接口。</li>
+</ul>
+</blockquote>
+<p>ProtocolBuffer现在已经是Google的混合语言数据标准了，现在已经正在使用的有超过48,162种报文格式定义和超过 12,183个 .proto 文件。他们用于RPC系统和持续数据存储系统。</p>
+<h1><a name="t12"></a></h1>
+<h1><a name="t13"></a>2&nbsp;&nbsp; 语言指导</h1>
+<p>本指导描述了如何使用ProtocolBuffer语言来定义结构化数据类型，包括 .proto 文件的语法和如何生成存取类。</p>
+<p>这是一份指导手册，一步步的例子使用文档中的多种功能，查看入门指导( http://code.google.com/apis/protocolbuffers/docs/tutorials.html )选择你的语言。</p>
+<h2><a name="t14"></a></h2>
+<h2><a name="t15"></a>2.1&nbsp;&nbsp; 定义一个消息类型</h2>
+<p>@waiting …</p>
+<h2><a name="t16"></a></h2>
+<h2><a name="t17"></a>2.2&nbsp;&nbsp; 值类型</h2>
+<p>@waiting …</p>
+<h2><a name="t18"></a></h2>
+<h2><a name="t19"></a>2.3&nbsp;&nbsp; 可选字段与缺省值</h2>
+<p>@waiting …</p>
+<h2><a name="t20"></a></h2>
+<h2><a name="t21"></a>2.4&nbsp;&nbsp; 枚举</h2>
+<p>@waiting …</p>
+<h2><a name="t22"></a></h2>
+<h2><a name="t23"></a>2.5&nbsp;&nbsp; 使用其他消息类型</h2>
+<p>@waiting …</p>
+<h2><a name="t24"></a></h2>
+<h2><a name="t25"></a>2.6&nbsp;&nbsp; 嵌套类型</h2>
+<p>@waiting …</p>
+<h2><a name="t26"></a></h2>
+<h2><a name="t27"></a>2.7&nbsp;&nbsp; 更新一个数据类型</h2>
+<p>@waiting …</p>
+<h2><a name="t28"></a></h2>
+<h2><a name="t29"></a>2.8&nbsp;&nbsp; 扩展</h2>
+<p>@waiting …</p>
+<h2><a name="t30"></a></h2>
+<h2><a name="t31"></a>2.9&nbsp;&nbsp; 包</h2>
+<p>@waiting …</p>
+<h2><a name="t32"></a></h2>
+<h2><a name="t33"></a>2.10&nbsp;&nbsp; 定义服务</h2>
+<p>@waiting …</p>
+<h2><a name="t34"></a></h2>
+<h2><a name="t35"></a>2.11&nbsp;&nbsp; 选项</h2>
+<p>@waiting …</p>
+<h2><a name="t36"></a></h2>
+<h2><a name="t37"></a>2.12&nbsp;&nbsp; 生成你的类</h2>
+<p>@waiting …</p>
+<h1><a name="t38"></a></h1>
+<h1><a name="t39"></a>3&nbsp;&nbsp; 代码风格指导</h1>
+<p>本文档提供了 .proto 文件的代码风格指导。按照惯例，你将会，你将会生成一些便于阅读和一致的ProtocolBuffer定义文件。</p>
+<h2><a name="t40"></a></h2>
+<h2><a name="t41"></a>3.1&nbsp;&nbsp; 消息与字段名</h2>
+<p>使用骆驼风格的大小写命名，即单词首字母大写，来做消息名。使用GNU的全部小写，使用下划线分隔的方式定义字段名:</p>
+<pre>message SongServerRequest {
+    required string song_name=1;
+}</pre>
+<p>使用这种命名方式得到的名字如下:</p>
+<pre>C++:
+    const string&amp; song_name() {...}
+    void set_song_name(const string&amp; x) {...}
+
+Java:
+    public String getSongName() {...}
+    public Builder setSongName(String v) {...}</pre>
+<h2><a name="t42"></a></h2>
+<h2><a name="t43"></a>3.2&nbsp;&nbsp; 枚举</h2>
+<p>使用骆驼风格做枚举名，而用全部大写做值的名字:</p>
+<pre>enum Foo {
+    FIRST_VALUE=1;
+    SECOND_VALUE=2;
+}</pre>
+<p>每个枚举值最后以分号结尾，而不是逗号。</p>
+<h2><a name="t44"></a></h2>
+<h2><a name="t45"></a>3.3&nbsp;&nbsp; 服务</h2>
+<p>如果你的 .proto 文件定义了RPC服务，你可以使用骆驼风格:</p>
+<pre>service FooService {
+    rpc GetSomething(FooRequest) returns (FooResponse);
+}</pre>
+<h1><a name="t46"></a></h1>
+<h1><a name="t47"></a>4&nbsp;&nbsp; 编码</h1>
+<p>本文档描述了ProtocolBuffer的串行化二进制数据格式定义。你如果仅仅是在应用中使用ProtocolBuffer，并不需要知道这些，但是这些会对你定义高效的格式有所帮助。</p>
+<h2><a name="t48"></a></h2>
+<h2><a name="t49"></a>4.1&nbsp;&nbsp; 一个简单的消息</h2>
+<p>@waiting …</p>
+<h2><a name="t50"></a></h2>
+<h2><a name="t51"></a>4.2&nbsp;&nbsp; 基于128的Varints</h2>
+<p>@waiting …</p>
+<h2><a name="t52"></a></h2>
+<h2><a name="t53"></a>4.3&nbsp;&nbsp; 消息结构</h2>
+<p>@waiting …</p>
+<h2><a name="t54"></a></h2>
+<h2><a name="t55"></a>4.4&nbsp;&nbsp; 更多的值类型</h2>
+<p>@waiting …</p>
+<h2><a name="t56"></a></h2>
+<h2><a name="t57"></a>4.5&nbsp;&nbsp; 内嵌消息</h2>
+<p>@waiting …</p>
+<h2><a name="t58"></a></h2>
+<h2><a name="t59"></a>4.6&nbsp;&nbsp; 可选的和重复的元素</h2>
+<p>@waiting …</p>
+<h2><a name="t60"></a></h2>
+<h2><a name="t61"></a>4.7&nbsp;&nbsp; 字段顺序</h2>
+<p>@waiting …</p>
+<h1><a name="t62"></a></h1>
+<h1><a name="t63"></a></h1>
+<h1><a name="t64"></a>5&nbsp;&nbsp; ProtocolBuffer基础：C++</h1>
+<p>@waiting …</p>
+<h1><a name="t65"></a></h1>
+<h1><a name="t66"></a>6&nbsp;&nbsp; ProtocolBuffer基础：Java</h1>
+<p>@waiting …</p>
+<h1><a name="t67"></a>7&nbsp;&nbsp; ProtocolBuffer基础：Python</h1>
+<p>本指南给Python程序员一个快速使用的ProtocolBuffer的指导。通过一些简单的例子来在应用中使用ProtocolBuffer，它向你展示了如何：</p>
+<blockquote>
+<ul>
+<li>定义 .proto 消息格式文件</li>
+<li>使用ProtocolBuffer编译器</li>
+<li>使用Python的ProtocolBuffer编程接口来读写消息</li>
+</ul>
+</blockquote>
+<p>这并不是一个在Python中使用ProtocolBuffer的完整指导。更多细节请参考手册信息，查看语言指导( http://code.google.com/apis/protocolbuffers/docs/proto.html )，Python API( http://code.google.com/apis/protocolbuffers/docs/reference/python/index.html )，和编码手册( http://code.google.com/apis/protocolbuffers/docs/encoding.html )。</p>
+<h2><a name="t68"></a></h2>
+<h2><a name="t69"></a>7.1&nbsp;&nbsp; 为什么使用ProtocolBuffer?</h2>
+<p>下面的例子”地址本”应用用于读写人的联系信息。每个人有name、ID、email，和联系人电话号码。</p>
+<p>如何串行化和读取结构化数据呢？有如下几种问题：</p>
+<blockquote>
+<ul>
+<li>使用Python的pickle，这是语言内置的缺省方法，不过没法演化，也无法让其他语言支持。</li>
+<li>你可以发明一种数据编码方法，例如4个整数”12:3-23:67″，这是简单而灵活的方法，不过你需要自己写解析器代码，且只适用于简单的数据。</li>
+<li>串行化数据到XML。这种方法因为可读性和多种语言的兼容函数库而显得比较吸引人，不过这也不是最好的方法，因为XML浪费空间是臭名昭著的，编码解码也很浪费时间。而XML DOM树也是很复杂的。</li>
+</ul>
+</blockquote>
+<p>ProtocolBuffer提供了灵活、高效、自动化的方法来解决这些问题。通过ProtocolBuffer，只需要写一个 .proto 数据结构描述文件，就可以编译到几种语言的自动编码解码类。生成的类提供了setter和getter方法来控制读写细节。最重要的是 ProtocolBuffer支持后期扩展协议，而又确保旧格式可以兼容。</p>
+<h2><a name="t70"></a></h2>
+<h2><a name="t71"></a>7.2&nbsp;&nbsp; 哪里可以找到例子代码</h2>
+<p>源码发行包中已经包含了，在”example”文件夹。</p>
+<h2><a name="t72"></a></h2>
+<h2><a name="t73"></a>7.3&nbsp;&nbsp; 定义你的协议格式</h2>
+<p>想要创建你的地址本应用，需要开始于一个 .proto 文件。定义一个 .proto 文件很简单：添加一个消息到数据结构，然后指定一个和一个类型到每一个字段，如下是本次例子使用的&nbsp;<tt>addressbook.proto</tt></p>
+<pre>package tutorial;
+
+message Person {
+    required string name=1;
+    required int32 id=2;
+    optional string email=3;
+
+    enum PhoneType {
+        MOBILE=0;
+        HOME=1;
+        WORK=2;
+    }
+
+    message PhoneNumber {
+        required string number=1;
+        optional PhoneType type=2 [default=HOME];
+    }
+
+    repeated PhoneNumber phone=4;
+}
+
+message AddressBook {
+    repeated Person person=1;
+}</pre>
+<p>有如你所见的，语法类似于C++或Java。让我们分块理解他们。</p>
+<p>@waiting …</p>
+<h2><a name="t74"></a></h2>
+<h2><a name="t75"></a>7.4&nbsp;&nbsp; 编译你的ProtocolBuffer</h2>
+<p>现在已经拥有了 .proto 文件，下一步就是编译生成相关的访问类。运行编译器&nbsp;<strong>protoc</strong>&nbsp;编译你的 .proto 文件。</p>
+<blockquote><ol>
+<li>如果还没安装编译器则下载并按照README的安装。</li>
+<li>运行编译器，指定源目录和目标目录，定位你的 .proto 文件到源目录，然后执行:
+<pre>protoc -I=$SRC_DIR --python_out=$DST_DIR addressbook.proto</pre>
+</li>
+</ol></blockquote>
+<p>因为需要使用Python类，所以&nbsp;<tt>–python_out</tt>&nbsp;选项指定了特定的输出语言。</p>
+<p>这个步骤会生成&nbsp;<tt>addressbook_pb2.py</tt>&nbsp;到目标目录。</p>
+<h2><a name="t76"></a></h2>
+<h2><a name="t77"></a>7.5&nbsp;&nbsp; ProtocolBuffer API</h2>
+<p>不像生成的C++和Java代码，Python生成的类并不会直接为你生成存取数据的代码。而是(有如你在<tt>addressbook_pb2.py</tt>&nbsp;中见到的)生成消息描述、枚举、和字段，还有一些神秘的空类，每个对应一个消息类型:</p>
+<pre>class Person(message.Message):
+    __metaclass__=reflection.GeneratedProtocolMessageType
+
+    class PhoneNumber(message.Message):
+        __metaclass__=reflection.GeneratedProtocolMessageType
+        DESCRIPTION=_PERSON_PHONENUMBER
+
+    DESCRIPTOR=_PERSON
+
+class AddressBook(message.Message):
+    __metaclass__=reflection.GeneratedProtocolMessageType
+    DESCRIPTOR=_ADDRESSBOOK</pre>
+<p>这里每个类最重要的一行是&nbsp;<tt>__metaclass__=reflection.GeneratedProtocolMessageType</tt>&nbsp;。通过Python的元类机制工作，你可以把他们看做是生成类的模板。在载入时， GeneratedProtocolMessageType 元类使用特定的描述符创建Python方法。随后你就可以使用完整的功能了。</p>
+<p>最后就是你可以使用 Person 类来操作相关字段了。例如你可以写:</p>
+<pre>import addressbook_pb2
+person=addressbook_pb2.Person()
+person.id=1234
+person.name="John Doe"
+person.email="jdoe@example.com"
+phone=person.phone.add()
+phone.number="555-4321"
+phone.type=addressbook_pb2.Person.HOME</pre>
+<p>需要注意的是这些赋值属性并不是简单的增加新字段到Python对象，如果你尝试给一个 .proto 文件中没有定义的字段赋值，就会抛出 AttributeError 异常，如果赋值类型错误会抛出 TypeError 。在给一个字段赋值之前读取会返回缺省值:</p>
+<pre>person.no_such_field=1  #raise AttributeError
+person.id="1234"        #raise TypeError</pre>
+<p>更多相关信息参考( http://code.google.com/apis/protocolbuffers/docs/reference/python-generated.html )。</p>
+<h3><a name="t78"></a>7.5.1&nbsp;&nbsp; 枚举</h3>
+<p>枚举在元类中定义为一些符号常量对应的数字。例如常量 addressbook_pb2.Person.WORK 拥有值2。</p>
+<h3><a name="t79"></a>7.5.2&nbsp;&nbsp; 标准消息方法</h3>
+<p>每个消息类包含一些其他方法允许你检查和控制整个消息，包括：</p>
+<blockquote>
+<ul>
+<li>IsInitialized() ：检查是否所有必须(required)字段都已经被赋值了。</li>
+<li>__str__() ：返回人类可读的消息表示，便于调试。</li>
+<li>CopyFrom(other_msg) ：使用另外一个消息的值来覆盖本消息。</li>
+<li>Clear() ：清除所有元素的值，回到初识状态。</li>
+</ul>
+</blockquote>
+<p>这些方法是通过接口 Message 实现的，更多消息参考( http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.message.Message-class.html )。</p>
+<h3><a name="t80"></a>7.5.3&nbsp;&nbsp; 解析与串行化</h3>
+<p>最后，每个ProtocolBuffer类有些方法用于读写消息的二进制数据( http://code.google.com/apis/protocolbuffers/docs/encoding.html )。包括：</p>
+<blockquote>
+<ul>
+<li>SerializeToString() ：串行化，并返回字符串。注意是二进制格式而非文本。</li>
+<li>ParseFromString(data) ：解析数据。</li>
+</ul>
+</blockquote>
+<p>他们是成对使用的，提供二进制数据的串行化和解析。另外参考消息API参考( http://code.google.com/apis/protocolbuffers/docs/reference/python/google.protobuf.message.Message-class.html )了解更多信息。</p>
+<p>Note</p>
+<p>ProtocolBuffer与面向对象设计</p>
+<p>ProtocolBuffer类只是用于存取数据的，类似于C++中的结构体，他们并没有在面向对象方面做很好的设计。如果你想要给这些类添加更多的行为，最好的方法是包装(wrap)。包装同样适合于复用别人写好的 .proto 文件。这种情况下，你可以把ProtocolBuffer生成类包装的很适合于你的应用，并隐藏一些数据和方法，暴露有用的函数等等。&nbsp;<strong>你不可以通过继承来给自动生成的类添加行为。</strong>&nbsp;这会破坏他们的内部工作机制。</p>
+<h2><a name="t81"></a>7.6&nbsp;&nbsp; 写消息</h2>
+<p>现在开始尝试使用ProtocolBuffer的类。第一件事是让地址本应用可以记录联系人的细节信息。想要做这些需要先创建联系人实例，然后写入到输出流。</p>
+<p>这里的程序从文件读取地址本，添加新的联系人信息，然后写回新的地址本到文件。</p>
+<pre>#! /usr/bin/python
+import addressbook_pb2
+import sys
+
+#这个函数使用用户输入填充联系人信息
+def PromptForAddress(person):
+    person.id=int(raw_input("Enter person ID number: "))
+    person.name=raw_input("Enter name: ")
+    email=raw_input("Enter email address (blank for none): ")
+    if email!="":
+        person.email=email
+    while True:
+        number=raw_input("Enter a phone number (or leave blank to finish): ")
+        if number=="":
+            break
+        phone_number=person.phone.add()
+        phone_number.number=number
+        type=raw_input("Is this a mobile, home, or work phone? ")
+        if type=="mobile":
+            phone_number.type=addressbook_pb2.Person.MOBILE
+        elif type=="home":
+            phone_number.type=addressbook_pb2.Person.HOME
+        elif type=="work":
+            phone_number.type=addressbook_pb2.Person.WORK
+        else:
+            print "Unknown phone type; leaving as default value."
+
+#主函数，从文件读取地址本，添加新的联系人，然后写回到文件
+if len(sys.argv)!=2:
+    print "Usage:",sys.argv[0],"ADDRESS_BOOK_FILE"
+    sys.exit(-1)
+
+address_book=addressbook_pb2.AddressBook()
+
+#读取已经存在的地址本
+try:
+    f=open(sys.argv[1],"fb")
+    address_book.ParseFromString(f.read())
+    f.close()
+except OSError:
+    print sys.argv[1]+": Count open file. Creating a new one."
+
+#添加地址
+PromptFromAddress(address_book.person.add())
+
+#写入到文件
+f=open(sys.argv[1],"wb")
+f.write(address_book.SerializeToString())
+f.close()</pre>
+<h2><a name="t82"></a>7.7&nbsp;&nbsp; 读消息</h2>
+<p>当然，一个无法读取的地址本是没什么用处的，这个例子读取刚才创建的文件并打印所有信息:</p>
+<pre>#! /usr/bin/python
+
+import addressbook_pb2
+import sys
+
+#遍历地址本中所有的人并打印出来
+def ListPeople(address_book):
+    for person in address_book.person:
+        print "Person ID:",person.id
+        print "  Name:",person.name
+        if person.HasField("email"):
+            print "  E-mail:",person.email
+        for phone_number in person.phone:
+            if phone_number.type==addressbook_pb2.Person.MOBILE:
+                print "  Mobile phone #:",
+            elif phone_number.type==addressbook_pb2.Person.HOME:
+                print "  Home phone #:",
+            elif phone_number.type==addressbook_pb2.Person.WORK:
+                print "  Work phone #:",
+            print phone_number.number
+
+#主函数，从文件读取地址本
+if len(sys.argv)!=2:
+    print "Usage:",sys.argv[0],"ADDRESS_BOOK_FILE"
+    sys.exit(-1)
+
+address_book=addressbook_pb2.AddressBook()
+
+#读取整个地址本文件
+f=open(sys.argv[1],"rb")
+address_book.ParseFromString(f.read())
+f.close()
+
+ListPeople(address_book)</pre>
+<h2><a name="t83"></a>7.8&nbsp;&nbsp; 扩展ProtocolBuffer</h2>
+<p>在你发不了代码以后，可能会想要改进ProtocolBuffer的定义。如果你想新的数据结构向后兼容，而你的旧数据可以向前兼容，那么你就找对了东西了，不过有些规则需要遵守。在新版本的ProtocolBuffer中：</p>
+<blockquote>
+<ul>
+<li>必须不可以改变已经存在的标签的数字。</li>
+<li>必须不可以增加或删除必须(required)字段。</li>
+<li>可以删除可选(optional)或重复(repeated)字段。</li>
+<li>可以添加新的可选或重复字段，但是必须使用新的标签数字，必须是之前的字段所没有用过的。</li>
+</ul>
+</blockquote>
+<p>这些规则也有例外( http://code.google.com/apis/protocolbuffers/docs/proto.html#updating )，不过很少使用。</p>
+<p>如果你遵从这些规则，旧代码会很容易的读取新的消息，并简单的忽略新的字段。而对旧的被删除的可选字段也会简单的使用他们的缺省值，被删除的重复字段会自动为空。新的代码也会透明的读取旧的消息。然而，需要注意的是新的可选消息不会在旧的消息中显示，所以你需要使用 has_ 严格的检查他们是否存在，或者在 .proto 文件中提供一个缺省值。如果没有缺省值，就会有一个类型相关的默认缺省值：对于字符串就是空字符串；对于布尔型则是false；对于数字类型默认为0。同时要注意的是如果你添加了新的重复字段，你的新代码不会告诉你这个字段为空(新代码)也不会，也不会(旧代码)包含 has_ 标志。</p>
+<h2><a name="t84"></a></h2>
+<h2><a name="t85"></a>7.9&nbsp;&nbsp; 高级使用</h2>
+<p>ProtocolBuffer不仅仅提供了数据结构的存取和串行化。查看Python API参考( http://code.google.com/apis/protocolbuffers/docs/reference/python/index.html )了解更多功能。</p>
+<p>一个核心功能是通过消息类的映射(reflection)提供的。你可以通过它遍历消息的所有字段，和管理他们的值。关于映射的一个很有用的地方是转换到其他编码，如XML或JSON。一个使用映射的更高级的功能是寻找同类型两个消息的差异，或者开发出排序、正则表达式等功能。使用你的创造力，还可以用ProtocolBuffer实现比你以前想象的更多的问题。</p>
+<p>映射是通过消息接口提供的。</p>
+<h1><a name="t86"></a></h1>
+<h1><a name="t87"></a>8&nbsp;&nbsp; 参考概览</h1>
+<p>@waiting …</p>
+<h1><a name="t88"></a>9&nbsp;&nbsp; C++代码生成</h1>
+<p>@waiting …</p>
+<h1><a name="t89"></a>10&nbsp;&nbsp; C++ API</h1>
+<p>@waiting …</p>
+<h1><a name="t90"></a>11&nbsp;&nbsp; Java代码生成</h1>
+<p>@waiting …</p>
+<h1><a name="t91"></a>12&nbsp;&nbsp; Java API</h1>
+<p>@waiting …</p>
+<h1><a name="t92"></a>13&nbsp;&nbsp; Python代码生成</h1>
+<p>本页提供了Python生成类的相关细节。你可以在阅读本文档之前查看语言指导。</p>
+<p>Python的ProtocolBuffer实现与C++和Java的略有不同，编译器只输出构建代码的描述符来生成类，而由Python的元类来执行工作。本文档描述了元类开始生效以后的东西。</p>
+<h2><a name="t93"></a></h2>
+<h2><a name="t94"></a>13.1&nbsp;&nbsp; 编译器的使用</h2>
+<p>ProtocolBuffer通过编译器的&nbsp;<tt>–python_out=</tt>&nbsp;选项来生成Python的相关类。这个参数实际上是指定输出的Python类放在哪个目录下。编译器会为每个 .proto 文件生成一个对应的 .py 文件。输出文件名与输入文件名相关，不过有两处修改：</p>
+<blockquote>
+<ul>
+<li>扩展名 .proto 改为 .py 。</li>
+<li>路径名的修改。</li>
+</ul>
+</blockquote>
+<p>如果你按照如下调用编译器:</p>
+<pre>protoc --proto_path=src --python_out=build/gen src/foo.proto src/bar/baz.proto</pre>
+<p>编译器会自动读取两个 .proto 文件然后产生两个输出文件。在需要时编译器会自动创建目录，不过&nbsp;<tt>–python_out</tt>指定的目录不会自动创建。</p>
+<p>需要注意的是，如果 .proto 文件名或路径包含有无法在Python中使用的模块名(如连字符)，就会被自动转换为下划线。所以文件&nbsp;<tt>foo-bar.proto</tt>&nbsp;会变成&nbsp;<tt>foo_bar_pb2.py</tt>&nbsp;。</p>
+<p>Note</p>
+<p>在每个文件后缀的&nbsp;<tt>_pb2.py</tt>&nbsp;中的2代表ProtocolBuffer版本2。版本1仅在Google内部使用，但是你仍然可以在以前发布的一些代码中找到它。自动版本2开始，ProtocolBuffer开始使用完全不同的接口了，从此Python也没有编译时类型检查了，我们加上这个版本号来标志Python文件名。</p>
+<h2><a name="t95"></a>13.2&nbsp;&nbsp; 包</h2>
+<p>Python代码生成根本不在乎包的名字。因为Python使用目录名来做包名。</p>
+<h2><a name="t96"></a>13.3&nbsp;&nbsp; 消息</h2>
+<p>先看看一个简单的消息声明:</p>
+<pre>message Foo {}</pre>
+<p>ProtocolBuffer编译器会生成类Foo，它是 google.protobuf.Message 的子类。这个实体类，不含有虚拟方法。不像C++和Java，Python生成类对优化选项不感冒；实际上Python的生成代码已经为代码大小做了优化。</p>
+<p>你不能继承Foo的子类。生成类被设计不可以被继承，否则会被打破一些设计。另外，继承本类也是不好的设计。</p>
+<p>Python的消息类没有特定的公共成员，而是定义接口，极其嵌套的字段、消息和枚举类型。</p>
+<p>一个消息可以在另外一个消息中声明，例如&nbsp;<tt>message Foo { message Bar {}}</tt>&nbsp;。在这种情况下，Bar类定义为Foo的一个静态成员，所以你可以通过 Foo.Bar 来引用。</p>
+<h2><a name="t97"></a>13.4&nbsp;&nbsp; 字段</h2>
+<p>对于消息类型中的每一个字段，都有对应的同名成员。</p>
+<h3><a name="t98"></a>13.4.1&nbsp;&nbsp; 简单字段</h3>
+<p>如果你有一个简单字段(包括可选的和重复的)，也就是非消息字段，你可以通过简单字段的方式来管理，例如foo字段的类型是int32，你可以:</p>
+<pre>message.foo=123
+print message.foo</pre>
+<p>注意设置foo的值，如果类型错误会抛出TypeError。</p>
+<p>如果foo在赋值之前就读取，就会使用缺省值。想要检查是否已经赋值，可以用 HasField() ，而清除该字段的值用 ClearField() 。例如:</p>
+<pre>assert not message.HasField("foo")
+message.foo=123
+assert message.HasField("foo")
+message.ClearField("foo")
+assert not message.HasField("foo")</pre>
+<h3><a name="t99"></a>13.4.2&nbsp;&nbsp; 简单消息字段</h3>
+<p>消息类型工作方式略有不同。你无法为一个嵌入消息字段赋值。而是直接操作这个消息的成员。因为实例化上层消息时，其包含的子消息同时也实例化了，例如定义:</p>
+<pre>message Foo {
+    optional Bar bar=1;
+}
+
+message bar {
+    optional int32 i=1;
+}</pre>
+<p>你不可以这么做，因为不能做消息类型字段的赋值:</p>
+<pre>foo=Foo()
+foo.bar=Bar()   #WRONG!</pre>
+<p>而是可以直接对消息类型字段的成员赋值:</p>
+<pre>foo=Foo()
+assert not foo.HasField("bar")
+foo.bar.i=1
+assert foo.HasField("bar")</pre>
+<p>注意简单的读取消息类型字段的未赋值成员只不过是打印其缺省值:</p>
+<pre>foo=Foo()
+assert not foo.HasField("bar")
+print foo.bar.i #打印i的缺省值
+assert not foo.HasField("bar")</pre>
+<h3><a name="t100"></a>13.4.3&nbsp;&nbsp; 重复字段</h3>
+<p>重复字段表现的像是Python的序列类型。如果是嵌入的消息，你无法为字段直接赋值，但是你可以管理。例如给定的定义:</p>
+<pre>message Foo {
+    repeated int32 nums=1;
+}</pre>
+<p>你就可以这么做:</p>
+<pre>foo=Foo()
+foo.nums.append(15)
+foo.nums.append(32)
+assert len(foo.nums)==2
+assert foo.nums[0]==15
+assert foo.nums[1]==32
+for i in foo.nums:
+    print i
+foo.nums[1]=56
+assert foo.nums[1]==56</pre>
+<p>作为一种简单字段，清除该字段必须使用 ClearField() 。</p>
+<h3><a name="t101"></a>13.4.4&nbsp;&nbsp; 重复消息字段</h3>
+<p>重复消息字段工作方式与重复字段很像，除了 add() 方法用于返回新的对象以外。例如如下定义:</p>
+<pre>message Foo {
+    repeated Bar bar=1;
+}
+
+message Bar {
+    optional int32 i=1;
+}</pre>
+<p>你可以这么做:</p>
+<pre>foo=Foo()
+bar=foo.bars.add()
+bar.i=15
+bar=foo.bars.add()
+bar.i=32
+assert len(foo.bars)==2
+assert foo.bars[0].i==15
+assert foo.bars[1].i==32
+for bar in foo.bars:
+    print bar.i
+foo.bars[1].i=56
+assert foo.bars[1].i==56</pre>
+<h3><a name="t102"></a>13.4.5&nbsp;&nbsp; 枚举类型</h3>
+<p>@waiting …</p>
+<h3><a name="t103"></a>13.4.6&nbsp;&nbsp; 扩展</h3>
+<p>@waiting …</p>
+<h2><a name="t104"></a></h2>
+<h2><a name="t105"></a>13.5&nbsp;&nbsp; 服务</h2>
+<h3><a name="t106"></a></h3>
+<h3><a name="t107"></a>13.5.1&nbsp;&nbsp; 接口</h3>
+<p>一个简单的接口定义:</p>
+<pre>service Foo {
+    rpc Bar(FooRequest) returns(FooResponse);
+}</pre>
+<p>ProtocolBuffer的编译器会生成类 Foo 来展示这个服务。 Foo 将会拥有每个服务定义的方法。在这种情况下 Bar 方法的定义是:</p>
+<pre>def Bar(self,rpc_controller,request,done)</pre>
+<p>参数等效于 Service.CallMethod() ，除了隐含的 method_descriptor 参数。</p>
+<p>这些生成的方法被定义为可以被子类重载。缺省实现只是简单的调用 controller.SetFailed() 而抛出错误信息告之尚未实现。然后调用done回调。在实现你自己的服务时，你必须继承生成类，然后重载各个接口方法。</p>
+<p>Foo继承了 Service 接口。ProtocolBuffer编译器会自动声响相关的实现方法：</p>
+<blockquote>
+<ul>
+<li>GetDescriptor ：返回服务的 ServiceDescriptor 。</li>
+<li>CallMethod ：检测需要调用哪个方法，并且直接调用。</li>
+<li>GetRequestClass 和 GetResponseClass ：返回指定方法的请求和响应类。</li>
+</ul>
+</blockquote>
+<h3><a name="t108"></a>13.5.2&nbsp;&nbsp; 存根(Stub)</h3>
+<p>ProtocolBuffer编译器也会为每个服务接口提供一个存根实现，用于客户端发送请求到服务器。对于Foo服务，存根实现是 Foo_Stub 。</p>
+<p>Foo_Stub 是Foo的子类，他的构造器是一个 RpcChannel 。存根会实现调用每个服务方法的 CallMethod() 。</p>
+<p>ProtocolBuffer哭并不包含RPC实现。然而，它包含了你构造服务类的所有工具，不过选择RPC实现则随你喜欢。你只需要提供 RpcChannel 和 RpcController 的实现即可。</p>
+<h1><a name="t109"></a></h1>
+<h1><a name="t110"></a>14&nbsp;&nbsp; Python API</h1>
+<p>@waiting …</p>
+<h1><a name="t111"></a>15&nbsp;&nbsp; 其他语言</h1>
+<p>http://www.cppblog.com/liquidx</p>
+</div>
+</div>
+</div></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag">标签: <a href="http://www.cnblogs.com/zchajax/tag/%E6%B8%B8%E6%88%8F/">游戏</a>, <a href="http://www.cnblogs.com/zchajax/tag/protobuf/">protobuf</a>, <a href="http://www.cnblogs.com/zchajax/tag/RPC/">RPC</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(5783258,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;9b8ba690-b36f-e011-a53f-842b2b196315&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/zchajax/" target="_blank"><img src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/u295424.jpg" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/zchajax/">zchajax</a><br>
+            <a href="http://home.cnblogs.com/u/zchajax/followees">关注 - 10</a><br>
+            <a href="http://home.cnblogs.com/u/zchajax/followers">粉丝 - 26</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;9b8ba690-b36f-e011-a53f-842b2b196315&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(5783258,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(5783258,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+</div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="http://www.cnblogs.com/zchajax/p/4402802.html" class="p_n_p_prefix">« </a> 上一篇：<a href="http://www.cnblogs.com/zchajax/p/4402802.html" title="发布于2015-04-08 16:32">android游戏的增量更新（资源及代码的热更新）</a><br></div>
+</div>
+
+
+		</div>
+		<p class="postfoot">
+			posted on <span id="post-date">2016-08-18 11:12</span> <a href="http://www.cnblogs.com/zchajax/">zchajax</a> 阅读(<span id="post_view_count">108</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=5783258" rel="nofollow">编辑</a> <a href="http://www.cnblogs.com/zchajax/p/5783258.html#" onclick="AddToWz(5783258);return false;">收藏</a>
+		</p>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=88081,cb_entryId=5783258,cb_blogApp=currentBlogApp,cb_blogUserGuid='9b8ba690-b36f-e011-a53f-842b2b196315',cb_entryCreatedDate='2016/8/18 11:12:00';loadViewCount(cb_entryId);</script>
+	
+	</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="http://www.cnblogs.com/zchajax/p/5783258.html#" onclick="return RefreshPage();">刷新页面</a><a href="http://www.cnblogs.com/zchajax/p/5783258.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank">【推荐】50万行VC++源码: 大型组态工控、电力仿真CAD与GIS源码库</a><br><a href="http://rongcloud.cn/reports/journal2" target="_blank">【推荐】融云发布 App 社交化白皮书 IM 提升活跃超 8 倍</a><br><a href="http://bbs.h3bpm.com/index.php?m=app&amp;app=product_download&amp;a=reg&amp;utm_source=csdn&amp;utm_medium=pic&amp;utm_campaign=show&amp;utm_content=v10&amp;utm_term=%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD" target="_blank">【推荐】自开发 零实施的BPM</a><br></div>
+<div id="opt_under_post"></div>
+<div id="ad_c1" class="c_ad_block"><a href="http://click.aliyun.com/m/9742/" target="_blank"><img width="300" height="250" src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/24442-20170123215154878-323669841.gif" alt=""></a></div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>最新IT新闻</b>:<br> ·  <a href="http://news.cnblogs.com/n/561944/" target="_blank">2017年11个移动App开发趋势</a><br> ·  <a href="http://news.cnblogs.com/n/561988/" target="_blank">硅谷大佬马斯克喜欢玩什么电脑游戏？</a><br> ·  <a href="http://news.cnblogs.com/n/561987/" target="_blank">全球主流公司大举投资AI：它们关注哪些方面？</a><br> ·  <a href="http://news.cnblogs.com/n/561986/" target="_blank">在比尔·盖茨眼中 这三项工作值得他再次辍学创业</a><br> ·  <a href="http://news.cnblogs.com/n/561985/" target="_blank">外媒：机械硬盘未死 超高容量产品是其未来出路</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="ad_c2" class="c_ad_block"><a href="http://bbs.h3bpm.com/index.php?m=app&amp;app=product_download&amp;a=reg&amp;utm_source=csdn&amp;utm_medium=pic&amp;utm_campaign=show&amp;utm_content=v10&amp;utm_term=%E5%85%8D%E8%B4%B9%E4%B8%8B%E8%BD%BD" target="_blank"><img width="468" height="60" src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/24442-20170118152220281-363324784.jpg" alt=""></a></div>
+<div id="under_post_kb"><div class="itnews c_ad_block" id="kb_block"><b>最新知识库文章</b>:<br><div id="kb_recent"> ·  <a href="http://kb.cnblogs.com/page/554260/" target="_blank">「代码家」的学习过程和学习经验分享</a><br> ·  <a href="http://kb.cnblogs.com/page/556770/" target="_blank">写给未来的程序媛</a><br> ·  <a href="http://kb.cnblogs.com/page/558087/" target="_blank">高质量的工程代码为什么难写</a><br> ·  <a href="http://kb.cnblogs.com/page/555750/" target="_blank">循序渐进地代码重构</a><br> ·  <a href="http://kb.cnblogs.com/page/554496/" target="_blank">技术的正宗与野路子</a><br></div>» <a href="http://kb.cnblogs.com/" target="_blank">更多知识库文章...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverAdT2();
+    deliverAdC1();
+    deliverAdC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);   
+</script>
+</div>
+
+
+</div>
+</div>
+<div id="leftmenu">
+
+
+<h3>导航</h3>
+<ul>
+<li>
+<a id="blog_nav_sitehome" href="http://www.cnblogs.com/">博客园</a></li>
+<li>
+<a id="blog_nav_myhome" class="two_words" href="http://www.cnblogs.com/zchajax/">首页</a></li>
+<li>
+<a id="blog_nav_newpost" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li>
+<a id="blog_nav_contact" accesskey="9" class="two_words" rel="nofollow" href="https://msg.cnblogs.com/send/zchajax">联系</a></li>
+<li>
+<a id="blog_nav_rss" class="two_words" href="http://www.cnblogs.com/zchajax/rss">订阅</a>
+<a id="blog_nav_rss_image" href="http://www.cnblogs.com/zchajax/rss"><img src="./ProtoBuf开发者指南（转） - zchajax - 博客园_files/xml.gif" alt="订阅"></a>
+</li>
+<li>
+<a id="blog_nav_admin" class="two_words" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+
+<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2016/12/01&#39;);return false;">&lt;</a></td><td align="center">2017年1月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2017/02/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">25</td><td class="CalOtherMonthDay" align="center">26</td><td class="CalOtherMonthDay" align="center">27</td><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td></tr><tr><td class="CalWeekendDay" align="center">1</td><td align="center">2</td><td align="center">3</td><td align="center">4</td><td align="center">5</td><td align="center">6</td><td class="CalWeekendDay" align="center">7</td></tr><tr><td class="CalWeekendDay" align="center">8</td><td align="center">9</td><td align="center">10</td><td align="center">11</td><td align="center">12</td><td align="center">13</td><td class="CalWeekendDay" align="center">14</td></tr><tr><td class="CalWeekendDay" align="center">15</td><td align="center">16</td><td align="center">17</td><td align="center">18</td><td align="center">19</td><td align="center">20</td><td class="CalWeekendDay" align="center">21</td></tr><tr><td class="CalWeekendDay" align="center">22</td><td align="center">23</td><td align="center">24</td><td align="center">25</td><td align="center">26</td><td align="center">27</td><td class="CalWeekendDay" align="center">28</td></tr><tr><td class="CalWeekendDay" align="center">29</td><td class="CalTodayDay" align="center">30</td><td align="center">31</td><td class="CalOtherMonthDay" align="center">1</td><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+<meta name="vs_showGrid" content="False">
+
+<h3>公告</h3>
+<div id="blog-news"><div id="profile_block">昵称：<a href="http://home.cnblogs.com/u/zchajax/">zchajax</a><br>园龄：<a href="http://home.cnblogs.com/u/zchajax/" title="入园时间：2011-04-26">5年9个月</a><br>粉丝：<a href="http://home.cnblogs.com/u/zchajax/followers/">26</a><br>关注：<a href="http://home.cnblogs.com/u/zchajax/followees/">10</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;9b8ba690-b36f-e011-a53f-842b2b196315&#39;)">+加关注</a></div></div></div><script type="text/javascript">loadBlogNews();</script>
+
+<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="http://www.cnblogs.com/zchajax/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="http://www.cnblogs.com/zchajax/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="http://www.cnblogs.com/zchajax/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="http://www.cnblogs.com/zchajax/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="http://www.cnblogs.com/zchajax/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<h3 class="catListTitle">我的标签</h3>
+<div id="MyTag">
+<ul>
+<li><a href="http://www.cnblogs.com/zchajax/tag/%E6%B8%B8%E6%88%8F/">游戏</a>(2)</li><li><a href="http://www.cnblogs.com/zchajax/tag/android/">android</a>(1)</li><li><a href="http://www.cnblogs.com/zchajax/tag/cocos2dx/">cocos2dx</a>(1)</li><li><a href="http://www.cnblogs.com/zchajax/tag/protobuf/">protobuf</a>(1)</li><li><a href="http://www.cnblogs.com/zchajax/tag/RPC/">RPC</a>(1)</li><li><a href="http://www.cnblogs.com/zchajax/tag/%E7%83%AD%E6%9B%B4%E6%96%B0/">热更新</a>(1)</li>
+</ul>
+</div></div><div id="sidebar_categories">
+		<h3>随笔档案</h3>
+		
+				<ul>
+			
+				<li><a id="CatList_LinkList_0_Link_0" href="http://www.cnblogs.com/zchajax/archive/2016/08.html">2016年8月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_1" href="http://www.cnblogs.com/zchajax/archive/2015/04.html">2015年4月 (1)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_2" href="http://www.cnblogs.com/zchajax/archive/2011/05.html">2011年5月 (4)</a></li>
+			
+				<li><a id="CatList_LinkList_0_Link_3" href="http://www.cnblogs.com/zchajax/archive/2011/04.html">2011年4月 (4)</a></li>
+			
+				</ul>
+			
+	</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<h3 class="catListTitle">最新评论</h3>
+<div class="RecentComment" id="RecentComments">
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029189.html#3166890">1. Re:android音乐播放器</a></li>
+        <li class="recent_comment_body">请高手给我全部代码  谢谢   1060104409@qq.com</li>
+        <li class="recent_comment_author">--yuanxiansheng</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/zchajax/p/4402802.html#3158379">2. Re:android游戏的增量更新（资源及代码的热更新）</a></li>
+        <li class="recent_comment_body">@KillU因为加载器和逻辑部分是分开编译的，所以加载器调用逻辑部分的函数就要用这个。启动检查的部分也是加载器（更新器）做的事情。...</li>
+        <li class="recent_comment_author">--zchajax</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/zchajax/p/4402802.html#3158370">3. Re:android游戏的增量更新（资源及代码的热更新）</a></li>
+        <li class="recent_comment_body">需要用到c++的动态函数调用技术<br>这个是应为so文件已经被载入了内存？一般更新文件不是在启动时检查吗？</li>
+        <li class="recent_comment_author">--KillU</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/zchajax/archive/2011/05/15/2047129.html#2771572">4. Re:android音乐播放器——通过webview下载歌曲</a></li>
+        <li class="recent_comment_body">还是有点问题的。。。。</li>
+        <li class="recent_comment_author">--yong7356</li>
+        <li class="recent_comment_title"><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029189.html#2771571">5. Re:android音乐播放器</a></li>
+        <li class="recent_comment_body">学习了，有实现边下载边播放的功能了吗？</li>
+        <li class="recent_comment_author">--yong7356</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<h3 class="catListTitle">阅读排行榜</h3>
+<div class="RecentComment" id="TopViewPosts"> 
+	<div id="TopViewPostsBlock"><ul><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029832.html">1. android操作sdcard中的多媒体文件（一）——音乐列表的制作(17220)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/05/09/2041136.html">2. 关于Android分辨率的支持（转）(16643)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/27/2030709.html">3. android操作sdcard中的多媒体文件（二）——音乐列表的更新(10419)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/05/02/2034453.html">4. 轻松实现带文字的ImageButton(4340)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029189.html">5. android音乐播放器(2604)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<h3 class="catListTitle">评论排行榜</h3>
+<div class="RecentComment" id="TopCommentsPosts">
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/27/2030709.html">1. android操作sdcard中的多媒体文件（二）——音乐列表的更新(10)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029189.html">2. android音乐播放器(10)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/05/15/2047129.html">3. android音乐播放器——通过webview下载歌曲(4)</a></li><li><a href="http://www.cnblogs.com/zchajax/p/4402802.html">4. android游戏的增量更新（资源及代码的热更新）(2)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029832.html">5. android操作sdcard中的多媒体文件（一）——音乐列表的制作(2)</a></li></ul></div>
+</div></div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div class="RecentComment">
+	<div id="TopDiggPostsBlock"><ul><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/27/2030709.html">1. android操作sdcard中的多媒体文件（二）——音乐列表的更新(8)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029189.html">2. android音乐播放器(5)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029832.html">3. android操作sdcard中的多媒体文件（一）——音乐列表的制作(3)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/04/26/2029413.html">4. android音乐播放器常见操作(2)</a></li><li><a href="http://www.cnblogs.com/zchajax/archive/2011/05/09/2041136.html">5. 关于Android分辨率的支持（转）(2)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+
+</div>
+</div>
+<div class="clear"></div>
+<div id="footer">
+
+<p id="footer">
+	Powered by: 
+	<br>
+	
+	<a id="Footer1_Hyperlink3" name="Hyperlink1" href="http://www.cnblogs.com/" style="font-family:Verdana;font-size:12px;">博客园</a>
+	<br>
+	Copyright © zchajax
+</p>
+</div>
+</div>
+
+
+
+</body></html>
