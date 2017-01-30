@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package com.talent.aio.examples.im.common.packets;
+
+option java_package = "com.talent.aio.examples.im.common.packets";
+option java_multiple_files = true;
+
+//https://github.com/google/protobuf/releases
+
+message BaseReqBody {
+	int64 time = 1;
+}
+/**
+ * 加入群组请求
+ */
+message JoinReqBody {
+	int64 time = 1;
+	string group = 2;
+}
+/**
+ * 加入群组申请的结果
+ */
+message JoinGroupResult {
+	int32 code = 1;  //结果码
+	string msg = 2;
+}
+/**
+ * 加入群组响应
+ */
+message JoinRespBody {
+	int64 time = 1;
+	JoinGroupResult result = 2;
+	string group = 32;
+}
+/**
+ * 聊天请求
+ */
+message ChatReqBody {
+	int64 time = 1;
+	int32 type = 2; //聊天类型
+	string text = 3; //聊天内容
+	string group = 4; //哪个组
+	int32 toId = 5; //目标用户id，
+	string toNick = 6; //目标用户nick，
+}
+/**
+ * 聊天响应
+ */
+message ChatRespBody {
+	int64 time = 1;
+	int32 type = 2; //聊天类型
+	string text = 3; //聊天内容
+	int32 fromId = 4; //发送聊天消息的用户id
+	string fromNick = 5; //发送聊天消息的用户nick
+	int32 toId = 6; //目标用户id
+	string toNick = 7; //目标用户nick
+	string group = 8; //目标group
+}
+
+enum ChatOp {
+	JOIN = 0;
+	QUIT = 1;
+	CHAT = 2;
+	ACK = 3;
+}
