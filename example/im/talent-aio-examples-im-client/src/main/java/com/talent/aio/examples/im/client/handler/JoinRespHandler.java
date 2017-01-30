@@ -11,8 +11,9 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.JoinRespBody;
 import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.packets.JoinReqBody;
+import com.talent.aio.examples.im.common.packets.JoinRespBody;
 import com.talent.aio.examples.im.common.vo.JoinGroupResultVo;
 
 /**
@@ -99,19 +100,18 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 	{
 
 		String bodyStr = null;
-		if (packet.getBody() != null)
+		if (packet.getBody() == null)
 		{
-			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+			throw new Exception("body is null");
 		}
-		JoinRespBody body = Json.toBean(bodyStr, JoinRespBody.class);
+		
+		JoinRespBody respBody = JoinRespBody.parseFrom(packet.getBody());
 		
 		
-		
-		
-		if (Objects.equals(JoinGroupResultVo.Code.OK, body.getResult().getCode()))
+		if (Objects.equals(JoinGroupResultVo.Code.OK, respBody.getResult().getCode()))
 		{
 			
-			String group = body.getGroup();
+			String group = respBody.getGroup();
 //			channelContext.getGroupContext().getGroups().bind(group, channelContext);
 			com.talent.aio.common.Aio.bindGroup(channelContext, group);
 			//			log.info("join group {}", group);
@@ -122,7 +122,7 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 		{
 			//被拒绝
 			//			log.error("refused to join in group {}", body.getGroup());
-			String xx = ClientNodes.getKey(channelContext) + "被拒绝进入组" + body.getGroup();
+			String xx = ClientNodes.getKey(channelContext) + "被拒绝进入组" + respBody.getGroup();
 			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
 		}
 		

@@ -142,14 +142,14 @@ public class ImPacket extends Packet
 
 	private byte[] body;
 
-	public ImPacket(byte[] body, byte command)
+	public ImPacket(byte[] body, Command command)
 	{
 		super();
 		this.body = body;
 		this.setCommand(command);
 	}
 
-	public ImPacket(byte command)
+	public ImPacket(Command command)
 	{
 		super();
 		this.setCommand(command);
@@ -192,14 +192,14 @@ public class ImPacket extends Packet
 	@JSONField(serialize = false)
 	private int bodyLen;
 
-	private byte command;
+	private Command command;
 
 	public int getBodyLen()
 	{
 		return bodyLen;
 	}
 
-	public byte getCommand()
+	public Command getCommand()
 	{
 		return command;
 	}
@@ -229,7 +229,7 @@ public class ImPacket extends Packet
 		this.bodyLen = bodyLen;
 	}
 
-	public void setCommand(byte type)
+	public void setCommand(Command type)
 	{
 		this.command = type;
 		//		if (com.talent.im.common.command.Command.PRIORITY_HANDLER_COMMANDS.contains(type))

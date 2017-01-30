@@ -29,8 +29,8 @@ import com.talent.aio.examples.im.client.ui.component.MyTextArea;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.Const.ChatType;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.ChatReqBody;
 import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.packets.ChatReqBody;
 
 /**
  *
@@ -373,7 +373,13 @@ public class JFrameMain extends javax.swing.JFrame
 		String msg = msgField.getText();
 		int loopcount = Integer.parseInt(loopcountField.getText());
 		String toGroup = groupField.getText();
-		ChatReqBody chatReqBody = new ChatReqBody(ChatType.pub, msg, toGroup, null, null);
+		ChatReqBody.Builder builder = ChatReqBody.newBuilder();
+		builder.setTime(SystemTimer.currentTimeMillis());
+		builder.setGroup(toGroup);
+		builder.setType(ChatType.pub);
+		builder.setText(msg);
+		
+		ChatReqBody chatReqBody = builder.build();//new ChatReqBody(ChatType.pub, msg, toGroup, null, null);
 //		int count = 0;
 		setSendStartTime(SystemTimer.currentTimeMillis());
 
@@ -385,7 +391,7 @@ public class JFrameMain extends javax.swing.JFrame
 			readLock.lock();
 			Set<ChannelContext<Object, ImPacket, Object>> set = objWithReadWriteLock.getObj();
 
-			byte[] body = Json.toJson(chatReqBody).getBytes(ImPacket.CHARSET);
+			byte[] body = chatReqBody.toByteArray();
 			ImPacket packet = new ImPacket(body, Command.CHAT_REQ);
 
 			for (ChannelContext<Object, ImPacket, Object> entry : set)
@@ -456,6 +462,12 @@ public class JFrameMain extends javax.swing.JFrame
 
 	private void printLogBtnActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_cleanBtn1ActionPerformed
+		if (imClientStarter == null)
+		{
+			log.error("还没有连接");
+			return;
+		}
+		
 		@SuppressWarnings("unused")
 		String id = imClientStarter.getClientGroupContext().getId();
 		ObjWithReadWriteLock<Set<ChannelContext<Object, ImPacket, Object>>> connections = imClientStarter.getClientGroupContext().getConnections().getSet();

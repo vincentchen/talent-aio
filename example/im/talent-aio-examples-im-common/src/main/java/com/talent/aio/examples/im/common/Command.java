@@ -1,135 +1,122 @@
-/**
- * 
- */
 package com.talent.aio.examples.im.common;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 
- * @filename:	 com.talent.im.server.Command
- * @copyright:   Copyright (c)2010
- * @company:     talent
- * @author:      谭耀武
- * @version:     1.0
- * @create time: 2014年3月20日 下午4:44:50
- * @record
- * <table cellPadding="3" cellSpacing="0" style="width:600px">
- * <thead style="font-weight:bold;background-color:#e3e197">
- * 	<tr>   <td>date</td>	<td>author</td>		<td>version</td>	<td>description</td></tr>
- * </thead>
- * <tbody style="background-color:#ffffeb">
- * 	<tr><td>2014年3月20日</td>	<td>谭耀武</td>	<td>1.0</td>	<td>create</td></tr>
- * </tbody>
- * </table>
+ * @author tanyaowu 
+ * @创建时间 2017年1月30日 下午6:08:49
+ *
+ * @操作列表
+ *  编号	| 操作时间	| 操作人员	 | 操作说明
+ *  (1) | 2017年1月30日 | tanyaowu | 新建类
+ *
  */
-public class Command
+public enum Command
 {
-	public static final Map<Byte, String> COMMAND_DESC = new HashMap<>();
-
-	public static final short START_INDEXOF_INNERCOMMAND = 20000;
-
-//	private static final int STEP = 1000;
-
 	/**
 	 * 鉴权请求
 	 */
-	public static final byte AUTH_REQ = 1;
+	AUTH_REQ((byte) 1, "鉴权请求"),
 	/**
 	 * 鉴权响应
 	 */
-	public static final byte AUTH_RESP = -1;
-
-	
+	AUTH_RESP((byte) -1, "鉴权响应"),
 	/**
-	 * 请求进入房间
+	 * 申请进入群组
 	 */
-	public static final byte JOIN_GROUP_REQ = 2;
+	JOIN_GROUP_REQ((byte) 2, "申请进入群组"),
 	/**
-	 * 进入房间后，服务器发给该客户端的响应的响应
+	 * 申请进入群组响应
 	 */
-	public static final byte JOIN_GROUP_RESP = -2;
+	JOIN_GROUP_RESP((byte) -2, "申请进入群组响应"),
 	/**
 	 * 进入房间通知，成员进入房间后，要向其它成员发送通知
 	 */
-	public static final byte JOIN_GROUP_NOTIFY_RESP = -3;
-
+	JOIN_GROUP_NOTIFY_RESP((byte) -3, "进入房间通知，成员进入房间后，要向其它成员发送通知"),
 	/**
 	 * 聊天请求
 	 */
-	public static final byte CHAT_REQ = 4;
+	CHAT_REQ((byte) 4, "聊天请求"),
 	/**
 	 * 聊天响应
 	 */
-	public static final byte CHAT_RESP = -4;
-	
-	
+	CHAT_RESP((byte) -4, "聊天响应"),
 	/**
 	 * 开播请求
 	 */
-	public static final byte STARTSHOW_REQ = 5;
+	STARTSHOW_REQ((byte) 5, "开播请求"),
 	/**
 	 * 开播响应
 	 */
-	public static final byte STARTSHOW_RESP = -5;
-	
+	STARTSHOW_RESP((byte) -5, "开播响应"),
 	/**
 	 * 停播请求
 	 */
-	public static final byte ENDSHOW_REQ = 6;
+	ENDSHOW_REQ((byte) 6, "停播请求"),
 	/**
 	 * 停播通知
 	 */
-	public static final byte ENDSHOW_NOTIFY_RESP = -6;
-
-	
+	ENDSHOW_NOTIFY_RESP((byte) -6, "停播通知"),
 	/**
 	 * 心跳请求
 	 */
-	public static final byte HEARTBEAT_REQ = 99;
-	
+	HEARTBEAT_REQ((byte) 99, "心跳请求");
 
-	public static final Set<Byte> PRIORITY_HANDLER_COMMANDS = new HashSet<>();
+	private byte code;
+	private String name;
 
+	private Command(byte code, String name)
+	{
+		this.setCode(code);
+		this.setName(name);
+	}
+
+	/**
+	 * @return the code
+	 */
+	public byte getCode()
+	{
+		return code;
+	}
+
+	/**
+	 * @param code the code to set
+	 */
+	public void setCode(byte code)
+	{
+		this.code = code;
+	}
+
+	private static final Map<Byte, Command> map = new HashMap<>();
 	static
 	{
-		PRIORITY_HANDLER_COMMANDS.add(AUTH_REQ);
-		PRIORITY_HANDLER_COMMANDS.add(AUTH_RESP);
-		
-		PRIORITY_HANDLER_COMMANDS.add(JOIN_GROUP_REQ);
-		PRIORITY_HANDLER_COMMANDS.add(JOIN_GROUP_RESP);
-		
-		PRIORITY_HANDLER_COMMANDS.add(STARTSHOW_REQ);
-		PRIORITY_HANDLER_COMMANDS.add(STARTSHOW_RESP);
+		for (Command command : values())
+		{
+			map.put(command.getCode(), command);
+		}
+	}
 
-		COMMAND_DESC.put(AUTH_REQ, "鉴权");
-		COMMAND_DESC.put(AUTH_RESP, "鉴权响应");
-
-		COMMAND_DESC.put(JOIN_GROUP_REQ, "进入房间");
-		COMMAND_DESC.put(JOIN_GROUP_RESP, "进入房间响应");
-
-		COMMAND_DESC.put(HEARTBEAT_REQ, "心跳");
-		COMMAND_DESC.put(CHAT_REQ, "聊天");
-		COMMAND_DESC.put(CHAT_RESP, "聊天响应");
-
+	public static Command valueOf(byte code)
+	{
+		return map.get(code);
 	}
 
 	/**
-	 * 
+	 * @return the name
 	 */
-	public Command()
+	public String getName()
 	{
-
+		return name;
 	}
 
 	/**
-	 * @param args
+	 * @param name the name to set
 	 */
-	public static void main(String[] args)
+	public void setName(String name)
 	{
-
+		this.name = name;
 	}
+
 }

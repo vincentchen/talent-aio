@@ -43,7 +43,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 {
 	private static Logger log = LoggerFactory.getLogger(ImClientAioHandler.class);
 
-	private static Map<Byte, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
+	private static Map<Command, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
 	static
 	{
 		handlerMap.put(Command.AUTH_RESP, new AuthRespHandler());
@@ -86,7 +86,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-		Byte command = packet.getCommand();
+		Command command = packet.getCommand();
 		ImBsAioHandlerIntf handler = handlerMap.get(command);
 		if (handler != null)
 		{
@@ -96,7 +96,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		} else
 		{
 			CommandStat.getCount(command).handled.incrementAndGet();
-			log.warn("找不到对应的命令码[{}]处理类", command);
+			log.warn("找不到对应的命令码[{}]处理类", command.toString());
 			return null;
 		}
 
@@ -136,7 +136,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, packet.isCompress());
 		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.isHasSynSeq());
 		buffer.put(firstbyte);
-		buffer.put(packet.getCommand());
+		buffer.put(packet.getCommand().getCode());
 		buffer.putInt(bodyLen);
 
 		
@@ -188,7 +188,8 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		{
 			return null;
 		}
-		Byte command = buffer.get();
+		Byte code = buffer.get();
+		Command command = Command.valueOf(code);
 		int bodyLength = buffer.getInt();
 
 		if (bodyLength > ImPacket.MAX_LENGTH_OF_BODY || bodyLength < 0)

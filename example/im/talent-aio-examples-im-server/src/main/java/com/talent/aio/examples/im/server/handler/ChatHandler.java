@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.Const;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.ChatReqBody;
-import com.talent.aio.examples.im.common.bs.ChatRespBody;
-import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.packets.ChatReqBody;
+import com.talent.aio.examples.im.common.packets.ChatRespBody;
 
 /**
  * 聊天
@@ -48,18 +48,13 @@ public class ChatHandler implements ImBsAioHandlerIntf
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
 		
-		String bodyStr = null;
-		if (packet.getBody() != null)
+		if (packet.getBody() == null)
 		{
-			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+			throw new Exception("body is null");
 		}
 		
-		if (log.isInfoEnabled())
-		{
-			log.info("{}收到chat包:{}", channelContext.toString(), bodyStr);
-		}
 		
-		ChatReqBody chatReqBody = Json.toBean(bodyStr, ChatReqBody.class);
+		ChatReqBody chatReqBody = ChatReqBody.parseFrom(packet.getBody());
 
 		Integer fromId = 111;
 		String fromNick = "test";
@@ -73,16 +68,37 @@ public class ChatHandler implements ImBsAioHandlerIntf
 
 		if (chatReqBody != null)
 		{
-			ChatRespBody chatRespBody = new ChatRespBody(chatReqBody.getType(), chatReqBody.getText(), fromId, fromNick, toId, toNick, toGroup);
+
+			ChatRespBody.Builder builder = ChatRespBody.newBuilder();
+			builder.setType(chatReqBody.getType());
+			builder.setText(chatReqBody.getText());
+			builder.setFromId(fromId);
+			builder.setFromNick(fromNick);
+			
+//			if (toId != null)
+//			{
+				builder.setToId(toId);
+//			}
+//			if (StringUtils.isNotBlank(toNick))
+//			{
+				builder.setToNick(toNick);
+//			}
+			
+			builder.setGroup(toGroup);
+			builder.setTime(SystemTimer.currentTimeMillis());
+			ChatRespBody chatRespBody = builder.build();
+			byte[] bodybyte = chatRespBody.toByteArray();
+			
 			
 			ImPacket respPacket = new ImPacket();
 			respPacket.setCommand(Command.CHAT_RESP);
-			respPacket.setBody(Json.toJson(chatRespBody).getBytes(ImPacket.CHARSET));
+			
+			respPacket.setBody(bodybyte);
 			
 			if (Objects.equals(Const.ChatType.pub, chatReqBody.getType()))
 			{
 				Aio.sendToGroup(channelContext.getGroupContext(), toGroup, respPacket);
-			} else if (chatReqBody.getType() == null || Objects.equals(Const.ChatType.pri, chatReqBody.getType()))
+			} else if (Objects.equals(Const.ChatType.pri, chatReqBody.getType()))
 			{
 //				MsgSendApi.deliverToUser(chatRespBody, fromId, Command.CHAT_RESP);
 //				MsgSendApi.deliverToUser(chatRespBody, toId, Command.CHAT_RESP);

@@ -28,13 +28,13 @@ import java.util.concurrent.atomic.AtomicLong;
 public class CommandStat
 {
 
-	public final static Map<Byte, CommandStat> commandAndCount = new ConcurrentHashMap<>();
+	public final static Map<Command, CommandStat> commandAndCount = new ConcurrentHashMap<>();
 	
 	public final AtomicLong received = new AtomicLong();
 	public final AtomicLong handled = new AtomicLong();
 	public final AtomicLong sent = new AtomicLong();
 
-	public static CommandStat getCount(Byte command)
+	public static CommandStat getCount(Command command)
 	{
 		CommandStat ret = commandAndCount.get(command);
 		if (ret != null)

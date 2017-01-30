@@ -6,11 +6,14 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.JoinReqBody;
-import com.talent.aio.examples.im.common.bs.JoinRespBody;
 import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.packets.JoinGroupResult;
+import com.talent.aio.examples.im.common.packets.JoinReqBody;
+import com.talent.aio.examples.im.common.packets.JoinReqBody.Builder;
+import com.talent.aio.examples.im.common.packets.JoinRespBody;
 import com.talent.aio.examples.im.common.vo.JoinGroupResultVo;
 
 /**
@@ -39,20 +42,22 @@ public class JoinHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-
-		String bodyStr = null;
-		if (packet.getBody() != null)
+		if (packet.getBody() == null)
 		{
-			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+			throw new Exception("body is null");
 		}
 
+		JoinReqBody reqBody = JoinReqBody.parseFrom(packet.getBody());
+		
+		
+		
 		if (log.isInfoEnabled())
 		{
-			log.info("{}收到join包{}", channelContext.toString(), bodyStr);
+			log.info("{}收到join包{}", channelContext.toString(), reqBody.toString());
 		}
 		
-		JoinReqBody joinReqBody = Json.toBean(bodyStr, JoinReqBody.class);
-		String group = joinReqBody.getGroup();
+//		JoinReqBody joinReqBody = Json.toBean(bodyStr, JoinReqBody.class);
+		String group = reqBody.getGroup();
 		if (StringUtils.isBlank(group))
 		{
 			log.error("group is null,{}", channelContext);
@@ -62,14 +67,16 @@ public class JoinHandler implements ImBsAioHandlerIntf
 
 //		channelContext.getGroupContext().getGroups().bind(groupid, channelContext);
 		com.talent.aio.common.Aio.bindGroup(channelContext, group);
+
 		
-		JoinGroupResultVo joinGroupResultVo = new JoinGroupResultVo();
-		joinGroupResultVo.setCode(com.talent.aio.examples.im.common.vo.JoinGroupResultVo.Code.OK);
-		JoinRespBody joinRespBody = new JoinRespBody(group, joinGroupResultVo);
+		JoinGroupResult joinGroupResult = JoinGroupResult.newBuilder().setCode(JoinGroupResultVo.Code.OK).build();
+		JoinRespBody joinRespBody = JoinRespBody.newBuilder().setTime(SystemTimer.currentTimeMillis()).setResult(joinGroupResult).setGroup(group).build();
+		byte[] body = joinRespBody.toByteArray();
+		
 		
 		ImPacket respPacket = new ImPacket();
 		respPacket.setCommand(Command.JOIN_GROUP_RESP);
-		respPacket.setBody(Json.toJson(joinRespBody).getBytes(ImPacket.CHARSET));
+		respPacket.setBody(body);
 		
 		Aio.send(channelContext, respPacket);
 	
