@@ -31,7 +31,7 @@ public class ImPacket extends Packet
 {
 
 	private static Logger log = LoggerFactory.getLogger(ImPacket.class);
-	
+
 	/**
 	 * 心跳字节
 	 */
@@ -47,13 +47,12 @@ public class ImPacket extends Packet
 	/**
 	 * 消息体最多为多少
 	 */
-	public static final int MAX_LENGTH_OF_BODY =  (int) (1024 * 1024 * 2.1); //只支持多少M数据
-	
-	
+	public static final int MAX_LENGTH_OF_BODY = (int) (1024 * 1024 * 2.1); //只支持多少M数据
+
 	/**
 	 * 消息头最少为多少个字节
 	 */
-	public static final int LEAST_HEADER_LENGHT = 6;//1+1+4 + (4)
+	public static final int LEAST_HEADER_LENGHT = 4;//1+1+2 + (2+4)
 
 	/**
 	 * 压缩标识位mask，1为压缩，否则不压缩
@@ -63,12 +62,17 @@ public class ImPacket extends Packet
 	/**
 	 * 是否有同步序列号标识位mask，如果有同步序列号，则消息头会带有同步序列号，否则不带
 	 */
-	public static final byte FIRST_BYTE_HAS_SYNSEQ_COMPRESS = 0B00100000;
+	public static final byte FIRST_BYTE_MASK_HAS_SYNSEQ = 0B00100000;
+
+	/**
+	 * 是否是用4字节来表示消息体的长度
+	 */
+	public static final byte FIRST_BYTE_MASK_4_BYTE_LENGTH = 0B00010000;
 
 	/**
 	 * 版本号mask
 	 */
-	public static final byte FIRST_BYTE_VERSION_COMPRESS = 0B00001111;
+	public static final byte FIRST_BYTE_MASK_VERSION = 0B00001111;
 
 	/**
 	 * 是否压缩消息体
@@ -79,6 +83,11 @@ public class ImPacket extends Packet
 	 * 是否带有同步序列号
 	 */
 	private boolean hasSynSeq = false;
+
+	/**
+	 * 是否用4字节来表示消息体的长度，false:2字节，true:4字节
+	 */
+	private boolean is4ByteLength = false;
 
 	public static boolean decodeCompress(byte version)
 	{
@@ -98,28 +107,48 @@ public class ImPacket extends Packet
 
 	public static boolean decodeHasSynSeq(byte firstByte)
 	{
-		return (FIRST_BYTE_HAS_SYNSEQ_COMPRESS & firstByte) != 0;
+		return (FIRST_BYTE_MASK_HAS_SYNSEQ & firstByte) != 0;
 	}
 
 	public static byte encodeHasSynSeq(byte bs, boolean isCompress)
 	{
 		if (isCompress)
 		{
-			return (byte) (bs | FIRST_BYTE_HAS_SYNSEQ_COMPRESS);
+			return (byte) (bs | FIRST_BYTE_MASK_HAS_SYNSEQ);
 		} else
 		{
-			return (byte) (bs & (FIRST_BYTE_HAS_SYNSEQ_COMPRESS ^ 0b01111111));
+			return (byte) (bs & (FIRST_BYTE_MASK_HAS_SYNSEQ ^ 0b01111111));
+		}
+	}
+
+	public static boolean decode4ByteLength(byte version)
+	{
+		return (FIRST_BYTE_MASK_4_BYTE_LENGTH & version) != 0;
+	}
+
+	public static byte encode4ByteLength(byte bs, boolean is4ByteLength)
+	{
+		if (is4ByteLength)
+		{
+			return (byte) (bs | FIRST_BYTE_MASK_4_BYTE_LENGTH);
+		} else
+		{
+			return (byte) (bs & (FIRST_BYTE_MASK_4_BYTE_LENGTH ^ 0b01111111));
 		}
 	}
 
 	public static byte decodeVersion(byte version)
 	{
-		return (byte) (FIRST_BYTE_VERSION_COMPRESS & version);
+		return (byte) (FIRST_BYTE_MASK_VERSION & version);
 	}
 
 	public int calcHeaderLength()
 	{
 		int ret = LEAST_HEADER_LENGHT;
+		if (this.is4ByteLength)
+		{
+			ret += 2;
+		}
 		if (this.hasSynSeq)
 		{
 			ret += 4;
@@ -137,8 +166,6 @@ public class ImPacket extends Packet
 	//			return (byte) (firstByte & (FIRST_BYTE_HAS_SYNSEQ_COMPRESS ^ 0b01111111));
 	//		}
 	//	}
-
-
 
 	private byte[] body;
 
@@ -173,8 +200,7 @@ public class ImPacket extends Packet
 		System.out.println("Math.pow(2, 24):" + Math.pow(2, 24));
 		System.out.println("Math.pow(2, 8):" + Math.pow(2, 8));
 		System.out.println("Math.pow(2, 7):" + Math.pow(2, 7));
-		
-		
+
 		byte xx = FIRST_BYTE_MASK_COMPRESS ^ 0b01111111;
 		String xxx = Integer.toBinaryString(xx);
 		System.out.println(xxx);
@@ -284,6 +310,22 @@ public class ImPacket extends Packet
 	public void setHasSynSeq(boolean hasSynSeq)
 	{
 		this.hasSynSeq = hasSynSeq;
+	}
+
+	/**
+	 * @return the is4byteLength
+	 */
+	public boolean isIs4ByteLength()
+	{
+		return is4ByteLength;
+	}
+
+	/**
+	 * @param is4ByteLength the is4byteLength to set
+	 */
+	public void setIs4byteLength(boolean is4ByteLength)
+	{
+		this.is4ByteLength = is4ByteLength;
 	}
 
 }
