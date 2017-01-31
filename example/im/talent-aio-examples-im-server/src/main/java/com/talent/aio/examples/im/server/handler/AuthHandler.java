@@ -11,8 +11,9 @@ import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.AuthReqBody;
 import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.packets.AuthReqBody;
+import com.talent.aio.examples.im.common.packets.DeviceType;
 import com.talent.aio.examples.im.common.utils.Md5;
 
 
@@ -52,20 +53,13 @@ public class AuthHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-		
-		
-		String bodyStr = null;
-		if (packet.getBody() != null)
+		if (packet.getBody() == null)
 		{
-			bodyStr = new String(packet.getBody(), ImPacket.CHARSET);
+			throw new Exception("body is null");
 		}
 		
-		if (log.isInfoEnabled())
-		{
-			log.info("{}收到鉴权包:{}", channelContext.toString(), bodyStr);
-		}
 		
-		AuthReqBody authReqBody = Json.toBean(bodyStr, AuthReqBody.class);
+		AuthReqBody authReqBody = AuthReqBody.parseFrom(packet.getBody());
 		String token = authReqBody.getToken();
 		String deviceId = authReqBody.getDeviceId();
 		String deviceInfo = authReqBody.getDeviceInfo();
@@ -111,7 +105,7 @@ public class AuthHandler implements ImBsAioHandlerIntf
 			return null;
 		}
 
-		Byte type = authReqBody.getDeviceType();
+		DeviceType deviceType = authReqBody.getDeviceType();
 
 		ImPacket imRespPacket = new ImPacket();
 		imRespPacket.setCommand(Command.AUTH_RESP);

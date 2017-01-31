@@ -9,12 +9,9 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.examples.im.common.packets.JoinGroupResult;
 import com.talent.aio.examples.im.common.packets.JoinReqBody;
-import com.talent.aio.examples.im.common.packets.JoinReqBody.Builder;
 import com.talent.aio.examples.im.common.packets.JoinRespBody;
-import com.talent.aio.examples.im.common.vo.JoinGroupResultVo;
 
 /**
  * 手机端进入房间
@@ -69,7 +66,7 @@ public class JoinHandler implements ImBsAioHandlerIntf
 		com.talent.aio.common.Aio.bindGroup(channelContext, group);
 
 		
-		JoinGroupResult joinGroupResult = JoinGroupResult.newBuilder().setCode(JoinGroupResultVo.Code.OK).build();
+		JoinGroupResult joinGroupResult = JoinGroupResult.JOIN_GROUP_RESULT_OK;
 		JoinRespBody joinRespBody = JoinRespBody.newBuilder().setTime(SystemTimer.currentTimeMillis()).setResult(joinGroupResult).setGroup(group).build();
 		byte[] body = joinRespBody.toByteArray();
 		
