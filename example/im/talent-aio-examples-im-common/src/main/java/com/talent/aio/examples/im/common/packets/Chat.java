@@ -35,11 +35,6 @@ public final class Chat {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_com_talent_aio_examples_im_common_packets_JoinReqBody_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_com_talent_aio_examples_im_common_packets_JoinGroupResult_descriptor;
-  static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_com_talent_aio_examples_im_common_packets_JoinGroupResult_fieldAccessorTable;
-  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_com_talent_aio_examples_im_common_packets_JoinRespBody_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -72,20 +67,26 @@ public final class Chat {
       "\003cid\030\005 \001(\t\022\022\n\nappVersion\030\006 \001(\t\022\022\n\ndevice" +
       "Info\030\007 \001(\t\022\013\n\003seq\030\010 \001(\003\022\014\n\004sign\030\t \001(\t\"\034\n" +
       "\014AuthRespBody\022\014\n\004time\030\001 \001(\003\"*\n\013JoinReqBo" +
-      "dy\022\014\n\004time\030\001 \001(\003\022\r\n\005group\030\002 \001(\t\",\n\017JoinG",
-      "roupResult\022\014\n\004code\030\001 \001(\005\022\013\n\003msg\030\002 \001(\t\"w\n" +
-      "\014JoinRespBody\022\014\n\004time\030\001 \001(\003\022J\n\006result\030\002 " +
-      "\001(\0132:.com.talent.aio.examples.im.common." +
-      "packets.JoinGroupResult\022\r\n\005group\030  \001(\t\"d" +
-      "\n\013ChatReqBody\022\014\n\004time\030\001 \001(\003\022\014\n\004type\030\002 \001(" +
-      "\005\022\014\n\004text\030\003 \001(\t\022\r\n\005group\030\004 \001(\t\022\014\n\004toId\030\005" +
-      " \001(\005\022\016\n\006toNick\030\006 \001(\t\"\207\001\n\014ChatRespBody\022\014\n" +
-      "\004time\030\001 \001(\003\022\014\n\004type\030\002 \001(\005\022\014\n\004text\030\003 \001(\t\022" +
-      "\016\n\006fromId\030\004 \001(\005\022\020\n\010fromNick\030\005 \001(\t\022\014\n\004toI" +
-      "d\030\006 \001(\005\022\016\n\006toNick\030\007 \001(\t\022\r\n\005group\030\010 \001(\t*6",
-      "\n\nDeviceType\022\n\n\006UNKNOW\020\000\022\006\n\002PC\020\001\022\013\n\007ANDR" +
-      "OID\020\002\022\007\n\003IOS\020\003B-\n)com.talent.aio.example" +
-      "s.im.common.packetsP\001b\006proto3"
+      "dy\022\014\n\004time\030\001 \001(\003\022\r\n\005group\030\002 \001(\t\"w\n\014JoinR",
+      "espBody\022\014\n\004time\030\001 \001(\003\022J\n\006result\030\002 \001(\0162:." +
+      "com.talent.aio.examples.im.common.packet" +
+      "s.JoinGroupResult\022\r\n\005group\030\003 \001(\t\"d\n\013Chat" +
+      "ReqBody\022\014\n\004time\030\001 \001(\003\022\014\n\004type\030\002 \001(\005\022\014\n\004t" +
+      "ext\030\003 \001(\t\022\r\n\005group\030\004 \001(\t\022\014\n\004toId\030\005 \001(\005\022\016" +
+      "\n\006toNick\030\006 \001(\t\"\207\001\n\014ChatRespBody\022\014\n\004time\030" +
+      "\001 \001(\003\022\014\n\004type\030\002 \001(\005\022\014\n\004text\030\003 \001(\t\022\016\n\006fro" +
+      "mId\030\004 \001(\005\022\020\n\010fromNick\030\005 \001(\t\022\014\n\004toId\030\006 \001(" +
+      "\005\022\016\n\006toNick\030\007 \001(\t\022\r\n\005group\030\010 \001(\t*f\n\nDevi" +
+      "ceType\022\026\n\022DEVICE_TYPE_UNKNOW\020\000\022\022\n\016DEVICE",
+      "_TYPE_PC\020\001\022\027\n\023DEVICE_TYPE_ANDROID\020\002\022\023\n\017D" +
+      "EVICE_TYPE_IOS\020\003*\320\001\n\017JoinGroupResult\022\034\n\030" +
+      "JOIN_GROUP_RESULT_UNKNOW\020\000\022\030\n\024JOIN_GROUP" +
+      "_RESULT_OK\020\001\022\037\n\033JOIN_GROUP_RESULT_NOT_EX" +
+      "IST\020\002\022 \n\034JOIN_GROUP_RESULT_GROUP_FULL\020\003\022" +
+      "!\n\035JOIN_GROUP_RESULT_IN_BACKLIST\020\004\022\037\n\033JO" +
+      "IN_GROUP_RESULT_TAKEOUTED\020\005B-\n)com.talen" +
+      "t.aio.examples.im.common.packetsP\001b\006prot" +
+      "o3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -123,26 +124,20 @@ public final class Chat {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_talent_aio_examples_im_common_packets_JoinReqBody_descriptor,
         new java.lang.String[] { "Time", "Group", });
-    internal_static_com_talent_aio_examples_im_common_packets_JoinGroupResult_descriptor =
-      getDescriptor().getMessageTypes().get(4);
-    internal_static_com_talent_aio_examples_im_common_packets_JoinGroupResult_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_com_talent_aio_examples_im_common_packets_JoinGroupResult_descriptor,
-        new java.lang.String[] { "Code", "Msg", });
     internal_static_com_talent_aio_examples_im_common_packets_JoinRespBody_descriptor =
-      getDescriptor().getMessageTypes().get(5);
+      getDescriptor().getMessageTypes().get(4);
     internal_static_com_talent_aio_examples_im_common_packets_JoinRespBody_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_talent_aio_examples_im_common_packets_JoinRespBody_descriptor,
         new java.lang.String[] { "Time", "Result", "Group", });
     internal_static_com_talent_aio_examples_im_common_packets_ChatReqBody_descriptor =
-      getDescriptor().getMessageTypes().get(6);
+      getDescriptor().getMessageTypes().get(5);
     internal_static_com_talent_aio_examples_im_common_packets_ChatReqBody_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_talent_aio_examples_im_common_packets_ChatReqBody_descriptor,
         new java.lang.String[] { "Time", "Type", "Text", "Group", "ToId", "ToNick", });
     internal_static_com_talent_aio_examples_im_common_packets_ChatRespBody_descriptor =
-      getDescriptor().getMessageTypes().get(7);
+      getDescriptor().getMessageTypes().get(6);
     internal_static_com_talent_aio_examples_im_common_packets_ChatRespBody_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_com_talent_aio_examples_im_common_packets_ChatRespBody_descriptor,

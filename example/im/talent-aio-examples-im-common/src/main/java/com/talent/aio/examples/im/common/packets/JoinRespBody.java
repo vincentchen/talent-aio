@@ -21,6 +21,7 @@ public  final class JoinRespBody extends
   }
   private JoinRespBody() {
     time_ = 0L;
+    result_ = 0;
     group_ = "";
   }
 
@@ -54,20 +55,13 @@ public  final class JoinRespBody extends
             time_ = input.readInt64();
             break;
           }
-          case 18: {
-            com.talent.aio.examples.im.common.packets.JoinGroupResult.Builder subBuilder = null;
-            if (result_ != null) {
-              subBuilder = result_.toBuilder();
-            }
-            result_ = input.readMessage(com.talent.aio.examples.im.common.packets.JoinGroupResult.parser(), extensionRegistry);
-            if (subBuilder != null) {
-              subBuilder.mergeFrom(result_);
-              result_ = subBuilder.buildPartial();
-            }
+          case 16: {
+            int rawValue = input.readEnum();
 
+            result_ = rawValue;
             break;
           }
-          case 258: {
+          case 26: {
             java.lang.String s = input.readStringRequireUtf8();
 
             group_ = s;
@@ -106,30 +100,25 @@ public  final class JoinRespBody extends
   }
 
   public static final int RESULT_FIELD_NUMBER = 2;
-  private com.talent.aio.examples.im.common.packets.JoinGroupResult result_;
+  private int result_;
   /**
    * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
    */
-  public boolean hasResult() {
-    return result_ != null;
+  public int getResultValue() {
+    return result_;
   }
   /**
    * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
    */
   public com.talent.aio.examples.im.common.packets.JoinGroupResult getResult() {
-    return result_ == null ? com.talent.aio.examples.im.common.packets.JoinGroupResult.getDefaultInstance() : result_;
-  }
-  /**
-   * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-   */
-  public com.talent.aio.examples.im.common.packets.JoinGroupResultOrBuilder getResultOrBuilder() {
-    return getResult();
+    com.talent.aio.examples.im.common.packets.JoinGroupResult result = com.talent.aio.examples.im.common.packets.JoinGroupResult.valueOf(result_);
+    return result == null ? com.talent.aio.examples.im.common.packets.JoinGroupResult.UNRECOGNIZED : result;
   }
 
-  public static final int GROUP_FIELD_NUMBER = 32;
+  public static final int GROUP_FIELD_NUMBER = 3;
   private volatile java.lang.Object group_;
   /**
-   * <code>string group = 32;</code>
+   * <code>string group = 3;</code>
    */
   public java.lang.String getGroup() {
     java.lang.Object ref = group_;
@@ -144,7 +133,7 @@ public  final class JoinRespBody extends
     }
   }
   /**
-   * <code>string group = 32;</code>
+   * <code>string group = 3;</code>
    */
   public com.google.protobuf.ByteString
       getGroupBytes() {
@@ -175,11 +164,11 @@ public  final class JoinRespBody extends
     if (time_ != 0L) {
       output.writeInt64(1, time_);
     }
-    if (result_ != null) {
-      output.writeMessage(2, getResult());
+    if (result_ != com.talent.aio.examples.im.common.packets.JoinGroupResult.JOIN_GROUP_RESULT_UNKNOW.getNumber()) {
+      output.writeEnum(2, result_);
     }
     if (!getGroupBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 32, group_);
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 3, group_);
     }
   }
 
@@ -192,12 +181,12 @@ public  final class JoinRespBody extends
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(1, time_);
     }
-    if (result_ != null) {
+    if (result_ != com.talent.aio.examples.im.common.packets.JoinGroupResult.JOIN_GROUP_RESULT_UNKNOW.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(2, getResult());
+        .computeEnumSize(2, result_);
     }
     if (!getGroupBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(32, group_);
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, group_);
     }
     memoizedSize = size;
     return size;
@@ -217,11 +206,7 @@ public  final class JoinRespBody extends
     boolean result = true;
     result = result && (getTime()
         == other.getTime());
-    result = result && (hasResult() == other.hasResult());
-    if (hasResult()) {
-      result = result && getResult()
-          .equals(other.getResult());
-    }
+    result = result && result_ == other.result_;
     result = result && getGroup()
         .equals(other.getGroup());
     return result;
@@ -237,10 +222,8 @@ public  final class JoinRespBody extends
     hash = (37 * hash) + TIME_FIELD_NUMBER;
     hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
         getTime());
-    if (hasResult()) {
-      hash = (37 * hash) + RESULT_FIELD_NUMBER;
-      hash = (53 * hash) + getResult().hashCode();
-    }
+    hash = (37 * hash) + RESULT_FIELD_NUMBER;
+    hash = (53 * hash) + result_;
     hash = (37 * hash) + GROUP_FIELD_NUMBER;
     hash = (53 * hash) + getGroup().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
@@ -368,12 +351,8 @@ public  final class JoinRespBody extends
       super.clear();
       time_ = 0L;
 
-      if (resultBuilder_ == null) {
-        result_ = null;
-      } else {
-        result_ = null;
-        resultBuilder_ = null;
-      }
+      result_ = 0;
+
       group_ = "";
 
       return this;
@@ -399,11 +378,7 @@ public  final class JoinRespBody extends
     public com.talent.aio.examples.im.common.packets.JoinRespBody buildPartial() {
       com.talent.aio.examples.im.common.packets.JoinRespBody result = new com.talent.aio.examples.im.common.packets.JoinRespBody(this);
       result.time_ = time_;
-      if (resultBuilder_ == null) {
-        result.result_ = result_;
-      } else {
-        result.result_ = resultBuilder_.build();
-      }
+      result.result_ = result_;
       result.group_ = group_;
       onBuilt();
       return result;
@@ -449,8 +424,8 @@ public  final class JoinRespBody extends
       if (other.getTime() != 0L) {
         setTime(other.getTime());
       }
-      if (other.hasResult()) {
-        mergeResult(other.getResult());
+      if (other.result_ != 0) {
+        setResultValue(other.getResultValue());
       }
       if (!other.getGroup().isEmpty()) {
         group_ = other.group_;
@@ -508,126 +483,53 @@ public  final class JoinRespBody extends
       return this;
     }
 
-    private com.talent.aio.examples.im.common.packets.JoinGroupResult result_ = null;
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.talent.aio.examples.im.common.packets.JoinGroupResult, com.talent.aio.examples.im.common.packets.JoinGroupResult.Builder, com.talent.aio.examples.im.common.packets.JoinGroupResultOrBuilder> resultBuilder_;
+    private int result_ = 0;
     /**
      * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
      */
-    public boolean hasResult() {
-      return resultBuilder_ != null || result_ != null;
+    public int getResultValue() {
+      return result_;
+    }
+    /**
+     * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
+     */
+    public Builder setResultValue(int value) {
+      result_ = value;
+      onChanged();
+      return this;
     }
     /**
      * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
      */
     public com.talent.aio.examples.im.common.packets.JoinGroupResult getResult() {
-      if (resultBuilder_ == null) {
-        return result_ == null ? com.talent.aio.examples.im.common.packets.JoinGroupResult.getDefaultInstance() : result_;
-      } else {
-        return resultBuilder_.getMessage();
-      }
+      com.talent.aio.examples.im.common.packets.JoinGroupResult result = com.talent.aio.examples.im.common.packets.JoinGroupResult.valueOf(result_);
+      return result == null ? com.talent.aio.examples.im.common.packets.JoinGroupResult.UNRECOGNIZED : result;
     }
     /**
      * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
      */
     public Builder setResult(com.talent.aio.examples.im.common.packets.JoinGroupResult value) {
-      if (resultBuilder_ == null) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        result_ = value;
-        onChanged();
-      } else {
-        resultBuilder_.setMessage(value);
+      if (value == null) {
+        throw new NullPointerException();
       }
-
-      return this;
-    }
-    /**
-     * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-     */
-    public Builder setResult(
-        com.talent.aio.examples.im.common.packets.JoinGroupResult.Builder builderForValue) {
-      if (resultBuilder_ == null) {
-        result_ = builderForValue.build();
-        onChanged();
-      } else {
-        resultBuilder_.setMessage(builderForValue.build());
-      }
-
-      return this;
-    }
-    /**
-     * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-     */
-    public Builder mergeResult(com.talent.aio.examples.im.common.packets.JoinGroupResult value) {
-      if (resultBuilder_ == null) {
-        if (result_ != null) {
-          result_ =
-            com.talent.aio.examples.im.common.packets.JoinGroupResult.newBuilder(result_).mergeFrom(value).buildPartial();
-        } else {
-          result_ = value;
-        }
-        onChanged();
-      } else {
-        resultBuilder_.mergeFrom(value);
-      }
-
+      
+      result_ = value.getNumber();
+      onChanged();
       return this;
     }
     /**
      * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
      */
     public Builder clearResult() {
-      if (resultBuilder_ == null) {
-        result_ = null;
-        onChanged();
-      } else {
-        result_ = null;
-        resultBuilder_ = null;
-      }
-
-      return this;
-    }
-    /**
-     * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-     */
-    public com.talent.aio.examples.im.common.packets.JoinGroupResult.Builder getResultBuilder() {
       
+      result_ = 0;
       onChanged();
-      return getResultFieldBuilder().getBuilder();
-    }
-    /**
-     * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-     */
-    public com.talent.aio.examples.im.common.packets.JoinGroupResultOrBuilder getResultOrBuilder() {
-      if (resultBuilder_ != null) {
-        return resultBuilder_.getMessageOrBuilder();
-      } else {
-        return result_ == null ?
-            com.talent.aio.examples.im.common.packets.JoinGroupResult.getDefaultInstance() : result_;
-      }
-    }
-    /**
-     * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-     */
-    private com.google.protobuf.SingleFieldBuilderV3<
-        com.talent.aio.examples.im.common.packets.JoinGroupResult, com.talent.aio.examples.im.common.packets.JoinGroupResult.Builder, com.talent.aio.examples.im.common.packets.JoinGroupResultOrBuilder> 
-        getResultFieldBuilder() {
-      if (resultBuilder_ == null) {
-        resultBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-            com.talent.aio.examples.im.common.packets.JoinGroupResult, com.talent.aio.examples.im.common.packets.JoinGroupResult.Builder, com.talent.aio.examples.im.common.packets.JoinGroupResultOrBuilder>(
-                getResult(),
-                getParentForChildren(),
-                isClean());
-        result_ = null;
-      }
-      return resultBuilder_;
+      return this;
     }
 
     private java.lang.Object group_ = "";
     /**
-     * <code>string group = 32;</code>
+     * <code>string group = 3;</code>
      */
     public java.lang.String getGroup() {
       java.lang.Object ref = group_;
@@ -642,7 +544,7 @@ public  final class JoinRespBody extends
       }
     }
     /**
-     * <code>string group = 32;</code>
+     * <code>string group = 3;</code>
      */
     public com.google.protobuf.ByteString
         getGroupBytes() {
@@ -658,7 +560,7 @@ public  final class JoinRespBody extends
       }
     }
     /**
-     * <code>string group = 32;</code>
+     * <code>string group = 3;</code>
      */
     public Builder setGroup(
         java.lang.String value) {
@@ -671,7 +573,7 @@ public  final class JoinRespBody extends
       return this;
     }
     /**
-     * <code>string group = 32;</code>
+     * <code>string group = 3;</code>
      */
     public Builder clearGroup() {
       
@@ -680,7 +582,7 @@ public  final class JoinRespBody extends
       return this;
     }
     /**
-     * <code>string group = 32;</code>
+     * <code>string group = 3;</code>
      */
     public Builder setGroupBytes(
         com.google.protobuf.ByteString value) {

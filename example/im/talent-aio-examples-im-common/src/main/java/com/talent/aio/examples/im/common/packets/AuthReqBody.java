@@ -442,7 +442,7 @@ public  final class AuthReqBody extends
     if (!getTokenBytes().isEmpty()) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, token_);
     }
-    if (deviceType_ != com.talent.aio.examples.im.common.packets.DeviceType.UNKNOW.getNumber()) {
+    if (deviceType_ != com.talent.aio.examples.im.common.packets.DeviceType.DEVICE_TYPE_UNKNOW.getNumber()) {
       output.writeEnum(4, deviceType_);
     }
     if (!getCidBytes().isEmpty()) {
@@ -477,7 +477,7 @@ public  final class AuthReqBody extends
     if (!getTokenBytes().isEmpty()) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, token_);
     }
-    if (deviceType_ != com.talent.aio.examples.im.common.packets.DeviceType.UNKNOW.getNumber()) {
+    if (deviceType_ != com.talent.aio.examples.im.common.packets.DeviceType.DEVICE_TYPE_UNKNOW.getNumber()) {
       size += com.google.protobuf.CodedOutputStream
         .computeEnumSize(4, deviceType_);
     }

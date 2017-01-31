@@ -9,40 +9,40 @@ package com.talent.aio.examples.im.common.packets;
 public enum DeviceType
     implements com.google.protobuf.ProtocolMessageEnum {
   /**
-   * <code>UNKNOW = 0;</code>
+   * <code>DEVICE_TYPE_UNKNOW = 0;</code>
    */
-  UNKNOW(0),
+  DEVICE_TYPE_UNKNOW(0),
   /**
-   * <code>PC = 1;</code>
+   * <code>DEVICE_TYPE_PC = 1;</code>
    */
-  PC(1),
+  DEVICE_TYPE_PC(1),
   /**
-   * <code>ANDROID = 2;</code>
+   * <code>DEVICE_TYPE_ANDROID = 2;</code>
    */
-  ANDROID(2),
+  DEVICE_TYPE_ANDROID(2),
   /**
-   * <code>IOS = 3;</code>
+   * <code>DEVICE_TYPE_IOS = 3;</code>
    */
-  IOS(3),
+  DEVICE_TYPE_IOS(3),
   UNRECOGNIZED(-1),
   ;
 
   /**
-   * <code>UNKNOW = 0;</code>
+   * <code>DEVICE_TYPE_UNKNOW = 0;</code>
    */
-  public static final int UNKNOW_VALUE = 0;
+  public static final int DEVICE_TYPE_UNKNOW_VALUE = 0;
   /**
-   * <code>PC = 1;</code>
+   * <code>DEVICE_TYPE_PC = 1;</code>
    */
-  public static final int PC_VALUE = 1;
+  public static final int DEVICE_TYPE_PC_VALUE = 1;
   /**
-   * <code>ANDROID = 2;</code>
+   * <code>DEVICE_TYPE_ANDROID = 2;</code>
    */
-  public static final int ANDROID_VALUE = 2;
+  public static final int DEVICE_TYPE_ANDROID_VALUE = 2;
   /**
-   * <code>IOS = 3;</code>
+   * <code>DEVICE_TYPE_IOS = 3;</code>
    */
-  public static final int IOS_VALUE = 3;
+  public static final int DEVICE_TYPE_IOS_VALUE = 3;
 
 
   public final int getNumber() {
@@ -63,10 +63,10 @@ public enum DeviceType
 
   public static DeviceType forNumber(int value) {
     switch (value) {
-      case 0: return UNKNOW;
-      case 1: return PC;
-      case 2: return ANDROID;
-      case 3: return IOS;
+      case 0: return DEVICE_TYPE_UNKNOW;
+      case 1: return DEVICE_TYPE_PC;
+      case 2: return DEVICE_TYPE_ANDROID;
+      case 3: return DEVICE_TYPE_IOS;
       default: return null;
     }
   }

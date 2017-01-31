@@ -15,22 +15,18 @@ public interface JoinRespBodyOrBuilder extends
   /**
    * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
    */
-  boolean hasResult();
+  int getResultValue();
   /**
    * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
    */
   com.talent.aio.examples.im.common.packets.JoinGroupResult getResult();
-  /**
-   * <code>.com.talent.aio.examples.im.common.packets.JoinGroupResult result = 2;</code>
-   */
-  com.talent.aio.examples.im.common.packets.JoinGroupResultOrBuilder getResultOrBuilder();
 
   /**
-   * <code>string group = 32;</code>
+   * <code>string group = 3;</code>
    */
   java.lang.String getGroup();
   /**
-   * <code>string group = 32;</code>
+   * <code>string group = 3;</code>
    */
   com.google.protobuf.ByteString
       getGroupBytes();

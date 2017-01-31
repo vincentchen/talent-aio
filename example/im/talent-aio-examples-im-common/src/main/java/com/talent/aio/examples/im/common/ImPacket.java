@@ -1,14 +1,3 @@
-/**
- * **************************************************************************
- *
- * @说明: 
- * @项目名称: talent-aio-examples-server
- *
- * @author: tanyaowu 
- * @创建时间: 2016年11月18日 上午9:15:03
- *
- * **************************************************************************
- */
 package com.talent.aio.examples.im.common;
 
 import org.slf4j.Logger;
@@ -74,20 +63,20 @@ public class ImPacket extends Packet
 	 */
 	public static final byte FIRST_BYTE_MASK_VERSION = 0B00001111;
 
-	/**
-	 * 是否压缩消息体
-	 */
-	private boolean isCompress = false;
+//	/**
+//	 * 是否压缩消息体
+//	 */
+//	private boolean isCompress = false;
 
-	/**
-	 * 是否带有同步序列号
-	 */
-	private boolean hasSynSeq = false;
+//	/**
+//	 * 是否带有同步序列号
+//	 */
+//	private boolean hasSynSeq = false;
 
-	/**
-	 * 是否用4字节来表示消息体的长度，false:2字节，true:4字节
-	 */
-	private boolean is4ByteLength = false;
+//	/**
+//	 * 是否用4字节来表示消息体的长度，false:2字节，true:4字节
+//	 */
+//	private boolean is4ByteLength = false;
 
 	public static boolean decodeCompress(byte version)
 	{
@@ -110,9 +99,9 @@ public class ImPacket extends Packet
 		return (FIRST_BYTE_MASK_HAS_SYNSEQ & firstByte) != 0;
 	}
 
-	public static byte encodeHasSynSeq(byte bs, boolean isCompress)
+	public static byte encodeHasSynSeq(byte bs, boolean hasSynSeq)
 	{
-		if (isCompress)
+		if (hasSynSeq)
 		{
 			return (byte) (bs | FIRST_BYTE_MASK_HAS_SYNSEQ);
 		} else
@@ -142,14 +131,22 @@ public class ImPacket extends Packet
 		return (byte) (FIRST_BYTE_MASK_VERSION & version);
 	}
 
-	public int calcHeaderLength()
+	/**
+	 * 计算消息头占用了多少字节数
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月31日 下午5:32:26
+	 *
+	 */
+	public int calcHeaderLength(boolean is4byteLength)
 	{
 		int ret = LEAST_HEADER_LENGHT;
-		if (this.is4ByteLength)
+		if (is4byteLength)
 		{
 			ret += 2;
 		}
-		if (this.hasSynSeq)
+		if (this.getSynSeq() > 0)
 		{
 			ret += 4;
 		}
@@ -280,52 +277,52 @@ public class ImPacket extends Packet
 		this.body = body;
 	}
 
-	/**
-	 * @return the isCompress
-	 */
-	public boolean isCompress()
-	{
-		return isCompress;
-	}
+//	/**
+//	 * @return the isCompress
+//	 */
+//	public boolean isCompress()
+//	{
+//		return isCompress;
+//	}
+//
+//	/**
+//	 * @param isCompress the isCompress to set
+//	 */
+//	public void setCompress(boolean isCompress)
+//	{
+//		this.isCompress = isCompress;
+//	}
 
-	/**
-	 * @param isCompress the isCompress to set
-	 */
-	public void setCompress(boolean isCompress)
-	{
-		this.isCompress = isCompress;
-	}
+//	/**
+//	 * @return the hasSynSeq
+//	 */
+//	public boolean isHasSynSeq()
+//	{
+//		return hasSynSeq;
+//	}
+//
+//	/**
+//	 * @param hasSynSeq the hasSynSeq to set
+//	 */
+//	public void setHasSynSeq(boolean hasSynSeq)
+//	{
+//		this.hasSynSeq = hasSynSeq;
+//	}
 
-	/**
-	 * @return the hasSynSeq
-	 */
-	public boolean isHasSynSeq()
-	{
-		return hasSynSeq;
-	}
-
-	/**
-	 * @param hasSynSeq the hasSynSeq to set
-	 */
-	public void setHasSynSeq(boolean hasSynSeq)
-	{
-		this.hasSynSeq = hasSynSeq;
-	}
-
-	/**
-	 * @return the is4byteLength
-	 */
-	public boolean isIs4ByteLength()
-	{
-		return is4ByteLength;
-	}
-
-	/**
-	 * @param is4ByteLength the is4byteLength to set
-	 */
-	public void setIs4byteLength(boolean is4ByteLength)
-	{
-		this.is4ByteLength = is4ByteLength;
-	}
+//	/**
+//	 * @return the is4byteLength
+//	 */
+//	public boolean isIs4ByteLength()
+//	{
+//		return is4ByteLength;
+//	}
+//
+//	/**
+//	 * @param is4ByteLength the is4byteLength to set
+//	 */
+//	public void setIs4byteLength(boolean is4ByteLength)
+//	{
+//		this.is4ByteLength = is4ByteLength;
+//	}
 
 }
