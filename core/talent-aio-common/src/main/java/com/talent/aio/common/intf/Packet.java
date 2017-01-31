@@ -30,7 +30,7 @@ public class Packet
 	/**
 	 * 同步发送时，需要的同步序列号
 	 */
-	private Integer synSeq = null;
+	private Integer synSeq = 0;
 //
 //	/**
 //	 * @return the priority
