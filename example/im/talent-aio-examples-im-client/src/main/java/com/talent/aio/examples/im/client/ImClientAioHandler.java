@@ -125,6 +125,8 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 
 		byte[] body = packet.getBody();
 		int bodyLen = 0;
+		boolean isCompress = false;
+		boolean is4ByteLength = false;
 		if (body != null)
 		{
 			bodyLen = body.length;
@@ -140,7 +142,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 						body = gzipedbody;
 						packet.setBody(gzipedbody);
 						bodyLen = gzipedbody.length;
-						packet.setCompress(true);
+						isCompress = true;
 					}
 				} catch (IOException e)
 				{
@@ -150,18 +152,18 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 
 			if (bodyLen > Short.MAX_VALUE)
 			{
-				packet.setIs4byteLength(true);
+				is4ByteLength = true;
 			}
 		}
 
-		int allLen = packet.calcHeaderLength() + bodyLen;
+		int allLen = packet.calcHeaderLength(is4ByteLength) + bodyLen;
 
 		ByteBuffer buffer = ByteBuffer.allocate(allLen);
 		buffer.order(channelContext.getGroupContext().getByteOrder());
 
-		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, packet.isCompress());
-		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.isHasSynSeq());
-		firstbyte = ImPacket.encode4ByteLength(firstbyte, packet.isIs4ByteLength());
+		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, isCompress);
+		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.getSynSeq() > 0);
+		firstbyte = ImPacket.encode4ByteLength(firstbyte, is4ByteLength);
 //		String bstr = Integer.toBinaryString(firstbyte);
 //		log.error("二进制:{}",bstr);
 		
@@ -170,7 +172,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 
 		//GzipUtils
 
-		if (packet.isIs4ByteLength())
+		if (is4ByteLength)
 		{
 			buffer.putInt(bodyLen);
 		} else
@@ -267,9 +269,6 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 			imPacket = new ImPacket();
 			imPacket.setCommand(command);
 			
-			imPacket.setCompress(isCompress);
-			imPacket.setHasSynSeq(hasSynSeq);;
-			imPacket.setIs4byteLength(is4ByteLength);
 			
 			
 			if (seq != 0)

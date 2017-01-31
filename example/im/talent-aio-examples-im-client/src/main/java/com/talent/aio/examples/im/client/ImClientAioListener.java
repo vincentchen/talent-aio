@@ -22,8 +22,9 @@ import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.bs.AuthReqBody;
 import com.talent.aio.examples.im.common.json.Json;
+import com.talent.aio.examples.im.common.packets.AuthReqBody;
+import com.talent.aio.examples.im.common.packets.DeviceType;
 import com.talent.aio.examples.im.common.utils.Md5;
 
 /**
@@ -155,12 +156,12 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		ImPacket imReqPacket = new ImPacket();
 		imReqPacket.setCommand(Command.AUTH_REQ);
 
-		AuthReqBody authReqBody = new AuthReqBody();
-		authReqBody.setDeviceId(did);
-		authReqBody.setSeq(seq);
-		authReqBody.setDeviceType((byte) 2);
-		authReqBody.setDeviceInfo(info);
-		authReqBody.setToken(token);
+		AuthReqBody.Builder authReqBodyBuilder = com.talent.aio.examples.im.common.packets.AuthReqBody.newBuilder();
+		authReqBodyBuilder.setDeviceId(did);
+		authReqBodyBuilder.setSeq(seq);
+		authReqBodyBuilder.setDeviceType(DeviceType.DEVICE_TYPE_ANDROID);
+		authReqBodyBuilder.setDeviceInfo(info);
+		authReqBodyBuilder.setToken(token);
 
 		did = did == null ? "" : did;
 		token = token == null ? "" : token;
@@ -177,9 +178,10 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 			log.error(e.getLocalizedMessage(), e);
 			throw new RuntimeException(e);
 		}
-		authReqBody.setSign(sign);
+		authReqBodyBuilder.setSign(sign);
 
-		imReqPacket.setBody(Json.toJson(authReqBody).getBytes(ImPacket.CHARSET));
+		AuthReqBody authReqBody = authReqBodyBuilder.build();
+		imReqPacket.setBody(authReqBody.toByteArray());
 		return imReqPacket;
 	}
 	

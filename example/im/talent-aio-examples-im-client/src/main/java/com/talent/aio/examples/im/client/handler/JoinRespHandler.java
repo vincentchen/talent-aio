@@ -11,10 +11,8 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
-import com.talent.aio.examples.im.common.packets.JoinReqBody;
+import com.talent.aio.examples.im.common.packets.JoinGroupResult;
 import com.talent.aio.examples.im.common.packets.JoinRespBody;
-import com.talent.aio.examples.im.common.vo.JoinGroupResultVo;
 
 /**
  * 
@@ -108,7 +106,7 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 		JoinRespBody respBody = JoinRespBody.parseFrom(packet.getBody());
 		
 		
-		if (Objects.equals(JoinGroupResultVo.Code.OK, respBody.getResult().getCode()))
+		if (Objects.equals(JoinGroupResult.JOIN_GROUP_RESULT_OK, respBody.getResult()))
 		{
 			
 			String group = respBody.getGroup();
