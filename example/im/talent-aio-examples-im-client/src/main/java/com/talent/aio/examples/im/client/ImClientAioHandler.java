@@ -11,6 +11,7 @@
  */
 package com.talent.aio.examples.im.client;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.talent.aio.examples.im.client.handler.JoinRespHandler;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
+import com.talent.aio.examples.im.common.utils.GzipUtils;
 
 /**
  * 
@@ -96,7 +98,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		} else
 		{
 			CommandStat.getCount(command).handled.incrementAndGet();
-			log.warn("找不到对应的命令码[{}]处理类", command.toString());
+			log.warn("找不到对应的命令码[{}]处理类", command);
 			return null;
 		}
 
@@ -126,6 +128,30 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		if (body != null)
 		{
 			bodyLen = body.length;
+
+			if (bodyLen > 200)
+			{
+				try
+				{
+					byte[] gzipedbody = GzipUtils.gZip(body);
+					if (gzipedbody.length < body.length)
+					{
+						log.error("压缩前:{}, 压缩后:{}", body.length, gzipedbody.length);
+						body = gzipedbody;
+						packet.setBody(gzipedbody);
+						bodyLen = gzipedbody.length;
+						packet.setCompress(true);
+					}
+				} catch (IOException e)
+				{
+					log.error(e.getMessage(), e);
+				}
+			}
+
+			if (bodyLen > Short.MAX_VALUE)
+			{
+				packet.setIs4byteLength(true);
+			}
 		}
 
 		int allLen = packet.calcHeaderLength() + bodyLen;
@@ -135,22 +161,33 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 
 		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, packet.isCompress());
 		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.isHasSynSeq());
+		firstbyte = ImPacket.encode4ByteLength(firstbyte, packet.isIs4ByteLength());
+//		String bstr = Integer.toBinaryString(firstbyte);
+//		log.error("二进制:{}",bstr);
+		
 		buffer.put(firstbyte);
 		buffer.put(packet.getCommand().getCode());
-		buffer.putInt(bodyLen);
 
-		
+		//GzipUtils
+
+		if (packet.isIs4ByteLength())
+		{
+			buffer.putInt(bodyLen);
+		} else
+		{
+			buffer.putShort((short) bodyLen);
+		}
 
 		if (packet.getSynSeq() != null && packet.getSynSeq() > 0)
 		{
 			buffer.putInt(packet.getSynSeq());
-		} 
-//		else
-//		{
-//			buffer.putInt(0);
-//		}
-//
-//		buffer.putInt(0);
+		}
+		//		else
+		//		{
+		//			buffer.putInt(0);
+		//		}
+		//
+		//		buffer.putInt(0);
 
 		if (body != null)
 		{
@@ -176,13 +213,18 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 
 		int headerLength = ImPacket.LEAST_HEADER_LENGHT;
 		ImPacket imPacket = null;
-		byte version = buffer.get();
-		version = ImPacket.decodeVersion(version);
-		boolean isCompress = ImPacket.decodeCompress(version);
-		boolean hasSynSeq = ImPacket.decodeHasSynSeq(version);
+		byte firstbyte = buffer.get();
+		byte version = ImPacket.decodeVersion(firstbyte);
+		boolean isCompress = ImPacket.decodeCompress(firstbyte);
+		boolean hasSynSeq = ImPacket.decodeHasSynSeq(firstbyte);
+		boolean is4ByteLength = ImPacket.decode4ByteLength(firstbyte);
 		if (hasSynSeq)
 		{
 			headerLength += 4;
+		}
+		if (is4ByteLength)
+		{
+			headerLength += 2;
 		}
 		if (readableLength < headerLength)
 		{
@@ -190,14 +232,19 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		}
 		Byte code = buffer.get();
 		Command command = Command.valueOf(code);
-		int bodyLength = buffer.getInt();
+		int bodyLength = 0;
+		if (is4ByteLength)
+		{
+			bodyLength = buffer.getInt();
+		} else
+		{
+			bodyLength = buffer.getShort();
+		}
 
 		if (bodyLength > ImPacket.MAX_LENGTH_OF_BODY || bodyLength < 0)
 		{
 			throw new AioDecodeException("bodyLength [" + bodyLength + "] is not right, remote:" + channelContext.getClientNode());
 		}
-
-		
 
 		int seq = 0;
 		if (hasSynSeq)
@@ -205,8 +252,8 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 			seq = buffer.getInt();
 		}
 
-//		@SuppressWarnings("unused")
-//		int reserve = buffer.getInt();//保留字段
+		//		@SuppressWarnings("unused")
+		//		int reserve = buffer.getInt();//保留字段
 
 		//		PacketMeta<ImPacket> packetMeta = new PacketMeta<>();
 		int neededLength = headerLength + bodyLength;
@@ -218,8 +265,13 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		} else
 		{
 			imPacket = new ImPacket();
-			imPacket.setBodyLen(bodyLength);
 			imPacket.setCommand(command);
+			
+			imPacket.setCompress(isCompress);
+			imPacket.setHasSynSeq(hasSynSeq);;
+			imPacket.setIs4byteLength(is4ByteLength);
+			
+			
 			if (seq != 0)
 			{
 				imPacket.setSynSeq(seq);
@@ -229,7 +281,22 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 			{
 				byte[] dst = new byte[bodyLength];
 				buffer.get(dst);
-				imPacket.setBody(dst);
+				if (isCompress)
+				{
+					try
+					{
+						byte[] unGzippedBytes = GzipUtils.unGZip(dst);
+						imPacket.setBody(unGzippedBytes);
+						imPacket.setBodyLen(unGzippedBytes.length);
+					} catch (IOException e)
+					{
+						throw new AioDecodeException(e);
+					}
+				} else
+				{
+					imPacket.setBody(dst);
+					imPacket.setBodyLen(dst.length);
+				}
 			}
 
 			//			packetMeta.setPacket(imPacket);
