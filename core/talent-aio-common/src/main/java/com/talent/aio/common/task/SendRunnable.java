@@ -144,7 +144,6 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 
 		if (queueSize > 1)
 		{
-
 			ByteBuffer[] byteBuffers = new ByteBuffer[queueSize];
 			int allBytebufferCapacity = 0;
 
@@ -153,7 +152,6 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			{
 				if ((packet = queue.poll()) != null)
 				{
-
 					ByteBuffer byteBuffer = aioHandler.encode(packet, channelContext);
 					allBytebufferCapacity += byteBuffer.limit();
 					packetCount++;
@@ -184,7 +182,6 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 					allByteBuffer.put(byteBuffer);
 				}
 			}
-
 			this.sendByteBuffer(allByteBuffer, packetCount);
 
 		} else
