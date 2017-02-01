@@ -96,8 +96,6 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 	@Override
 	public Object handler(ImPacket packet, com.talent.aio.common.ChannelContext<Object, ImPacket, Object> channelContext) throws Exception
 	{
-
-		String bodyStr = null;
 		if (packet.getBody() == null)
 		{
 			throw new Exception("body is null");
@@ -113,8 +111,8 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 //			channelContext.getGroupContext().getGroups().bind(group, channelContext);
 			com.talent.aio.common.Aio.bindGroup(channelContext, group);
 			//			log.info("join group {}", group);
-			String xx = ClientNodes.getKey(channelContext) + "进入组:" + group;
-			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
+//			String xx = ClientNodes.getKey(channelContext) + "进入组:" + group;
+//			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
 			//顺利进入组
 		} else
 		{

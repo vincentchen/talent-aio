@@ -17,15 +17,12 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.examples.im.common.packets.AuthReqBody;
 import com.talent.aio.examples.im.common.packets.DeviceType;
-import com.talent.aio.examples.im.common.utils.Md5;
 
 /**
  * 
@@ -63,38 +60,10 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	{
 	}
 
-	/** 
-	 * @see com.talent.aio.examples.im.common.ImAioListener#onBeforeClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
-	 * 
-	 * @param channelContext
-	 * @param throwable
-	 * @param remark
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月16日 下午5:52:24
-	 * 
-	 */
-	@SuppressWarnings("unchecked")
+	
 	@Override
-	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
-	{
-		log.info("即将关闭连接:{}", channelContext);
-
-		JFrameMain jFrameMain = JFrameMain.getInstance();
-		synchronized (jFrameMain)
-		{
-			try
-			{
-				jFrameMain.getListModel().removeElement(ClientNodes.getKey(channelContext));
-				jFrameMain.getClients().setModel(jFrameMain.getListModel());
-			} catch (Exception e)
-			{
-
-			}
-
-//			jFrameMain.updateClientCount();
-		}
-
-	}
+	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
+	{}
 
 	/** 
 	 * @see com.talent.aio.client.intf.ClientAioListener#onAfterReconnected(com.talent.aio.common.ChannelContext)
@@ -106,8 +75,24 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> newChannelContext, ChannelContext<Object, ImPacket, Object> initChannelContext)
+	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext)
 	{
+		JFrameMain jFrameMain = JFrameMain.getInstance();
+		synchronized (jFrameMain)
+		{
+			try
+			{
+				jFrameMain.getClients().updateUI();
+//				jFrameMain.getListModel().removeElement(initChannelContext);
+				//因为
+				//jFrameMain.getListModel().addElement(newChannelContext);
+			} catch (Exception e)
+			{
+
+			}
+
+//			jFrameMain.updateClientCount();
+		}
 		return true;
 	}
 
@@ -121,8 +106,24 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext)
+	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isReconnect)
 	{
+//		JFrameMain jFrameMain = JFrameMain.getInstance();
+//		synchronized (jFrameMain)
+//		{
+//			try
+//			{
+//				jFrameMain.getListModel().addElement(channelContext);
+////				jFrameMain.getClients().setModel(jFrameMain.getListModel());
+//			} catch (Exception e)
+//			{
+//
+//			}
+//
+////			jFrameMain.updateClientCount();
+//		}
+		
+		
 		String did = "did";
 		String token = "token";
 		String info = "info";
@@ -169,16 +170,16 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		seq = seq == null ? 0 : seq;
 		
 		String data = token + did + info + seq + "fdsfeofa";
-		String sign = null;
-		try
-		{
-			sign = Md5.getMD5(data);//DesUtils.encrypt(data, ImClientConfig.getInstance().getString("im.auth.private.key", "fdsfeofa"));
-		} catch (Exception e)
-		{
-			log.error(e.getLocalizedMessage(), e);
-			throw new RuntimeException(e);
-		}
-		authReqBodyBuilder.setSign(sign);
+//		String sign = null;
+//		try
+//		{
+//			sign = Md5.getMD5(data);
+//		} catch (Exception e)
+//		{
+//			log.error(e.getLocalizedMessage(), e);
+//			throw new RuntimeException(e);
+//		}
+//		authReqBodyBuilder.setSign(sign);
 
 		AuthReqBody authReqBody = authReqBodyBuilder.build();
 		imReqPacket.setBody(authReqBody.toByteArray());
@@ -217,6 +218,43 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
+
+	}
+
+	/** 
+	 * @see com.talent.aio.common.intf.AioListener#onAfterClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
+	 * 
+	 * @param channelContext
+	 * @param throwable
+	 * @param remark
+	 * @重写人: tanyaowu
+	 * @重写时间: 2017年2月1日 上午11:02:39
+	 * 
+	 */
+	@Override
+	public void onAfterClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
+	{
+		log.info("已经关闭连接:{}", channelContext);
+
+		JFrameMain jFrameMain = JFrameMain.getInstance();
+		synchronized (jFrameMain)
+		{
+			try
+			{
+				
+				if (isRemove)
+				{
+					jFrameMain.getListModel().removeElement(channelContext);
+				}
+				jFrameMain.getClients().updateUI();
+//				
+			} catch (Exception e)
+			{
+
+			}
+
+//			jFrameMain.updateClientCount();
+		}
 
 	}
 

@@ -5,6 +5,7 @@
  */
 package com.talent.aio.examples.im.client.ui;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -21,15 +22,14 @@ import com.talent.aio.client.ClientGroupStat;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ObjWithReadWriteLock;
-import com.talent.aio.common.maintain.ClientNodes;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.client.ImClientStarter;
 import com.talent.aio.examples.im.client.handler.ChatRespHandler;
+import com.talent.aio.examples.im.client.ui.component.MyRenderer;
 import com.talent.aio.examples.im.client.ui.component.MyTextArea;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.Const.ChatType;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.examples.im.common.packets.ChatReqBody;
 
 /**
@@ -312,13 +312,42 @@ public class JFrameMain extends javax.swing.JFrame
 			int start = 0;//Integer.parseInt(loginnameSufStartField.getText());
 			int end = Integer.parseInt(loginnameSufEndField.getText());
 			//                int count = end - start + 1;
+			
+			clients.setModel(listModel);
+			
+			//#5cb85c OK
+			//#f0ad4e warn
+			Color okColor = new Color(0x5c, 0xb8, 0x5c);
+			Color warnColor = new Color(0xf0, 0xad, 0x4e);
+			clients.setCellRenderer(new MyRenderer(okColor, warnColor)); 
+			
 			for (int i = start; i < end; i++)
 			{
-				ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(null, null);
+				imClientStarter.getClientGroupContext().getGroupExecutor().execute(new Runnable(){
 
-				String key = ClientNodes.getKey(channelContext);
-				listModel.addElement(key);
-				clients.setModel(listModel);
+					@Override
+					public void run()
+					{
+						try
+						{
+							ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(null, null);
+							if (channelContext != null)
+							{
+//								String key = ClientNodes.getKey(channelContext);
+								listModel.addElement(channelContext);
+							}
+						} catch (Exception e)
+						{
+							log.error(e.toString(), e);
+						}
+						
+					}
+					
+				});
+				
+				
+				
+				
 				//				clients.setSelectedValue(key, false);
 
 			}
