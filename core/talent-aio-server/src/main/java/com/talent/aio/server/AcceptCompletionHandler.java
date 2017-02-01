@@ -81,18 +81,18 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, asynchronousSocketChannel);
+			channelContext.setClosed(false);
 			ServerAioListener<Ext, P, R> serverAioListener = serverGroupContext.getServerAioListener();
 			if (serverAioListener != null)
 			{
-				boolean f = serverAioListener.onAfterConnected(channelContext);
+				boolean f = serverAioListener.onAfterConnected(channelContext, false);
 				if (!f)
 				{
 					log.warn("不允许连接:{}", channelContext);
-					Aio.close(channelContext, "不允许连接");
+					Aio.remove(channelContext, "不允许连接");
 					return;
 				}
 			}
-			
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
