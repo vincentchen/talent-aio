@@ -114,20 +114,6 @@ public class DefaultRejectedExecutionHandler<R extends SynRunnableIntf> implemen
 					Runnable r = deque.poll(6, TimeUnit.SECONDS);
 					if (r != null)
 					{
-						//						if (r instanceof SynRunnableIntf)
-						//						{
-						//							synchronized (r)
-						//							{
-						//								SynRunnableIntf synRunnableIntf = ((SynRunnableIntf) r);
-						//								synRunnableIntf.setInSchedule(false);
-						//								synRunnableIntf.setRunning(false);
-						//								executor.execute(r);
-						//							}
-						//						} else
-						//						{
-						//							executor.execute(r);
-						//						}
-
 						executor.execute(r);
 						log.warn("submit a runnable, {} runnables waiting for submit", deque.size());
 					}

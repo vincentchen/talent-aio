@@ -12,6 +12,7 @@ import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.maintain.MaintainUtils;
 import com.talent.aio.common.threadpool.AbstractSynRunnable;
 import com.talent.aio.common.utils.SystemTimer;
 
@@ -47,101 +48,99 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	@Override
 	public void runTask()
 	{
-		closeCount.incrementAndGet();
-		if (t != null)
+		synchronized (this)
 		{
-			log.error("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
-		} else
-		{
-			log.info("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
-		}
+			closeCount.incrementAndGet();
+			if (t != null)
+			{
+				log.error("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
+			} else
+			{
+				log.info("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
+			}
 
-		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-		try
-		{
+			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 			AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
-			if (aioListener != null)
-			{
-				try
-				{
-					groupContext.getAioListener().onBeforeClose(channelContext, t, remark);
-				} catch (Throwable e)
-				{
-					log.error(e.toString(), e);
-				}
-			}
 
-			try
-			{
-				AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
-				if (asynchronousSocketChannel != null)
-				{
-					asynchronousSocketChannel.close();
-				}
-			} catch (Throwable e)
-			{
-				log.error(e.toString());
-			}
-
-			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
-
+			ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
 			if (!isRemove)
 			{
-
-				ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
-
 				if (reconnConf != null && reconnConf.getInterval() > 0)
 				{
 					if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
 					{
-						reconnConf.getQueue().put(channelContext);
+						//需要重连，所以并不删除
+					} else
+					{
+						isRemove = true;
 					}
+				} else
+				{
+					isRemove = true;
 				}
 			}
 
-			//删除集合中的维护信息 start
 			try
 			{
-				groupContext.getConnections().remove(channelContext);
+				if (aioListener != null)
+				{
+					try
+					{
+						groupContext.getAioListener().onBeforeClose(channelContext, t, remark, isRemove);
+					} catch (Throwable e)
+					{
+						log.error(e.toString(), e);
+					}
+				}
+
+				try
+				{
+					AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
+					if (asynchronousSocketChannel != null)
+					{
+						asynchronousSocketChannel.close();
+					}
+				} catch (Throwable e)
+				{
+					log.error(e.toString());
+				}
+
+				channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+
+				if (isRemove)
+				{
+					MaintainUtils.removeFromMaintain(channelContext);
+				}
+
+				channelContext.setClosed(true);
+				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
+				if (aioListener != null)
+				{
+					try
+					{
+						aioListener.onAfterClose(channelContext, t, remark, isRemove);
+					} catch (Throwable e)
+					{
+						log.error(e.toString(), e);
+					}
+				}
 			} catch (Throwable e)
 			{
 				log.error(e.toString(), e);
+			} finally
+			{
+				this.setWaitingExecute(false);
+				if (!isRemove)
+				{
+					try
+					{
+						reconnConf.getQueue().put(channelContext);
+					} catch (InterruptedException e)
+					{
+						log.error(e.toString(), e);
+					}
+				}
 			}
-
-			try
-			{
-				groupContext.getClientNodes().remove(channelContext);
-			} catch (Throwable e)
-			{
-				log.error(e.toString(), e);
-			}
-
-			try
-			{
-				groupContext.getUsers().unbind(channelContext);
-			} catch (Throwable e)
-			{
-				log.error(e.toString(), e);
-			}
-
-			try
-			{
-				groupContext.getGroups().unbind(channelContext);
-			} catch (Throwable e)
-			{
-				log.error(e.toString(), e);
-			}
-
-			channelContext.setClosed(true);
-			channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
-			//删除集合中的维护信息 end
-
-		} catch (Throwable e)
-		{
-			log.error(e.toString(), e);
-		} finally
-		{
-			//				semaphore.release();
 		}
 	}
 

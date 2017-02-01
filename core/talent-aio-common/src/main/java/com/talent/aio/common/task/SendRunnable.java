@@ -202,9 +202,10 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			}
 		}
 
-		if (queue.size() > 0)
-		{
-			runTask();
-		}
+//		if (queue.size() > 0)
+//		{
+////			runTask();
+//			this.getExecutor().execute(this);
+//		}
 	}
 }

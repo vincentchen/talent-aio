@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.maintain.MaintainUtils;
 import com.talent.aio.common.task.CloseRunnable;
 import com.talent.aio.common.task.DecodeRunnable;
 import com.talent.aio.common.task.HandlerRunnable;
@@ -212,8 +213,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 //			sendRunnableHighPrior = new SendRunnable<>(this, groupContext.getSendExecutorHighPrior());
 			sendRunnableNormPrior = new SendRunnable<>(this, groupContext.getSendExecutorNormPrior());
 
-			groupContext.getConnections().add(this);
-			groupContext.getClientNodes().put(this);
+			MaintainUtils.addToMaintain(this);
 		}
 	}
 
