@@ -30,13 +30,12 @@ public interface ClientAioListener <Ext, P extends Packet, R> extends AioListene
 
 	/**
 	 * 重连后触发的方法
-	 * @param newChannelContext
-	 * @param initChannelContext
+	 * @param channelContext
 	 * @return
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年1月11日 下午3:04:17
+	 * @创建时间:　2017年2月1日 下午2:15:58
 	 *
 	 */
-	boolean onAfterReconnected(ChannelContext<Ext, P, R> newChannelContext, ChannelContext<Ext, P, R> initChannelContext);
+	boolean onAfterReconnected(ChannelContext<Ext, P, R> channelContext);
 }
