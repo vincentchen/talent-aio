@@ -13,6 +13,7 @@ package com.talent.aio.examples.im.client.ui.component;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
@@ -30,14 +31,14 @@ import com.talent.aio.examples.im.common.ImPacket;
  *  (1) | 2017年2月1日 | tanyaowu | 新建类
  *
  */
-public class MyRenderer extends DefaultListCellRenderer
+public class ImListCellRenderer extends DefaultListCellRenderer
 {
 	private Color okColor;
 	private Color warnColor;
 
 	//#5cb85c OK
 	//#f0ad4e warn
-	public MyRenderer(Color okColor, Color warnColor)
+	public ImListCellRenderer(Color okColor, Color warnColor)
 	{
 		this.okColor = okColor;
 		this.warnColor = warnColor;
@@ -45,16 +46,22 @@ public class MyRenderer extends DefaultListCellRenderer
 
 	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
 	{
-		super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
 		ClientChannelContext<Object, ImPacket, Object> channelContext = (ClientChannelContext<Object, ImPacket, Object>) value;
+		super.getListCellRendererComponent(list, channelContext, index, isSelected, cellHasFocus);
+
+		String text = (index + 1) + "-" + channelContext.getClientNode().getPort();
+		setText(text);
 
 		if (channelContext.isClosed())
 		{
-			setBackground(this.warnColor);
+			//			Font font = new Font("宋体", Font.PLAIN, 36);
+			setForeground(warnColor);
+			//			setBackground(this.warnColor);
 		} else
 		{
-			setBackground(this.okColor);
+			//			Font font = new Font("宋体", Font.PLAIN, 36);
+			setForeground(okColor);
+			//			setBackground(this.okColor);
 		}
 
 		return this;

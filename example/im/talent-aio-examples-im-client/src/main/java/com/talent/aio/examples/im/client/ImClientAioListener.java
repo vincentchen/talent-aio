@@ -83,15 +83,10 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 			try
 			{
 				jFrameMain.getClients().updateUI();
-//				jFrameMain.getListModel().removeElement(initChannelContext);
-				//因为
-				//jFrameMain.getListModel().addElement(newChannelContext);
 			} catch (Exception e)
 			{
 
 			}
-
-//			jFrameMain.updateClientCount();
 		}
 		return true;
 	}
