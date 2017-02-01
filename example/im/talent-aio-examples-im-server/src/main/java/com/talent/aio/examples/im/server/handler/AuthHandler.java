@@ -66,44 +66,38 @@ public class AuthHandler implements ImBsAioHandlerIntf
 		Long seq = authReqBody.getSeq();
 		String sign = authReqBody.getSign();
 
-		String loginname = null;//authReqBody.getLoginname();
-		String pwd = null;//authReqBody.getPwd();
-
 		if (StringUtils.isBlank(deviceId))
 		{
 			Aio.close(channelContext, "did is null");
 			return null;
 		}
 
-		if (seq == null)
+		if (seq == null || seq <= 0)
 		{
 			Aio.close(channelContext, "seq is null");
 			return null;
 		}
 
-
-		//		did = did == null ? "" : did;
 		token = token == null ? "" : token;
 		deviceInfo = deviceInfo == null ? "" : deviceInfo;
-		//		seq = seq == null ? 0 : seq;
 
 		String data = token + deviceId + deviceInfo + seq + com.talent.aio.examples.im.common.Const.authkey;
 
-		try
-		{
-			String _sign = Md5.getMD5(data);
-			if (!_sign.equals(sign))
-			{
-				log.error("sign is invalid, {}, actual sign:{},expect sign:{}", channelContext.toString(), sign, _sign);
-				Aio.close(channelContext, "sign is invalid");
-				return null;
-			}
-		} catch (Exception e)
-		{
-			log.error(e.toString(), e);
-			Aio.close(channelContext, e.getMessage());
-			return null;
-		}
+//		try
+//		{
+//			String _sign = Md5.getMD5(data);
+//			if (!_sign.equals(sign))
+//			{
+//				log.error("sign is invalid, {}, actual sign:{},expect sign:{}", channelContext.toString(), sign, _sign);
+//				Aio.close(channelContext, "sign is invalid");
+//				return null;
+//			}
+//		} catch (Exception e)
+//		{
+//			log.error(e.toString(), e);
+//			Aio.close(channelContext, e.getMessage());
+//			return null;
+//		}
 
 		DeviceType deviceType = authReqBody.getDeviceType();
 

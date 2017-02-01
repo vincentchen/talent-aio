@@ -68,7 +68,7 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	 * 
 	 */
 	@Override
-	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark)
+	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
 	{
 		log.info("即将关闭连接:{}", channelContext);
 	}
@@ -99,7 +99,7 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	 * 
 	 */
 	@Override
-	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext)
+	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isReconnect)
 	{
 		return true;
 	}
@@ -134,6 +134,23 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
+		
+	}
+
+	/** 
+	 * @see com.talent.aio.common.intf.AioListener#onAfterClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
+	 * 
+	 * @param channelContext
+	 * @param throwable
+	 * @param remark
+	 * @重写人: tanyaowu
+	 * @重写时间: 2017年2月1日 上午11:03:11
+	 * 
+	 */
+	@Override
+	public void onAfterClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
+	{
+		
 		
 	}
 
