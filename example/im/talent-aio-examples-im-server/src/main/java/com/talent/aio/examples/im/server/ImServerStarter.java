@@ -73,9 +73,9 @@ public class ImServerStarter
 	{
 		aioHandler = new ImServerAioHandler();
 		aioListener = new ImServerAioListener();
-		serverGroupContext = new ServerGroupContext<>(ip, port, aioHandler, aioListener);
+		serverGroupContext = new ServerGroupContext<>(aioHandler, aioListener);
 		aioServer = new AioServer<>(serverGroupContext);
-		aioServer.start();
+		aioServer.start(ip, port);
 
 		
 		//下面的代码就是定时打印日志，实际生产环境中可以不用。
