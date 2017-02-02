@@ -254,18 +254,20 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	}
 
 	/** 
-	 * @see com.talent.aio.client.intf.ClientAioListener#onFailConnected(com.talent.aio.common.ChannelContext, java.lang.Throwable)
+	 * @see com.talent.aio.client.intf.ClientAioListener#onFailConnected(com.talent.aio.common.ChannelContext, boolean, java.lang.Throwable)
 	 * 
 	 * @param channelContext
+	 * @param isReconnect
 	 * @param throwable
 	 * @重写人: tanyaowu
-	 * @重写时间: 2017年2月2日 下午7:48:11
+	 * @重写时间: 2017年2月2日 下午10:24:33
 	 * 
 	 */
 	@Override
-	public void onFailConnected(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable)
+	public void onFailConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isReconnect, Throwable throwable)
 	{
 		JFrameMain.updateConnectionCount();
+		
 	}
 
 }
