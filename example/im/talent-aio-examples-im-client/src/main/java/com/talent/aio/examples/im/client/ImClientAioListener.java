@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.examples.im.client.handler.ChatRespHandler;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
@@ -196,6 +197,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public void onBeforeSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet)
 	{
 		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
+		ChatRespHandler.sentPackets.incrementAndGet();
 
 	}
 

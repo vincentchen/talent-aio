@@ -52,7 +52,8 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 
 	}
 
-	public static final java.util.concurrent.atomic.AtomicInteger count = new AtomicInteger();
+	public static final AtomicInteger receivedPackets = new AtomicInteger();
+	public static final AtomicInteger sentPackets = new AtomicInteger();
 
 	//	@Override
 	//	public Map<String, Object> onReceived(ImReqPacket packet, ChannelContext<ImClientChannelContextExt> channelContext) throws Exception
@@ -105,13 +106,14 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 		//		}
 
 		//		ChatRespBody body = Json.toBean(bodyStr, ChatRespBody.class);
-		int packetCount = count.incrementAndGet();
-
+		int receivedPacket = receivedPackets.incrementAndGet();
+		int sentPacket = sentPackets.get();
+		
 		String xx = null;
 		long time = SystemTimer.currentTimeMillis();
 
 		JFrameMain frameMain = JFrameMain.getInstance();
-		if (packetCount == 1 || packetCount == 0 || packetCount % 100000 == 0)
+		if (receivedPacket == 1 || receivedPacket == 0 || receivedPacket % 100000 == 0)
 		{
 			long sendStartTime = frameMain.getSendStartTime();
 			long in = time - sendStartTime;
@@ -129,23 +131,32 @@ public class ChatRespHandler implements ImBsAioHandlerIntf
 			long receivedBytes = nowReceivedBytes - initReceivedBytes;
 			long sentBytes = nowSentBytes - initSentBytes;
 
-			double perPacket = Math.ceil(((double) packetCount / (double) in) * (double) 1000);
+			double perReceivedPacket = Math.ceil(((double) receivedPacket / (double) in) * (double) 1000);
 			double perReceivedBytes = Math.ceil(((double) receivedBytes / (double) in));
+			
+			double perSentPacket = Math.ceil(((double) sentPacket / (double) in) * (double) 1000);
 			double perSentBytes = Math.ceil(((double) sentBytes / (double) in));
 
-			xx = "<<--------------------\r\n已接收" + packetCount + "条消息，共" + (receivedBytes / (1024 * 1024)) + "M，一共耗时" + in + "毫秒\r\n平均每秒接收" + perPacket + "条消息，数据大小为"
-					+ perReceivedBytes + "KB(" + Math.ceil((perReceivedBytes / 1024)) + "M)，每条消息大小平均为" + Math.ceil((perReceivedBytes * 1024 / perPacket)) + "B\r\n平均每秒发送"
-					+ perSentBytes + "KB数据\r\n-------------------->>";
-
-			//			if (StringUtils.isBlank(body.getToNick()))
-			//			{
-			//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 说 : " + body.getBody();
-			//			} else
-			//			{
-			//				xx = "[" + c + "]" + "[" + time + "]";// + "[" + channelContext.getId() + "]" + body.getFromNick() + " 对 " + body.getToNick() + " 说 : " + body.getBody();
-			//			}
-
-			frameMain.getMsgTextArea().append(xx + System.lineSeparator());
+			
+			//汇总：耗时31毫秒、接收消息100条共10KB，发送消息100条共30KB
+			//每秒：接收消息100条共10KB，发送消息100条共30KB
+			
+			
+			log.error("<<--------------------\r\n"
+					+ "汇总：耗时{}毫秒，接收消息{}条共{}B，发送消息约{}条共{}B \r\n"
+					+ "每秒：接收消息{}条共{}B，发送消息约{}条共{}B\r\n"
+					+ "接收消息每条平均{}B，发送消息每条平均{}B\r\n"
+					+ "注：发送消息的条数用的是约数，但99.9%的情况下打印出来都是精确的，本例中最后打印的那条统计数100%是精确的\r\n"
+					+ "-------------------->>", 
+					in, receivedPacket, receivedBytes, sentPacket, sentBytes,
+					perReceivedPacket, perReceivedBytes, perSentPacket, perSentBytes,
+					Math.ceil((receivedBytes / receivedPacket)), Math.ceil((sentBytes / sentPacket)));
+			
+//			xx = "<<--------------------\r\n已接收" + receivedPacket + "条消息，共" + (receivedBytes / (1024 * 1024)) + "M，一共耗时" + in + "毫秒\r\n平均每秒接收" + perReceivedPacket + "条消息，数据大小为"
+//					+ perReceivedBytes + "KB(" + Math.ceil((perReceivedBytes / 1024)) + "M)，每条消息大小平均为" + Math.ceil((perReceivedBytes * 1024 / perReceivedPacket)) + "B\r\n平均每秒发送"
+//					+ perSentBytes + "KB数据\r\n-------------------->>";
+//
+//			frameMain.getMsgTextArea().append(xx + System.lineSeparator());
 		}
 		return null;
 	}
