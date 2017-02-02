@@ -36,6 +36,7 @@ import com.talent.aio.common.intf.Packet;
  */
 public class AioServer<Ext, P extends Packet, R>
 {
+	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(AioServer.class);
 
 	/**
@@ -52,6 +53,10 @@ public class AioServer<Ext, P extends Packet, R>
 	private ServerGroupContext<Ext, P, R> serverGroupContext;
 
 	private AsynchronousServerSocketChannel serverSocketChannel;
+	
+	private String serverIp;
+	
+	private Integer serverPort;
 
 	/**
 	 * 
@@ -91,10 +96,10 @@ public class AioServer<Ext, P extends Packet, R>
 		this.serverGroupContext = serverGroupContext;
 	}
 
-	public void start() throws IOException
+	public void start(String serverIp, int serverPort) throws IOException
 	{
-		String serverIp = serverGroupContext.getServerIp();
-		int serverPort = serverGroupContext.getServerPort();
+		this.setServerIp(serverIp);
+		this.setServerPort(serverPort);
 		ExecutorService groupExecutor = serverGroupContext.getGroupExecutor();
 
 		AsynchronousChannelGroup channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
@@ -120,6 +125,38 @@ public class AioServer<Ext, P extends Packet, R>
 
 		String ipstr = StringUtils.isNotBlank(serverIp) ? serverIp : "0.0.0.0";
 		System.out.println("start listening on " + ipstr + ":" + serverPort);
+	}
+
+	/**
+	 * @return the serverIp
+	 */
+	public String getServerIp()
+	{
+		return serverIp;
+	}
+
+	/**
+	 * @param serverIp the serverIp to set
+	 */
+	public void setServerIp(String serverIp)
+	{
+		this.serverIp = serverIp;
+	}
+
+	/**
+	 * @return the serverPort
+	 */
+	public Integer getServerPort()
+	{
+		return serverPort;
+	}
+
+	/**
+	 * @param serverPort the serverPort to set
+	 */
+	public void setServerPort(Integer serverPort)
+	{
+		this.serverPort = serverPort;
 	}
 
 }

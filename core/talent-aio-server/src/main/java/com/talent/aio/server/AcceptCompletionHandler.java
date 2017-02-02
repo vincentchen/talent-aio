@@ -82,6 +82,8 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, asynchronousSocketChannel);
 			channelContext.setClosed(false);
+			channelContext.setServerIp(aioServer.getServerIp());
+			channelContext.setServerPort(aioServer.getServerPort());
 			ServerAioListener<Ext, P, R> serverAioListener = serverGroupContext.getServerAioListener();
 			if (serverAioListener != null)
 			{
@@ -121,9 +123,9 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 		AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
 		serverSocketChannel.accept(aioServer, this);
 
-		String ip = aioServer.getServerGroupContext().getServerIp();
+		String ip = aioServer.getServerIp();
 		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		ipstr += ":" + aioServer.getServerGroupContext().getServerPort();
+		ipstr += ":" + aioServer.getServerPort();
 		log.error("[" + ipstr + "]监听出现异常", exc);
 
 	}

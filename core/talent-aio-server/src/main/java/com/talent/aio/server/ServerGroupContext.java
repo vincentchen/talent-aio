@@ -17,7 +17,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,6 @@ import com.talent.aio.server.intf.ServerAioListener;
 public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<Ext, P, R>
 {
 	static Logger log = LoggerFactory.getLogger(ServerGroupContext.class);
-	
 
 	/** The group executor. */
 	private ThreadPoolExecutor groupExecutor = null;
@@ -69,31 +67,33 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	private Thread checkHeartbeatThread = null;
 
 	/**
-	 * Instantiates a new aio server config.
+	 * 
+	 * @param aioHandler
+	 * @param aioListener
 	 *
-	 * @param ip the ip
-	 * @param port the port
-	 * @param aioHandler the aio handler
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月2日 下午1:40:29
+	 *
 	 */
-	public ServerGroupContext(String ip, int port, ServerAioHandler<Ext, P, R> aioHandler, ServerAioListener<Ext, P, R> aioListener)
+	public ServerGroupContext(ServerAioHandler<Ext, P, R> aioHandler, ServerAioListener<Ext, P, R> aioListener)
 	{
-		this(ip, port, aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
+		this(aioHandler, aioListener, new ThreadPoolExecutor(CORE_POOL_SIZE, CORE_POOL_SIZE, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
 				DefaultThreadFactory.getInstance("t-aio-server-group")));
 	}
 
 	/**
-	 * Instantiates a new server group context.
+	 * 
+	 * @param serverAioHandler
+	 * @param serverAioListener
+	 * @param groupExecutor
 	 *
-	 * @param ip the ip
-	 * @param port the port
-	 * @param aioHandler the aio handler
-	 * @param groupExecutor the group executor
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月2日 下午1:40:11
+	 *
 	 */
-	public ServerGroupContext(String ip, int port, ServerAioHandler<Ext, P, R> serverAioHandler, ServerAioListener<Ext, P, R> serverAioListener, ThreadPoolExecutor groupExecutor)
+	public ServerGroupContext(ServerAioHandler<Ext, P, R> serverAioHandler, ServerAioListener<Ext, P, R> serverAioListener, ThreadPoolExecutor groupExecutor)
 	{
-		super((StringUtils.isBlank(ip) ? "0.0.0.0" : ip) + ":" + port);
-		this.serverIp = ip;
-		this.serverPort = port;
+		super();
 		this.groupExecutor = groupExecutor;
 		this.acceptCompletionHandler = new AcceptCompletionHandler<>();
 		this.setServerAioHandler(serverAioHandler);
