@@ -25,7 +25,7 @@ import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ChannelContext.Stat;
 import com.talent.aio.common.GroupContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
+import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
@@ -108,7 +108,7 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 			{
 				while (true)
 				{
-					ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSet();
+					ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSetWithLock();
 					ReadLock readLock = objWithReadWriteLock.getLock().readLock();
 					try
 					{
