@@ -338,7 +338,6 @@ public class JFrameMain extends javax.swing.JFrame
 						} finally
 						{
 							countDownLatch.countDown();
-							System.out.println(c.incrementAndGet());
 						}
 					}
 				});
