@@ -213,7 +213,7 @@ public class Aio
 	 * @param groupid the groupid
 	 * @return the obj with read write lock
 	 */
-	public static <Ext, P extends Packet, R> ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> getChannelContextsByGroup(GroupContext<Ext, P, R> groupContext, String groupid)
+	public static <Ext, P extends Packet, R> ObjWithLock<Set<ChannelContext<Ext, P, R>>> getChannelContextsByGroup(GroupContext<Ext, P, R> groupContext, String groupid)
 	{
 		return groupContext.getGroups().clients(groupid);
 	}
@@ -360,7 +360,7 @@ public class Aio
 	 */
 	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet, ChannelContextFilter<Ext, P, R> channelContextFilter)
 	{
-		ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = groupContext.getGroups().clients(groupid);
+		ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = groupContext.getGroups().clients(groupid);
 		if (objWithReadWriteLock == null)
 		{
 			log.debug("组[{}]不存在", groupid);

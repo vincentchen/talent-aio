@@ -110,8 +110,12 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				if (isRemove)
 				{
 					MaintainUtils.removeFromMaintain(channelContext);
+				} else
+				{
+					groupContext.getCloseds().add(channelContext);
+					groupContext.getConnecteds().remove(channelContext);
 				}
-
+				
 				channelContext.setClosed(true);
 				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
 				if (aioListener != null)

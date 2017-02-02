@@ -26,7 +26,7 @@ import com.talent.aio.common.ChannelContext;
 public interface AioListener<Ext, P extends Packet, R>
 {
 	/**
-	 * 连接建立后触发的方法
+	 * 成功建立连接后触发的方法
 	 * @param channelContext
 	 * @param isReconnect 是否是重连, true: 表示这是重新连接，false: 表示这是第一次连接
 	 * @return true: 表示这个连接可以连接，false: 表示这个连接需要立即关闭

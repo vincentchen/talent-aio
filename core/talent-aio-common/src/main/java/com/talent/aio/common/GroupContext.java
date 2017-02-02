@@ -21,6 +21,8 @@ import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.maintain.ClientNodes;
+import com.talent.aio.common.maintain.Closeds;
+import com.talent.aio.common.maintain.Connecteds;
 import com.talent.aio.common.maintain.Connections;
 import com.talent.aio.common.maintain.Groups;
 import com.talent.aio.common.maintain.Syns;
@@ -113,6 +115,9 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 
 	protected ClientNodes<Ext, P, R> clientNodes = new ClientNodes<>();
 	protected Connections<Ext, P, R> connections = new Connections<>();
+	protected Connecteds<Ext, P, R> connecteds = new Connecteds<>();
+	protected Closeds<Ext, P, R> closeds = new Closeds<>();
+	
 	protected Groups<Ext, P, R> groups = new Groups<>();
 	protected Users<Ext, P, R> users = new Users<>();
 	protected Syns<Ext, P, R> syns = new Syns<>();
@@ -505,6 +510,38 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	public void setServerPort(int serverPort)
 	{
 		this.serverPort = serverPort;
+	}
+
+	/**
+	 * @return the connecteds
+	 */
+	public Connecteds<Ext, P, R> getConnecteds()
+	{
+		return connecteds;
+	}
+
+	/**
+	 * @param connecteds the connecteds to set
+	 */
+	public void setConnecteds(Connecteds<Ext, P, R> connecteds)
+	{
+		this.connecteds = connecteds;
+	}
+
+	/**
+	 * @return the closeds
+	 */
+	public Closeds<Ext, P, R> getCloseds()
+	{
+		return closeds;
+	}
+
+	/**
+	 * @param closeds the closeds to set
+	 */
+	public void setCloseds(Closeds<Ext, P, R> closeds)
+	{
+		this.closeds = closeds;
 	}
 
 }

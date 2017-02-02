@@ -16,7 +16,7 @@ import java.util.concurrent.locks.Lock;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.ObjWithReadWriteLock;
+import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.intf.Packet;
 
 /**
@@ -33,7 +33,7 @@ public class Users<Ext, P extends Packet, R>
 	 * key: userid
 	 * value: ChannelContext
 	 */
-	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>>(
+	private ObjWithLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>>(
 			new DualHashBidiMap<String, ChannelContext<Ext, P, R>>());
 
 	/**

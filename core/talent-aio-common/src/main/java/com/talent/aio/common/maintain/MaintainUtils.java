@@ -65,6 +65,14 @@ public class MaintainUtils
 		groupContext.getClientNodes().put(channelContext);
 	}
 
+	/**
+	 * 彻底删除，不再维护
+	 * @param channelContext
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月2日 上午9:27:00
+	 *
+	 */
 	public static <Ext, P extends Packet, R> void removeFromMaintain(ChannelContext<Ext, P, R> channelContext)
 	{
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
@@ -72,6 +80,8 @@ public class MaintainUtils
 		try
 		{
 			groupContext.getConnections().remove(channelContext);
+			groupContext.getConnecteds().remove(channelContext);
+			groupContext.getCloseds().remove(channelContext);
 		} catch (Exception e1)
 		{
 			log.error(e1.toString(), e1);

@@ -6,7 +6,7 @@ import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.Node;
-import com.talent.aio.common.ObjWithReadWriteLock;
+import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.intf.Packet;
 
 /**
@@ -21,7 +21,7 @@ public class ClientNodes<Ext, P extends Packet, R>
 {
 
 	/** remoteAndChannelContext key: "ip:port" value: ChannelContext. */
-	private ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>>(
+	private ObjWithLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> map = new ObjWithLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>>(
 			new DualHashBidiMap<String, ChannelContext<Ext, P, R>>());
 
 	/**
@@ -174,7 +174,7 @@ public class ClientNodes<Ext, P extends Packet, R>
 	/**
 	 * @return the map
 	 */
-	public ObjWithReadWriteLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> getMap()
+	public ObjWithLock<DualHashBidiMap<String, ChannelContext<Ext, P, R>>> getMap()
 	{
 		return map;
 	}

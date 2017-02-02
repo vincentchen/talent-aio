@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
  * @操作列表  编号	| 操作时间	| 操作人员	 | 操作说明
  *  (1) | 2016年11月5日 | tanyaowu | 新建类
  */
-public class ObjWithReadWriteLock<T>
+public class ObjWithLock<T>
 {
 
 	/** The log. */
 	@SuppressWarnings("unused")
-	private static Logger log = LoggerFactory.getLogger(ObjWithReadWriteLock.class);
+	private static Logger log = LoggerFactory.getLogger(ObjWithLock.class);
 
 	/** The obj. */
 	private T obj = null;
@@ -50,7 +50,7 @@ public class ObjWithReadWriteLock<T>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月5日 下午1:50:34
 	 */
-	public ObjWithReadWriteLock(T obj)
+	public ObjWithLock(T obj)
 	{
 		this(obj, new ReentrantReadWriteLock());
 	}
@@ -63,7 +63,7 @@ public class ObjWithReadWriteLock<T>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月7日 上午10:16:08
 	 */
-	public ObjWithReadWriteLock(T obj, ReentrantReadWriteLock lock)
+	public ObjWithLock(T obj, ReentrantReadWriteLock lock)
 	{
 		super();
 		this.obj = obj;
