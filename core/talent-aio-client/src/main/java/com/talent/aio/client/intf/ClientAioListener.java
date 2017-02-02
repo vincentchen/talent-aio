@@ -42,10 +42,11 @@ public interface ClientAioListener <Ext, P extends Packet, R> extends AioListene
 	/**
 	 * 连接失败后触发的方法
 	 * @param channelContext
+	 * @param isReconnect 是否是重连
 	 * @param throwable 有可能是null
 	 * @author: tanyaowu
 	 * @创建时间:　2017年2月2日 下午7:46:45
 	 *
 	 */
-	void onFailConnected(ChannelContext<Ext, P, R> channelContext, java.lang.Throwable throwable);
+	void onFailConnected(ChannelContext<Ext, P, R> channelContext, boolean isReconnect, java.lang.Throwable throwable);
 }

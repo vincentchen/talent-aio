@@ -171,7 +171,7 @@ public class AioClient<Ext, P extends Packet, R>
 
 		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 
-		boolean isReconnected = false;
+		boolean isReconnect = false;
 		ClientChannelContext<Ext, P, R> channelContext = null;//new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
 		//		
 		try
@@ -181,7 +181,7 @@ public class AioClient<Ext, P extends Packet, R>
 			if (initClientChannelContext != null) //表示是重连
 			{
 				channelContext = initClientChannelContext;
-				isReconnected = true;
+				isReconnect = true;
 			} else
 			{
 				channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
@@ -190,7 +190,7 @@ public class AioClient<Ext, P extends Packet, R>
 			}
 
 			future.get(5, TimeUnit.SECONDS);
-			if (isReconnected)
+			if (isReconnect)
 			{
 				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
 				channelContext.getDecodeRunnable().setCanceled(false);
@@ -212,7 +212,7 @@ public class AioClient<Ext, P extends Packet, R>
 		{
 			log.error(e.toString(), e);
 
-			if (!isReconnected)
+			if (!isReconnect)
 			{
 				clientGroupContext.getCloseds().add(channelContext);
 			}
@@ -231,7 +231,7 @@ public class AioClient<Ext, P extends Packet, R>
 
 			if (clientAioListener != null)
 			{
-				clientAioListener.onFailConnected(channelContext, e);
+				clientAioListener.onFailConnected(channelContext, isReconnect, e);
 			}
 
 			return channelContext;
@@ -240,7 +240,7 @@ public class AioClient<Ext, P extends Packet, R>
 
 		if (clientAioListener != null)
 		{
-			boolean f = clientAioListener.onAfterConnected(channelContext, isReconnected);
+			boolean f = clientAioListener.onAfterConnected(channelContext, isReconnect);
 			if (!f)
 			{
 				log.warn("不允许连接:{}", channelContext);
