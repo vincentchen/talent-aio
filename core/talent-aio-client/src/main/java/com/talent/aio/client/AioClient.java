@@ -101,21 +101,36 @@ public class AioClient<Ext, P extends Packet, R>
 
 	/**
 	 * 
+	 * @param serverIp
+	 * @param serverPort
 	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年1月15日 下午3:20:50
+	 * @创建时间:　2017年2月2日 下午1:26:17
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> connect() throws Exception
+	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort) throws Exception
 	{
-		return connect(null, 0, null);
+		return connect(null, 0, serverIp, serverPort);
 	}
 
-	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort) throws Exception
+	/**
+	 * 
+	 * @param bindIp
+	 * @param bindPort
+	 * @param serverIp
+	 * @param serverPort
+	 * @return
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月2日 下午1:26:28
+	 *
+	 */
+	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, String serverIp, Integer serverPort) throws Exception
 	{
-		return connect(bindIp, bindPort, null);
+		return connect(bindIp, bindPort, serverIp, serverPort, null);
 	}
 
 	/**
@@ -129,11 +144,9 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月19日 下午5:49:00
 	 *
 	 */
-	private ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, ClientChannelContext<Ext, P, R> initClientChannelContext) throws Exception
+	private ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, String serverIp, Integer serverPort, ClientChannelContext<Ext, P, R> initClientChannelContext)
+			throws Exception
 	{
-		String serverIp = clientGroupContext.getServerIp();
-		int serverPort = clientGroupContext.getServerPort();
-
 		AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(channelGroup);
 		asynchronousSocketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
 		asynchronousSocketChannel.setOption(StandardSocketOptions.SO_REUSEADDR, true);
@@ -167,6 +180,8 @@ public class AioClient<Ext, P extends Packet, R>
 		} else
 		{
 			channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+			channelContext.setServerIp(serverIp);
+			channelContext.setServerPort(serverPort);
 		}
 
 		//		channelContext.setBindIp(bindIp);
@@ -183,11 +198,11 @@ public class AioClient<Ext, P extends Packet, R>
 				//		channelContext.getHandlerRunnableHighPrior().setCanceled(false);
 				channelContext.getSendRunnableNormPrior().setCanceled(false);
 				//		channelContext.getSendRunnableHighPrior().setCanceled(false);
-				
+
 				clientGroupContext.getCloseds().remove(channelContext);
 			}
 			clientGroupContext.getConnecteds().add(channelContext);
-			
+
 			channelContext.setBindIp(bindIp);
 			channelContext.setBindPort(bindPort);
 
@@ -258,7 +273,7 @@ public class AioClient<Ext, P extends Packet, R>
 	 */
 	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
 	{
-		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext);
+		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.getServerIp(), channelContext.getServerPort(), channelContext);
 
 		if (channelContext.isClosed())
 		{
