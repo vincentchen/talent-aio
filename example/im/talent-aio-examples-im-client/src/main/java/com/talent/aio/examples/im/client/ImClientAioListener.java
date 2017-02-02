@@ -79,7 +79,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext)
 	{
 		JFrameMain jFrameMain = JFrameMain.getInstance();
-		synchronized (jFrameMain)
+		synchronized (jFrameMain.getClients())
 		{
 			try
 			{
@@ -119,6 +119,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 ////			jFrameMain.updateClientCount();
 //		}
 		
+		JFrameMain.updateConnectionCount();
 		
 		String did = "did";
 		String token = "token";
@@ -233,26 +234,38 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	{
 		log.info("已经关闭连接:{}", channelContext);
 
+		JFrameMain.updateConnectionCount();
 		JFrameMain jFrameMain = JFrameMain.getInstance();
-		synchronized (jFrameMain)
+		try
 		{
-			try
+			synchronized (jFrameMain.getClients())
 			{
-				
 				if (isRemove)
 				{
 					jFrameMain.getListModel().removeElement(channelContext);
 				}
 				jFrameMain.getClients().updateUI();
-//				
-			} catch (Exception e)
-			{
-
 			}
+			
+		} catch (Exception e)
+		{
 
-//			jFrameMain.updateClientCount();
 		}
+	}
 
+	/** 
+	 * @see com.talent.aio.client.intf.ClientAioListener#onFailConnected(com.talent.aio.common.ChannelContext, java.lang.Throwable)
+	 * 
+	 * @param channelContext
+	 * @param throwable
+	 * @重写人: tanyaowu
+	 * @重写时间: 2017年2月2日 下午7:48:11
+	 * 
+	 */
+	@Override
+	public void onFailConnected(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable)
+	{
+		JFrameMain.updateConnectionCount();
 	}
 
 }

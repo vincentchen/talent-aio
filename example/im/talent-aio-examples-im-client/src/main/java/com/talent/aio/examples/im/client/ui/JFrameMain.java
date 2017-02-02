@@ -85,6 +85,19 @@ public class JFrameMain extends javax.swing.JFrame
 		}
 		return instance;
 	}
+	
+	public static void updateConnectionCount(){
+		//instance
+		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
+		int connectionCount = clientGroupContext.getConnections().size();
+		instance.connectionCountLabel.setText(connectionCount + "");
+		
+		int connectedCount = clientGroupContext.getConnecteds().size();
+		instance.connectedCountLabel.setText(connectedCount + "");
+		
+		int closedCount = clientGroupContext.getCloseds().size();
+		instance.closedCountLabel.setText(closedCount + "");
+	}
 
 	/**
 	 * Creates new form JFrameMain
@@ -93,12 +106,12 @@ public class JFrameMain extends javax.swing.JFrame
 	{
 		initComponents();
 		
-		//#5cb85c OK
-		//#f0ad4e warn
-		Color okColor = new Color(0x5c, 0xb8, 0x5c);
-		Color warnColor = new Color(0xf0, 0xad, 0x4e);
+		//#2ecc71 OK
+		//##f1c40f warn
+		Color okColor = new Color(0x2e, 0xcc, 0x71);
+		Color warnColor = new Color(0xf1, 0xc4, 0x0f);
 		clients.setCellRenderer(new ImListCellRenderer(okColor, warnColor));
-		
+		clients.setModel(listModel);
 		try
 		{
 			imClientStarter = new ImClientStarter();
@@ -137,6 +150,13 @@ public class JFrameMain extends javax.swing.JFrame
         printLogBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        connectionCountLabel = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        connectedCountLabel = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        closedCountLabel = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("talent-im-client");
@@ -187,7 +207,7 @@ public class JFrameMain extends javax.swing.JFrame
         msgTextArea.setColumns(20);
         msgTextArea.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         msgTextArea.setRows(5);
-        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接并进入群组”，在与服务器连接后，将会自动进入群组。\n5、点击“群发”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 1000*2000=2000000)\n\n\n");
+        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接并进入群组”，在与服务器连接后，将会自动进入群组。\n5、点击“群发”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 100*2000=200000)\n\n\n");
         msgTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 msgTextAreaMouseClicked(evt);
@@ -211,7 +231,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel6.setText("次");
 
-        loginnameSufEndField.setText("1000");
+        loginnameSufEndField.setText("100");
         loginnameSufEndField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginnameSufEndFieldActionPerformed(evt);
@@ -233,52 +253,100 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel5.setText("聊天内容");
 
+        jLabel7.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel7.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(51, 0, 255));
+        jLabel7.setText("总连接数");
+
+        connectionCountLabel.setForeground(new java.awt.Color(51, 0, 204));
+        connectionCountLabel.setText("0");
+
+        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel9.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 153, 0));
+        jLabel9.setText("连接成功数");
+
+        connectedCountLabel.setForeground(new java.awt.Color(0, 153, 0));
+        connectedCountLabel.setText("0");
+
+        jLabel11.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel11.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(255, 51, 0));
+        jLabel11.setText("断链数");
+
+        closedCountLabel.setForeground(new java.awt.Color(255, 0, 0));
+        closedCountLabel.setText("0");
+
+        jButton1.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(0, 0, 204));
+        jButton1.setText("删除选中的连接");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(serverip, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(1, 1, 1)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(11, 11, 11)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(connectionCountLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(serverip, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel2)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(groupField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lianjie)
-                        .addGap(66, 66, 66)
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(loopcountField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(sendBtn)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(printLogBtn)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 997, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel9)
+                                .addGap(18, 18, 18)
+                                .addComponent(connectedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel11)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(closedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jButton1))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(33, 33, 33)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(groupField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(lianjie)
+                                .addGap(66, 66, 66)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(loopcountField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel6)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sendBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(printLogBtn)))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -300,10 +368,19 @@ public class JFrameMain extends javax.swing.JFrame
                     .addComponent(jLabel4)
                     .addComponent(printLogBtn)
                     .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(connectionCountLabel)
+                    .addComponent(jLabel9)
+                    .addComponent(connectedCountLabel)
+                    .addComponent(jLabel11)
+                    .addComponent(closedCountLabel)
+                    .addComponent(jButton1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane3)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 586, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
 
@@ -353,7 +430,10 @@ public class JFrameMain extends javax.swing.JFrame
 							ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverip_, port_);
 							if (channelContext != null)
 							{
-								listModel.addElement(channelContext);
+								synchronized (clients)
+								{
+									listModel.addElement(channelContext);
+								}
 							}
 						} catch (Exception e)
 						{
@@ -367,7 +447,7 @@ public class JFrameMain extends javax.swing.JFrame
 			}
 			countDownLatch.await();
 			
-			clients.setModel(listModel);
+			
 			
 //			threadPoolExecutor.shutdown();
 			
@@ -537,6 +617,47 @@ public class JFrameMain extends javax.swing.JFrame
 				clientGroupStat.getSentBytes().get() / 1000);
 	}//GEN-LAST:event_cleanBtn1ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+    	ChannelContext<Object, ImPacket, Object>[] ccs = null;
+    	synchronized (clients)
+		{
+			int[] selecteds = clients.getSelectedIndices();
+			if (selecteds != null && selecteds.length > 0)
+			{
+				ccs = new ChannelContext[selecteds.length];
+				//这里有并发问题，所以要先把要删除的连接选出来，然后再集中删除
+				for (int i = 0; i < selecteds.length; i++)
+				{
+					int index = selecteds[i];
+					try
+					{
+						ChannelContext<Object, ImPacket, Object> channelContext = (ChannelContext<Object, ImPacket, Object>) listModel.getElementAt(index);
+						ccs[i] = channelContext;
+					} catch (Exception e)
+					{
+						log.error(e.toString(), e);
+					}
+				}
+			}
+		}
+    	
+		if (ccs != null)
+		{
+			for (ChannelContext<Object, ImPacket, Object> cc : ccs)
+			{
+				if (cc != null)
+				{
+					Aio.remove(cc, "管理员删除");
+				}
+				
+			}
+		}
+    	
+    	//.getSelectedValues();
+    	
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 	/**
 	 * @param args the command line arguments
 	 */
@@ -591,18 +712,25 @@ public class JFrameMain extends javax.swing.JFrame
 	}
 
 	@SuppressWarnings("rawtypes")
-	DefaultListModel listModel = new DefaultListModel();
+	private DefaultListModel listModel = new DefaultListModel();
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> clients;
+    private javax.swing.JLabel closedCountLabel;
+    private javax.swing.JLabel connectedCountLabel;
+    private javax.swing.JLabel connectionCountLabel;
     private javax.swing.JTextField groupField;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton lianjie;
@@ -651,14 +779,14 @@ public class JFrameMain extends javax.swing.JFrame
 		return listModel;
 	}
 
-	/**
-	 * @param listModel the listModel to set
-	 */
-	@SuppressWarnings("rawtypes")
-	public void setListModel(DefaultListModel listModel)
-	{
-		this.listModel = listModel;
-	}
+//	/**
+//	 * @param listModel the listModel to set
+//	 */
+//	@SuppressWarnings("rawtypes")
+//	public void setListModel(DefaultListModel listModel)
+//	{
+//		this.listModel = listModel;
+//	}
 
 	//	/**
 	//	 * @return the cleanBtn
