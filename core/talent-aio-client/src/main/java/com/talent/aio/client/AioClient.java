@@ -22,7 +22,7 @@ import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ChannelContext.Stat;
-import com.talent.aio.common.ObjWithReadWriteLock;
+import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.ReadCompletionHandler;
 import com.talent.aio.common.ReconnConf;
 import com.talent.aio.common.intf.Packet;
@@ -183,7 +183,10 @@ public class AioClient<Ext, P extends Packet, R>
 				//		channelContext.getHandlerRunnableHighPrior().setCanceled(false);
 				channelContext.getSendRunnableNormPrior().setCanceled(false);
 				//		channelContext.getSendRunnableHighPrior().setCanceled(false);
+				
+				clientGroupContext.getCloseds().remove(channelContext);
 			}
+			clientGroupContext.getConnecteds().add(channelContext);
 			
 			channelContext.setBindIp(bindIp);
 			channelContext.setBindPort(bindPort);
@@ -301,7 +304,7 @@ public class AioClient<Ext, P extends Packet, R>
 					ReadLock readLock = null;
 					try
 					{
-						ObjWithReadWriteLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSet();
+						ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSetWithLock();
 						readLock = objWithReadWriteLock.getLock().readLock();
 						readLock.lock();
 						Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
