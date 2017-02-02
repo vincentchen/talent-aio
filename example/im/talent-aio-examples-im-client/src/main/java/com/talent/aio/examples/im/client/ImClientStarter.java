@@ -49,22 +49,17 @@ public class ImClientStarter
 	 * @创建时间:　2016年11月17日 下午5:59:24
 	 * 
 	 */
-	public ImClientStarter(String serverIp, int serverPort) throws IOException
+	public ImClientStarter() throws IOException
 	{
-		this.serverIp = serverIp;
-		this.serverPort = serverPort;
 		aioClientHandler = new ImClientAioHandler();
 		aioListener = new ImClientAioListener();
-		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener, reconnConf);
+		clientGroupContext = new ClientGroupContext<>(aioClientHandler, aioListener, reconnConf);
 //		clientGroupContext.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		clientGroupContext.setReadBufferSize(2048);
 		clientGroupContext.setByteOrder(ByteOrder.BIG_ENDIAN);
 		aioClient = new AioClient<>(clientGroupContext);
 	}
 
-	private String serverIp = null; //服务器的IP地址
-
-	private int serverPort = 0; //服务器的PORT
 
 	private AioClient<Object, ImPacket, Object> aioClient;
 
@@ -95,38 +90,6 @@ public class ImClientStarter
 	public static void main(String[] args) throws Exception
 	{
 		com.talent.aio.examples.im.client.ui.JFrameMain.main(args);
-	}
-
-	/**
-	 * @return the serverIp
-	 */
-	public String getServerIp()
-	{
-		return serverIp;
-	}
-
-	/**
-	 * @param serverIp the serverIp to set
-	 */
-	public void setServerIp(String serverIp)
-	{
-		this.serverIp = serverIp;
-	}
-
-	/**
-	 * @return the serverPort
-	 */
-	public int getServerPort()
-	{
-		return serverPort;
-	}
-
-	/**
-	 * @param serverPort the serverPort to set
-	 */
-	public void setServerPort(int serverPort)
-	{
-		this.serverPort = serverPort;
 	}
 
 	/**

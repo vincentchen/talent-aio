@@ -49,7 +49,7 @@ public class ImListCellRenderer extends DefaultListCellRenderer
 		ClientChannelContext<Object, ImPacket, Object> channelContext = (ClientChannelContext<Object, ImPacket, Object>) value;
 		super.getListCellRendererComponent(list, channelContext, index, isSelected, cellHasFocus);
 
-		String text = (index + 1) + "-" + channelContext.getClientNode().getPort();
+		String text = (index + 1) + "、" + channelContext.getServerIp() + ":" + channelContext.getServerPort() + "<--" + channelContext.getClientNode().getPort();
 		setText(text);
 
 		if (channelContext.isClosed())
