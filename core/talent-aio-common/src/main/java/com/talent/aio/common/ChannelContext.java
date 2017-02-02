@@ -60,6 +60,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private String userid;
 
 	private boolean isClosed = false;
+	
+	private boolean isRemoved = false;
 
 	private Stat stat = new Stat();
 
@@ -664,6 +666,22 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setServerPort(int serverPort)
 	{
 		this.serverPort = serverPort;
+	}
+
+	/**
+	 * @return the isRemoved
+	 */
+	public boolean isRemoved()
+	{
+		return isRemoved;
+	}
+
+	/**
+	 * @param isRemoved the isRemoved to set
+	 */
+	public void setRemoved(boolean isRemoved)
+	{
+		this.isRemoved = isRemoved;
 	}
 
 }

@@ -71,6 +71,24 @@ class ChannelContextSetWithLock<Ext, P extends Packet, R>
 			lock.unlock();
 		}
 	}
+	
+	public int size()
+	{
+		Lock lock = setWithLock.getLock().readLock();
+
+		try
+		{
+			lock.lock();
+			Set<ChannelContext<Ext, P, R>> m = setWithLock.getObj();
+			return m.size();
+		} catch (Exception e)
+		{
+			throw e;
+		} finally
+		{
+			lock.unlock();
+		}
+	}
 
 	/**
 	 * Instantiates a new remotes.

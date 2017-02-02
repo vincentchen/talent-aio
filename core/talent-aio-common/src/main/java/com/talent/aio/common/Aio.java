@@ -64,6 +64,18 @@ public class Aio
 
 	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, boolean isRemove)
 	{
+		if (channelContext.isClosed() && !isRemove)
+		{
+			log.info("连接已经关闭:{}", channelContext);
+			return;
+		}
+		
+		if (channelContext.isRemoved())
+		{
+			log.info("连接已经删除:{}", channelContext);
+			return;
+		}
+		
 		channelContext.getDecodeRunnable().clearMsgQueue();
 		channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
 		//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
@@ -79,7 +91,8 @@ public class Aio
 		CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
 		if (closeRunnable.isWaitingExecute())
 		{
-			log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t, closeRunnable.getT());
+			log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t,
+					closeRunnable.getT() == null ? "无" : closeRunnable.getT().toString());
 			return;
 		}
 		synchronized (closeRunnable)

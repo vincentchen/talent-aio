@@ -80,12 +80,26 @@ public class MaintainUtils
 		try
 		{
 			groupContext.getConnections().remove(channelContext);
+		} catch (Exception e1)
+		{
+			log.error(e1.toString(), e1);
+		}
+		try
+		{
 			groupContext.getConnecteds().remove(channelContext);
+		} catch (Exception e1)
+		{
+			log.error(e1.toString(), e1);
+		}
+		try
+		{
 			groupContext.getCloseds().remove(channelContext);
 		} catch (Exception e1)
 		{
 			log.error(e1.toString(), e1);
 		}
+		
+		
 		try
 		{
 			groupContext.getClientNodes().remove(channelContext);

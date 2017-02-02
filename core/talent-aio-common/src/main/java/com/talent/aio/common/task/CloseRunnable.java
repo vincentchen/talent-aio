@@ -92,7 +92,21 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 						log.error(e.toString(), e);
 					}
 				}
+				
+				channelContext.setClosed(true);
+				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
+				channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
 
+				if (isRemove)
+				{
+					MaintainUtils.removeFromMaintain(channelContext);
+					channelContext.setRemoved(true);
+				} else
+				{
+					groupContext.getCloseds().add(channelContext);
+					groupContext.getConnecteds().remove(channelContext);
+				}
+				
 				try
 				{
 					AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
@@ -104,20 +118,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				{
 					log.error(e.toString());
 				}
-
-				channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
-
-				if (isRemove)
-				{
-					MaintainUtils.removeFromMaintain(channelContext);
-				} else
-				{
-					groupContext.getCloseds().add(channelContext);
-					groupContext.getConnecteds().remove(channelContext);
-				}
 				
-				channelContext.setClosed(true);
-				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
 				if (aioListener != null)
 				{
 					try
