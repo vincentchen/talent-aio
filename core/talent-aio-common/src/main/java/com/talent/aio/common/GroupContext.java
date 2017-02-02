@@ -13,6 +13,7 @@ package com.talent.aio.common;
 
 import java.nio.ByteOrder;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +63,6 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 
 	public static final long KEEP_ALIVE_TIME = 9000000L;
 	
-	/** The ip. */
-	protected String serverIp;
-
-	/** The port. */
-	protected int serverPort;
 
 	private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
 
@@ -123,10 +119,9 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	protected Syns<Ext, P, R> syns = new Syns<>();
 
 	protected String id;
+	
+	private final static AtomicInteger ID_ATOMIC = new AtomicInteger();
 
-	protected GroupContext()
-	{
-	}
 
 	/**
 	 * @param serverIp
@@ -137,10 +132,10 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 * @创建时间:　2016年11月16日 上午10:21:58
 	 * 
 	 */
-	public GroupContext(String id)
+	public GroupContext()
 	{
 		super();
-		this.id = id;
+		this.id = ID_ATOMIC.incrementAndGet() + "";
 		
 //		LinkedBlockingQueue<Runnable> poolQueueHighPrior = new LinkedBlockingQueue<Runnable>();
 //		SynThreadPoolExecutor<SynRunnableIntf> executorHighPrior = new SynThreadPoolExecutor<SynRunnableIntf>(CORE_POOL_SIZE, CORE_POOL_SIZE, KEEP_ALIVE_TIME, poolQueueHighPrior,
@@ -480,37 +475,7 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		this.syns = syns;
 	}
 
-	/**
-	 * @return the serverIp
-	 */
-	public String getServerIp()
-	{
-		return serverIp;
-	}
-
-	/**
-	 * @param serverIp the serverIp to set
-	 */
-	public void setServerIp(String serverIp)
-	{
-		this.serverIp = serverIp;
-	}
-
-	/**
-	 * @return the serverPort
-	 */
-	public int getServerPort()
-	{
-		return serverPort;
-	}
-
-	/**
-	 * @param serverPort the serverPort to set
-	 */
-	public void setServerPort(int serverPort)
-	{
-		this.serverPort = serverPort;
-	}
+	
 
 	/**
 	 * @return the connecteds

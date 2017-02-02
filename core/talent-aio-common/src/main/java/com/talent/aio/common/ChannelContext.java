@@ -31,6 +31,13 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private static final java.util.concurrent.atomic.AtomicLong ID = new AtomicLong();
 
 	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
+	
+
+	/** The ip. */
+	protected String serverIp;
+
+	/** The port. */
+	protected int serverPort;
 
 	private GroupContext<Ext, P, R> groupContext = null;
 
@@ -624,6 +631,39 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 			this.timeClosed = timeClosed;
 		}
 
+	}
+	
+	
+	/**
+	 * @return the serverIp
+	 */
+	public String getServerIp()
+	{
+		return serverIp;
+	}
+
+	/**
+	 * @param serverIp the serverIp to set
+	 */
+	public void setServerIp(String serverIp)
+	{
+		this.serverIp = serverIp;
+	}
+
+	/**
+	 * @return the serverPort
+	 */
+	public int getServerPort()
+	{
+		return serverPort;
+	}
+
+	/**
+	 * @param serverPort the serverPort to set
+	 */
+	public void setServerPort(int serverPort)
+	{
+		this.serverPort = serverPort;
 	}
 
 }
