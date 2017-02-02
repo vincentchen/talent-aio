@@ -47,12 +47,10 @@ public class HelloClientStarter
 		aioClientHandler = new HelloClientAioHandler();
 		aioListener = null;
 
-		clientGroupContext = new ClientGroupContext<>(serverIp, serverPort, aioClientHandler, aioListener, reconnConf);
+		clientGroupContext = new ClientGroupContext<>(aioClientHandler, aioListener, reconnConf);
 		aioClient = new AioClient<>(clientGroupContext);
 
-		String bindIp = null;
-		int bindPort = 0;
-		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(bindIp, bindPort);
+		ClientChannelContext<Object, HelloPacket, Object> clientChannelContext = aioClient.connect(serverIp, serverPort);
 
 		//以下内容不是启动的过程，而是属于发消息的过程
 		HelloPacket packet = new HelloPacket();
