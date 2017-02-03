@@ -128,7 +128,7 @@ public class JFrameMain extends javax.swing.JFrame
 		//#2ecc71 OK
 		//##f1c40f warn
 		Color okColor = new Color(0x2e, 0xcc, 0x71);
-		Color warnColor = new Color(0xf1, 0xc4, 0x0f);
+		Color warnColor = new Color(0xe7, 0x4c, 0x3c);
 		clients.setCellRenderer(new ImListCellRenderer(okColor, warnColor));
 		clients.setModel(listModel);
 		try
