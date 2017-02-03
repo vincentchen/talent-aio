@@ -129,7 +129,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 								asynchronousSocketChannel.shutdownOutput();
 							} catch (Exception e)
 							{
-								log.error(e.toString());
+								log.error(e.toString(), e);
 							}
 							asynchronousSocketChannel.close();
 						}
