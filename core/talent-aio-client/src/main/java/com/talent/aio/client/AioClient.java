@@ -231,7 +231,14 @@ public class AioClient<Ext, P extends Packet, R>
 
 			if (clientAioListener != null)
 			{
-				clientAioListener.onFailConnected(channelContext, isReconnect, e);
+//				clientAioListener.onFailConnected(channelContext, isReconnect, e);
+				boolean f = clientAioListener.onAfterConnected(channelContext, false, isReconnect);
+				if (!f)
+				{
+					log.warn("不允许连接:{}", channelContext);
+					Aio.remove(channelContext, "不允许连接");
+					return null;
+				}
 			}
 
 			return channelContext;
@@ -240,7 +247,7 @@ public class AioClient<Ext, P extends Packet, R>
 
 		if (clientAioListener != null)
 		{
-			boolean f = clientAioListener.onAfterConnected(channelContext, isReconnect);
+			boolean f = clientAioListener.onAfterConnected(channelContext, true, isReconnect);
 			if (!f)
 			{
 				log.warn("不允许连接:{}", channelContext);
@@ -285,17 +292,21 @@ public class AioClient<Ext, P extends Packet, R>
 	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
 	{
 		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.getServerIp(), channelContext.getServerPort(), channelContext);
-
+		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
+		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 		if (channelContext.isClosed())
 		{
+			if (clientAioListener != null)
+			{
+				clientAioListener.onAfterReconnected(channelContext, false);
+			}
 			return null;
 		}
 
-		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
-		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
+		
 		if (clientAioListener != null)
 		{
-			clientAioListener.onAfterReconnected(channelContext);
+			clientAioListener.onAfterReconnected(channelContext, true);
 		}
 		return channelContext;
 	}
