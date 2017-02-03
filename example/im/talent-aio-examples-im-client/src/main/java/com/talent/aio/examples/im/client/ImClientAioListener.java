@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.examples.im.client.handler.ChatRespHandler;
+import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
@@ -64,15 +64,12 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	@Override
 	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext, boolean isConnected)
 	{
-		JFrameMain jFrameMain = JFrameMain.getInstance();
-		synchronized (jFrameMain.getClients())
+		if (isConnected)
 		{
-			try
+			JFrameMain jFrameMain = JFrameMain.getInstance();
+			synchronized (jFrameMain.getClients())
 			{
 				jFrameMain.getClients().updateUI();
-			} catch (Exception e)
-			{
-
 			}
 		}
 		return true;
@@ -181,8 +178,8 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public void onBeforeSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet)
 	{
 		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
-		ChatRespHandler.sentPackets.incrementAndGet();
-
+		JFrameMain.sentPackets.incrementAndGet();
+		com.talent.aio.examples.im.client.ui.JFrameMain.updateSentLabel();
 	}
 
 	/** 
@@ -199,7 +196,62 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
+		com.talent.aio.examples.im.client.ui.JFrameMain.updateReceivedLabel();
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		long receivedPacket = JFrameMain.receivedPackets.incrementAndGet();
+		long sentPacket = JFrameMain.sentPackets.get();
+		
+		long time = SystemTimer.currentTimeMillis();
 
+		JFrameMain frameMain = JFrameMain.getInstance();
+		if (receivedPacket == 1 || receivedPacket == 0 || receivedPacket % 100000 == 0)
+		{
+			long sendStartTime = frameMain.getSendStartTime();
+			long in = time - sendStartTime;
+			if (in <= 0)
+			{
+				in = 1;
+			}
+
+			long initReceivedBytes = frameMain.getStartRecievedBytes();
+			long initSentBytes = frameMain.getStartSentBytes();
+
+			long nowReceivedBytes = channelContext.getGroupContext().getGroupStat().getReceivedBytes().get();
+			long nowSentBytes = channelContext.getGroupContext().getGroupStat().getSentBytes().get();
+
+			long receivedBytes = nowReceivedBytes - initReceivedBytes;
+			long sentBytes = nowSentBytes - initSentBytes;
+
+			double perReceivedPacket = Math.ceil(((double) receivedPacket / (double) in) * (double) 1000);
+			double perReceivedBytes = Math.ceil(((double) receivedBytes / (double) in));
+			
+			double perSentPacket = Math.ceil(((double) sentPacket / (double) in) * (double) 1000);
+			double perSentBytes = Math.ceil(((double) sentBytes / (double) in));
+
+			
+			//汇总：耗时31毫秒、接收消息100条共10KB，发送消息100条共30KB
+			//每秒：接收消息100条共10KB，发送消息100条共30KB
+			
+			
+			log.error("<<--------------------\r\n"
+					+ "汇总：耗时{}毫秒，接收消息{}条共{}B，发送消息约{}条共{}B \r\n"
+					+ "每秒：接收消息{}条共{}B，发送消息约{}条共{}B\r\n"
+					+ "接收消息每条平均{}B，发送消息每条平均{}B\r\n"
+					+ "注：发送消息的条数用的是约数，但99.9%的情况下打印出来都是精确的，本例中最后打印的那条统计数100%是精确的\r\n"
+					+ "-------------------->>", 
+					in, receivedPacket, receivedBytes, sentPacket, sentBytes,
+					perReceivedPacket, perReceivedBytes, perSentPacket, perSentBytes,
+					Math.ceil((receivedBytes / receivedPacket)), Math.ceil((sentBytes / sentPacket)));
+		}
+		
 	}
 
 	/** 
