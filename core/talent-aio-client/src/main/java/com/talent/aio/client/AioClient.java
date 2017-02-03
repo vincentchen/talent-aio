@@ -42,6 +42,8 @@ import com.talent.aio.common.utils.SystemTimer;
 public class AioClient<Ext, P extends Packet, R>
 {
 	private static Logger log = LoggerFactory.getLogger(AioClient.class);
+	
+	private static final int DEFAULT_TIMEOUT = 2;
 
 	/**
 	 * @param args
@@ -107,44 +109,66 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年2月2日 下午1:26:17
+	 * @创建时间:　2017年2月3日 下午10:30:14
 	 *
 	 */
 	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort) throws Exception
 	{
-		return connect(null, 0, serverIp, serverPort);
+		return connect(serverIp, serverPort, null, 0, null);
 	}
-
+	
 	/**
 	 * 
-	 * @param bindIp
-	 * @param bindPort
 	 * @param serverIp
 	 * @param serverPort
 	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年2月2日 下午1:26:28
+	 * @创建时间:　2017年2月2日 下午1:26:17
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, String serverIp, Integer serverPort) throws Exception
+	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort, Integer timeout) throws Exception
 	{
-		return connect(bindIp, bindPort, serverIp, serverPort, null);
+		return connect(serverIp, serverPort, null, 0, timeout);
 	}
 
 	/**
 	 * 
-	 * @param bindIp 绑定本地ip
-	 * @param bindPort 绑定本地port
+	 * @param serverIp
+	 * @param serverPort
+	 * @param bindIp
+	 * @param bindPort
+	 * @param timeout
 	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2016年12月19日 下午5:49:00
+	 * @创建时间:　2017年2月3日 下午10:27:28
 	 *
 	 */
-	private ClientChannelContext<Ext, P, R> connect(String bindIp, Integer bindPort, String serverIp, Integer serverPort, ClientChannelContext<Ext, P, R> initClientChannelContext)
+	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort, String bindIp, Integer bindPort, Integer timeout) throws Exception
+	{
+		return connect(serverIp, serverPort, bindIp, bindPort, null, timeout);
+	}
+
+	
+	/**
+	 * 
+	 * @param serverIp
+	 * @param serverPort
+	 * @param bindIp
+	 * @param bindPort
+	 * @param initClientChannelContext
+	 * @param timeout 超时时间，单位秒
+	 * @return
+	 * @throws Exception
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月3日 下午10:25:26
+	 *
+	 */
+	private ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort, String bindIp, Integer bindPort, ClientChannelContext<Ext, P, R> initClientChannelContext, Integer timeout)
 			throws Exception
 	{
 		AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(channelGroup);
@@ -189,7 +213,14 @@ public class AioClient<Ext, P extends Packet, R>
 				channelContext.setServerPort(serverPort);
 			}
 
-			future.get(5, TimeUnit.SECONDS);
+			Integer _timeout = timeout;
+			if (_timeout == null)
+			{
+				_timeout = DEFAULT_TIMEOUT;
+			}
+			future.get(_timeout, TimeUnit.SECONDS);
+			
+			
 			if (isReconnect)
 			{
 				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
@@ -281,17 +312,19 @@ public class AioClient<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * 重连
+	 * 
 	 * @param channelContext
+	 * @param timeout
+	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2016年12月19日 下午5:43:35
+	 * @创建时间:　2017年2月3日 下午10:28:50
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext) throws Exception
+	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext, Integer timeout) throws Exception
 	{
-		connect(channelContext.getBindIp(), channelContext.getBindPort(), channelContext.getServerIp(), channelContext.getServerPort(), channelContext);
+		connect(channelContext.getServerIp(), channelContext.getServerPort(), channelContext.getBindIp(), channelContext.getBindPort(), channelContext, timeout);
 		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
 		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 		if (channelContext.isClosed())
@@ -431,7 +464,7 @@ public class AioClient<Ext, P extends Packet, R>
 		{
 			try
 			{
-				aioClient.reconnect(channelContext);
+				aioClient.reconnect(channelContext, 1);
 			} catch (java.lang.Throwable e)
 			{
 				log.error(e.toString(), e);
