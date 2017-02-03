@@ -276,14 +276,14 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		JFrameMain jFrameMain = JFrameMain.getInstance();
 		try
 		{
-			synchronized (jFrameMain.getClients())
-			{
+//			synchronized (jFrameMain.getClients())
+//			{
 				if (isRemove)
 				{
 					jFrameMain.getListModel().removeElement(channelContext);
 				}
 				jFrameMain.getClients().updateUI();
-			}
+//			}
 			
 		} catch (Exception e)
 		{

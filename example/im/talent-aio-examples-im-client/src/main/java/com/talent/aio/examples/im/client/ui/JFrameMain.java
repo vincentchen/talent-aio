@@ -97,13 +97,15 @@ public class JFrameMain extends javax.swing.JFrame
         
 		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
 		int connectionCount = clientGroupContext.getConnections().size();
-		instance.connectionCountLabel.setText(numberFormat.format(connectionCount));
+		instance.connectionCountLabel.setText("总连接"+numberFormat.format(connectionCount));
 		
 		int connectedCount = clientGroupContext.getConnecteds().size();
-		instance.connectedCountLabel.setText(numberFormat.format(connectedCount));
+		instance.connectedCountLabel.setText("正常链路"+numberFormat.format(connectedCount));
 		
 		int closedCount = clientGroupContext.getCloseds().size();
-		instance.closedCountLabel.setText(numberFormat.format(closedCount));
+		instance.closedCountLabel.setText("断链"+numberFormat.format(closedCount));
+		
+//		log.error("{},{},{}", connectionCount, connectedCount, closedCount);
 	}
 	public static void updateReceivedLabel(){
 		NumberFormat numberFormat = NumberFormat.getInstance();
@@ -154,7 +156,7 @@ public class JFrameMain extends javax.swing.JFrame
 
 					try
 					{
-						Thread.sleep(3000L);
+						Thread.sleep(2000L);
 					} catch (InterruptedException e)
 					{
 						log.error(e.toString(), e);
@@ -192,11 +194,8 @@ public class JFrameMain extends javax.swing.JFrame
         printLogBtn = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         connectionCountLabel = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
         connectedCountLabel = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
         closedCountLabel = new javax.swing.JLabel();
         delBtn = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
@@ -299,32 +298,17 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel5.setText("聊天内容");
 
-        jLabel7.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel7.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(51, 0, 255));
-        jLabel7.setText("总连接数");
-
         connectionCountLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         connectionCountLabel.setForeground(new java.awt.Color(51, 0, 204));
-        connectionCountLabel.setText("0");
-
-        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel9.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(0, 153, 0));
-        jLabel9.setText("链路正常数");
+        connectionCountLabel.setText("总连接0");
 
         connectedCountLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         connectedCountLabel.setForeground(new java.awt.Color(0, 153, 0));
-        connectedCountLabel.setText("0");
-
-        jLabel11.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel11.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(255, 51, 0));
-        jLabel11.setText("断链数");
+        connectedCountLabel.setText("正常链路0");
 
         closedCountLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         closedCountLabel.setForeground(new java.awt.Color(255, 0, 0));
-        closedCountLabel.setText("0");
+        closedCountLabel.setText("断链0");
 
         delBtn.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
         delBtn.setForeground(new java.awt.Color(51, 0, 255));
@@ -353,23 +337,9 @@ public class JFrameMain extends javax.swing.JFrame
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(delBtn)
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(connectionCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel9)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(connectedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(closedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 40, Short.MAX_VALUE)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(serverip, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -380,9 +350,17 @@ public class JFrameMain extends javax.swing.JFrame
                         .addGap(18, 18, 18)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(33, 33, 33)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(delBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(connectionCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(connectedCountLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(0, 0, 0)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(closedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -441,11 +419,8 @@ public class JFrameMain extends javax.swing.JFrame
                     .addComponent(jLabel5))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
                     .addComponent(connectionCountLabel)
-                    .addComponent(jLabel9)
                     .addComponent(connectedCountLabel)
-                    .addComponent(jLabel11)
                     .addComponent(closedCountLabel)
                     .addComponent(delBtn)
                     .addComponent(jLabel8)
@@ -802,16 +777,13 @@ public class JFrameMain extends javax.swing.JFrame
     private javax.swing.JButton delBtn;
     private javax.swing.JTextField groupField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JButton lianjie;
