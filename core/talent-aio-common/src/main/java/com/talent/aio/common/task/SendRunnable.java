@@ -2,7 +2,6 @@ package com.talent.aio.common.task;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
@@ -49,22 +48,11 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 	}
 
 	/**
-	 * 添加要处理的消息
-	 * 
-	 * @param packet
-	 */
-	public void addMsg(P packet)
-	{
-		getMsgQueue().add(packet);
-
-	}
-
-	/**
 	 * 清空消息队列
 	 */
 	public void clearMsgQueue()
 	{
-		getMsgQueue().clear();
+		msgQueue.clear();
 	}
 
 	public void sendPacket(P packet)
@@ -126,8 +114,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 	@Override
 	public void runTask()
 	{
-		ConcurrentLinkedQueue<P> queue = getMsgQueue();
-		int queueSize = queue.size();
+		int queueSize = msgQueue.size();
 		if (queueSize == 0)
 		{
 			return;
@@ -150,7 +137,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			int packetCount = 0;
 			for (int i = 0; i < queueSize; i++)
 			{
-				if ((packet = queue.poll()) != null)
+				if ((packet = msgQueue.poll()) != null)
 				{
 					ByteBuffer byteBuffer = aioHandler.encode(packet, channelContext);
 					allBytebufferCapacity += byteBuffer.limit();
@@ -186,7 +173,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 
 		} else
 		{
-			if ((packet = queue.poll()) != null)
+			if ((packet = msgQueue.poll()) != null)
 			{
 				if (aioListener != null)
 				{

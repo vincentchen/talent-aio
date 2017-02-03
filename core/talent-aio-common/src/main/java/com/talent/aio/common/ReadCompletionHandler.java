@@ -87,6 +87,11 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 			//			byteBuffer1.put(byteBuffer);
 			//			byteBuffer.clear();
 
+			if (channelContext.isClosed() || channelContext.isRemoved())
+			{
+				log.error("{} 已经关闭", channelContext);
+				return;
+			}
 			DecodeRunnable<Ext, P, R> decodeRunnable = channelContext.getDecodeRunnable();
 			decodeRunnable.addMsg(byteBuffer);
 

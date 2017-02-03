@@ -3,7 +3,6 @@
  */
 package com.talent.aio.common.task;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -133,23 +132,14 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 		return ret;
 	}
 
-	/**
-	 * 添加要处理的消息
-	 * 
-	 * @param packet
-	 */
-	public void addMsg(P packet)
-	{
-		//log.error("handler queue size:" + getMsgQueue().size());
-		getMsgQueue().add(packet);
-	}
+	
 
 	/**
 	 * 清空处理的队列消息
 	 */
 	public void clearMsgQueue()
 	{
-		getMsgQueue().clear();
+		msgQueue.clear();
 	}
 
 	public ChannelContext<Ext, P, R> getChannelContext()
@@ -197,9 +187,8 @@ public class HandlerRunnable<Ext, P extends Packet, R> extends AbstractQueueRunn
 	@Override
 	public void runTask()
 	{
-		ConcurrentLinkedQueue<P> queue = getMsgQueue();
 		P packet = null;
-		while ((packet = queue.poll()) != null)
+		while ((packet = msgQueue.poll()) != null)
 		{
 			doPacket(packet);
 		}

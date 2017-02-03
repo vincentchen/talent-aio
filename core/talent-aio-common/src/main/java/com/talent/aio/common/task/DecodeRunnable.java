@@ -4,7 +4,6 @@
 package com.talent.aio.common.task;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
@@ -50,34 +49,23 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	}
 
 	/**
-	 * 添加要解码的消息
-	 * 
-	 * @param datas
-	 */
-	public void addMsg(ByteBuffer datas)
-	{
-		getMsgQueue().add(datas);
-	}
-
-	/**
 	 * 清空处理的队列消息
 	 */
 	public void clearMsgQueue()
 	{
-		getMsgQueue().clear();
+		msgQueue.clear();
 		lastByteBuffer = null;
 	}
 
 	@Override
 	public void runTask()
 	{
-		ConcurrentLinkedQueue<ByteBuffer> queue = getMsgQueue();
 		@SuppressWarnings("unused")
 		int size = 0;
 		ByteBuffer byteBuffer = null;
-		label_1: while ((size = queue.size()) > 0)
+		label_1: while ((size = msgQueue.size()) > 0)
 		{
-			byteBuffer = queue.poll();
+			byteBuffer = msgQueue.poll();
 			if (byteBuffer != null)
 			{
 				if (lastByteBuffer != null)
@@ -172,6 +160,11 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 	 */
 	public static <Ext, P extends Packet, R> void handler(ChannelContext<Ext, P, R> channelContext, P packet)
 	{
+		if (channelContext.isClosed() || channelContext.isRemoved())
+		{
+			log.error("{} 已经关闭", channelContext);
+			return;
+		}
 		HandlerRunnable<Ext, P, R> handlerRunnable = AioUtils.selectHandlerRunnable(channelContext, packet);
 		handlerRunnable.addMsg(packet);
 		SynThreadPoolExecutor<SynRunnableIntf> synThreadPoolExecutor = AioUtils.selectHandlerExecutor(channelContext, packet);

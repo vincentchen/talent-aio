@@ -99,18 +99,18 @@ public class Aio
 						closeRunnable.getThrowable() == null ? "无" : closeRunnable.getThrowable().toString());
 				return;
 			}
+			//必须先取消任务再清空队列
+			channelContext.getDecodeRunnable().setCanceled(true);
+			channelContext.getHandlerRunnableNormPrior().setCanceled(true);
+			//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
+			channelContext.getSendRunnableNormPrior().setCanceled(true);
+			//		channelContext.getSendRunnableHighPrior().setCanceled(true);
 			
 			channelContext.getDecodeRunnable().clearMsgQueue();
 			channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
 			//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
 			channelContext.getSendRunnableNormPrior().clearMsgQueue();
 			//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
-
-			channelContext.getDecodeRunnable().setCanceled(true);
-			channelContext.getHandlerRunnableNormPrior().setCanceled(true);
-			//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
-			channelContext.getSendRunnableNormPrior().setCanceled(true);
-			//		channelContext.getSendRunnableHighPrior().setCanceled(true);
 			
 			closeRunnable.setRemove(isRemove);
 			closeRunnable.setRemark(remark);
@@ -349,6 +349,11 @@ public class Aio
 		if (channelContext == null)
 		{
 			log.error("channelContext == null");
+			return;
+		}
+		if (channelContext.isClosed() || channelContext.isRemoved())
+		{
+			log.error("{} 已经关闭", channelContext);
 			return;
 		}
 		SendRunnable<Ext, P, R> sendRunnable = AioUtils.selectSendRunnable(channelContext, packet);
