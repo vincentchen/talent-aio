@@ -103,14 +103,18 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						
 						int afterDecodePosition = byteBuffer.position();
 						int len = afterDecodePosition - initPosition;
+						
+						channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
+						channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
+						
+						submit(packet, len);
+						
 						AioListener<Ext, P, R> aioListener = channelContext.getGroupContext().getAioListener();
 						if (aioListener != null)
 						{
 							aioListener.onAfterDecoded(channelContext, packet, len);
 						}
-						submit(packet, len);
-						channelContext.getGroupContext().getGroupStat().getReceivedPacket().incrementAndGet();
-						channelContext.getGroupContext().getGroupStat().getReceivedBytes().addAndGet(len);
+						
 
 						if (byteBuffer.hasRemaining())//组包后，还剩有数据
 						{
