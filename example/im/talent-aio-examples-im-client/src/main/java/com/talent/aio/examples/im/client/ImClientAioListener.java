@@ -11,6 +11,8 @@
  */
 package com.talent.aio.examples.im.client;
 
+import java.text.NumberFormat;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,19 +239,20 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 			double perSentBytes = Math.ceil(((double) sentBytes / (double) in));
 
 			
+			NumberFormat numberFormat = NumberFormat.getInstance();
+			
+			
 			//汇总：耗时31毫秒、接收消息100条共10KB，发送消息100条共30KB
 			//每秒：接收消息100条共10KB，发送消息100条共30KB
-			
-			
 			log.error("<<--------------------\r\n"
 					+ "汇总：耗时{}毫秒，接收消息{}条共{}B，发送消息约{}条共{}B \r\n"
 					+ "每秒：接收消息{}条共{}B，发送消息约{}条共{}B\r\n"
 					+ "接收消息每条平均{}B，发送消息每条平均{}B\r\n"
 					+ "注：发送消息的条数用的是约数，但99.9%的情况下打印出来都是精确的，本例中最后打印的那条统计数100%是精确的\r\n"
 					+ "-------------------->>", 
-					in, receivedPacket, receivedBytes, sentPacket, sentBytes,
-					perReceivedPacket, perReceivedBytes, perSentPacket, perSentBytes,
-					Math.ceil((receivedBytes / receivedPacket)), Math.ceil((sentBytes / sentPacket)));
+					numberFormat.format(in), numberFormat.format(receivedPacket), numberFormat.format(receivedBytes), numberFormat.format(sentPacket), numberFormat.format(sentBytes),
+							numberFormat.format(perReceivedPacket), numberFormat.format(perReceivedBytes), numberFormat.format(perSentPacket), numberFormat.format(perSentBytes),
+									numberFormat.format(Math.ceil((receivedBytes / receivedPacket))), numberFormat.format(Math.ceil((sentBytes / sentPacket))));
 		}
 		
 	}

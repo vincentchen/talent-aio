@@ -8,6 +8,7 @@ package com.talent.aio.examples.im.client.ui;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,7 +31,6 @@ import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.client.ImClientStarter;
-import com.talent.aio.examples.im.client.handler.ChatRespHandler;
 import com.talent.aio.examples.im.client.ui.component.ImListCellRenderer;
 import com.talent.aio.examples.im.client.ui.component.MyTextArea;
 import com.talent.aio.examples.im.common.Command;
@@ -93,28 +93,29 @@ public class JFrameMain extends javax.swing.JFrame
 	}
 	
 	public static void updateConnectionCount(){
-		//instance
+		NumberFormat numberFormat = NumberFormat.getInstance();
+        
 		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
 		int connectionCount = clientGroupContext.getConnections().size();
-		instance.connectionCountLabel.setText(connectionCount + "");
+		instance.connectionCountLabel.setText(numberFormat.format(connectionCount));
 		
 		int connectedCount = clientGroupContext.getConnecteds().size();
-		instance.connectedCountLabel.setText(connectedCount + "");
+		instance.connectedCountLabel.setText(numberFormat.format(connectedCount));
 		
 		int closedCount = clientGroupContext.getCloseds().size();
-		instance.closedCountLabel.setText(closedCount + "");
+		instance.closedCountLabel.setText(numberFormat.format(closedCount));
 	}
 	public static void updateReceivedLabel(){
-		//instance
+		NumberFormat numberFormat = NumberFormat.getInstance();
 		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
 		GroupStat groupStat = clientGroupContext.getGroupStat();
-		instance.receivedLabel.setText(groupStat.getReceivedPacket() + "条," + groupStat.getReceivedBytes() + "B");
+		instance.receivedLabel.setText(numberFormat.format(groupStat.getReceivedPacket().get()) + "条共" + numberFormat.format(groupStat.getReceivedBytes().get()) + "B");
 	}
 	public static void updateSentLabel(){
-		//instance
+		NumberFormat numberFormat = NumberFormat.getInstance();
 		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
 		GroupStat groupStat = clientGroupContext.getGroupStat();
-		instance.sentLabel.setText(groupStat.getSentPacket() + "条," + groupStat.getSentBytes() + "B");
+		instance.sentLabel.setText(numberFormat.format(groupStat.getSentPacket().get()) + "条共" + numberFormat.format(groupStat.getSentBytes().get()) + "B");
 	}
 
 	/**
@@ -299,31 +300,34 @@ public class JFrameMain extends javax.swing.JFrame
         jLabel5.setText("聊天内容");
 
         jLabel7.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel7.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(51, 0, 255));
         jLabel7.setText("总连接数");
 
+        connectionCountLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         connectionCountLabel.setForeground(new java.awt.Color(51, 0, 204));
         connectionCountLabel.setText("0");
 
         jLabel9.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel9.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 153, 0));
-        jLabel9.setText("连接成功数");
+        jLabel9.setText("链路正常数");
 
+        connectedCountLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         connectedCountLabel.setForeground(new java.awt.Color(0, 153, 0));
         connectedCountLabel.setText("0");
 
         jLabel11.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel11.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
+        jLabel11.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(255, 51, 0));
         jLabel11.setText("断链数");
 
+        closedCountLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         closedCountLabel.setForeground(new java.awt.Color(255, 0, 0));
         closedCountLabel.setText("0");
 
-        delBtn.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
-        delBtn.setForeground(new java.awt.Color(0, 0, 204));
+        delBtn.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
+        delBtn.setForeground(new java.awt.Color(51, 0, 255));
         delBtn.setText("删除");
         delBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -331,12 +335,16 @@ public class JFrameMain extends javax.swing.JFrame
             }
         });
 
+        jLabel8.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
         jLabel8.setText("已接收");
 
+        receivedLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         receivedLabel.setText("0");
 
+        jLabel12.setFont(new java.awt.Font("宋体", 1, 18)); // NOI18N
         jLabel12.setText("已发送");
 
+        sentLabel.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         sentLabel.setText("0");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -344,73 +352,72 @@ public class JFrameMain extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(1, 1, 1)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(delBtn)
-                                .addGap(24, 24, 24)
-                                .addComponent(jLabel7)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(connectionCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel9)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(connectedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(closedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(serverip, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(33, 33, 33)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(delBtn)
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel7)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(groupField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(lianjie))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel8)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(receivedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(66, 66, 66)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(loopcountField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel6)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(sendBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(printLogBtn))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(sentLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(connectionCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel9)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(connectedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel11)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(closedCountLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(serverip, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(loginnameSufEndField, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(33, 33, 33)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(groupField, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lianjie)
+                        .addGap(74, 74, 74)
+                        .addComponent(jLabel5))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(receivedLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(msgField, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(loopcountField, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sendBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(printLogBtn)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel12)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sentLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(1, 1, 1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -707,6 +714,10 @@ public class JFrameMain extends javax.swing.JFrame
 						log.error(e.toString(), e);
 					}
 				}
+			} else
+			{
+				log.error("请选中要删除的连接");
+				return;
 			}
 		}
     	
