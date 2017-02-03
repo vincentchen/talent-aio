@@ -87,7 +87,7 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			ServerAioListener<Ext, P, R> serverAioListener = serverGroupContext.getServerAioListener();
 			if (serverAioListener != null)
 			{
-				boolean f = serverAioListener.onAfterConnected(channelContext, false);
+				boolean f = serverAioListener.onAfterConnected(channelContext, true, false);
 				if (!f)
 				{
 					log.warn("不允许连接:{}", channelContext);
