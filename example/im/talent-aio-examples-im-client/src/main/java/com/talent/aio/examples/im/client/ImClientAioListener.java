@@ -61,22 +61,8 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	{
 	}
 
-	
 	@Override
-	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
-	{}
-
-	/** 
-	 * @see com.talent.aio.client.intf.ClientAioListener#onAfterReconnected(com.talent.aio.common.ChannelContext)
-	 * 
-	 * @param channelContext
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午10:17:53
-	 * 
-	 */
-	@Override
-	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext)
+	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext, boolean isConnected)
 	{
 		JFrameMain jFrameMain = JFrameMain.getInstance();
 		synchronized (jFrameMain.getClients())
@@ -92,17 +78,8 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		return true;
 	}
 
-	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterConnected(com.talent.aio.common.ChannelContext)
-	 * 
-	 * @param channelContext
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午11:41:27
-	 * 
-	 */
 	@Override
-	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isReconnect)
+	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
 //		JFrameMain jFrameMain = JFrameMain.getInstance();
 //		synchronized (jFrameMain)
@@ -120,6 +97,12 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 //		}
 		
 		JFrameMain.updateConnectionCount();
+		
+		if (!isConnected)
+		{
+			//没连上
+			return true;
+		}
 		
 		String did = "did";
 		String token = "token";
@@ -251,23 +234,6 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		{
 
 		}
-	}
-
-	/** 
-	 * @see com.talent.aio.client.intf.ClientAioListener#onFailConnected(com.talent.aio.common.ChannelContext, boolean, java.lang.Throwable)
-	 * 
-	 * @param channelContext
-	 * @param isReconnect
-	 * @param throwable
-	 * @重写人: tanyaowu
-	 * @重写时间: 2017年2月2日 下午10:24:33
-	 * 
-	 */
-	@Override
-	public void onFailConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isReconnect, Throwable throwable)
-	{
-		JFrameMain.updateConnectionCount();
-		
 	}
 
 }
