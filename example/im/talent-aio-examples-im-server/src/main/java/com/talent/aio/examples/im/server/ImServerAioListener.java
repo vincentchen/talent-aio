@@ -34,7 +34,9 @@ import com.talent.aio.server.intf.ServerAioListener;
  */
 public class ImServerAioListener implements ServerAioListener<Object, ImPacket, Object>
 {
-private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
+	@SuppressWarnings("unused")
+	private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
+
 	/**
 	 * 
 	 *
@@ -58,22 +60,6 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	}
 
 	/** 
-	 * @see com.talent.aio.examples.im.common.ImAioListener#onBeforeClose(com.talent.aio.common.ChannelContext, java.lang.Throwable, java.lang.String)
-	 * 
-	 * @param channelContext
-	 * @param throwable
-	 * @param remark
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月16日 下午5:52:24
-	 * 
-	 */
-	@Override
-	public void onBeforeClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
-	{
-		log.info("即将关闭连接:{}", channelContext);
-	}
-
-	/** 
 	 * @see com.talent.aio.server.intf.ServerAioListener#onAfterAccepted(java.nio.channels.AsynchronousSocketChannel, com.talent.aio.server.AioServer)
 	 * 
 	 * @param asynchronousSocketChannel
@@ -89,17 +75,8 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 		return true;
 	}
 
-	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterConnected(com.talent.aio.common.ChannelContext)
-	 * 
-	 * @param channelContext
-	 * @return
-	 * @重写人: tanyaowu
-	 * @重写时间: 2016年12月20日 上午11:08:44
-	 * 
-	 */
 	@Override
-	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isReconnect)
+	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
 		return true;
 	}
@@ -117,7 +94,7 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	public void onBeforeSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet)
 	{
 		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
-		
+
 	}
 
 	/** 
@@ -134,7 +111,7 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
-		
+
 	}
 
 	/** 
@@ -150,9 +127,7 @@ private static Logger log = LoggerFactory.getLogger(ImServerAioListener.class);
 	@Override
 	public void onAfterClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
 	{
-		
-		
-	}
 
+	}
 
 }
