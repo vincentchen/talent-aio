@@ -125,22 +125,6 @@ public class ReadCompletionHandler<Ext, P extends Packet, R> implements Completi
 
 	}
 
-	//	/**
-	//	 * @return the byteBuffer
-	//	 */
-	//	public ByteBuffer getByteBuffer()
-	//	{
-	//		return byteBuffer;
-	//	}
-	//
-	//	/**
-	//	 * @param byteBuffer the byteBuffer to set
-	//	 */
-	//	public void setByteBuffer(ByteBuffer byteBuffer)
-	//	{
-	//		this.byteBuffer = byteBuffer;
-	//	}
-
 	/**
 	 * @return the channelContext
 	 */

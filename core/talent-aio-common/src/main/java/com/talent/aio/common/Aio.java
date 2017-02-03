@@ -13,6 +13,8 @@ package com.talent.aio.common;
 
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,50 +66,74 @@ public class Aio
 
 	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, boolean isRemove)
 	{
+		
+//		if (t != null)
+//		{
+//			log.error(t.toString(), t);
+//		}
+		
 		if (channelContext.isClosed() && !isRemove)
 		{
-			log.info("连接已经关闭:{}", channelContext);
+			log.info("{}已经关闭，备注:{}，异常:{}", channelContext, remark, t == null ? "无" : t.toString());
 			return;
 		}
 		
 		if (channelContext.isRemoved())
 		{
-			log.info("连接已经删除:{}", channelContext);
+			log.info("{}已经删除，备注:{}，异常:{}", channelContext, remark, t == null ? "无" : t.toString());
 			return;
 		}
 		
-		channelContext.getDecodeRunnable().clearMsgQueue();
-		channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
-		//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
-		channelContext.getSendRunnableNormPrior().clearMsgQueue();
-		//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
-
-		channelContext.getDecodeRunnable().setCanceled(true);
-		channelContext.getHandlerRunnableNormPrior().setCanceled(true);
-		//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
-		channelContext.getSendRunnableNormPrior().setCanceled(true);
-		//		channelContext.getSendRunnableHighPrior().setCanceled(true);
-
 		CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
-		if (closeRunnable.isWaitingExecute())
+		ReentrantReadWriteLock reentrantReadWriteLock = closeRunnable.getLock();
+		WriteLock writeLock = reentrantReadWriteLock.writeLock();
+		if (!writeLock.tryLock())
 		{
-			log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t,
-					closeRunnable.getT() == null ? "无" : closeRunnable.getT().toString());
 			return;
 		}
-		synchronized (closeRunnable)
+		
+		
+		
+		try
 		{
+			
+			if (closeRunnable.isWaitingExecute())
+			{
+				log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t == null ? "无" : t.toString(),
+						closeRunnable.getThrowable() == null ? "无" : closeRunnable.getThrowable().toString());
+				return;
+			}
+			
+			channelContext.getDecodeRunnable().clearMsgQueue();
+			channelContext.getHandlerRunnableNormPrior().clearMsgQueue();
+			//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
+			channelContext.getSendRunnableNormPrior().clearMsgQueue();
+			//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
+
+			channelContext.getDecodeRunnable().setCanceled(true);
+			channelContext.getHandlerRunnableNormPrior().setCanceled(true);
+			//		channelContext.getHandlerRunnableHighPrior().setCanceled(true);
+			channelContext.getSendRunnableNormPrior().setCanceled(true);
+			//		channelContext.getSendRunnableHighPrior().setCanceled(true);
+			
+			
 			if (closeRunnable.isWaitingExecute())//double check
 			{
 				return;
 			}
 			closeRunnable.setRemove(isRemove);
 			closeRunnable.setRemark(remark);
-			closeRunnable.setT(t);
+			closeRunnable.setThrowable(t);
 			closeRunnable.getExecutor().execute(closeRunnable);
 			closeRunnable.setWaitingExecute(true);
+		} catch (Exception e)
+		{
+			log.error(t.toString(), e);
+		} finally 
+		{
+			writeLock.unlock();
 		}
-		//		closeRunnable.runTask();
+		
 	}
 
 	/**

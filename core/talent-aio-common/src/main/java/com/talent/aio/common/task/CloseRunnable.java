@@ -3,6 +3,7 @@ package com.talent.aio.common.task;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,26 +33,34 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 
 	private ChannelContext<Ext, P, R> channelContext;
 	private String remark;
-	private Throwable t;
+	private Throwable throwable;
 	private boolean isRemove = false;
 	private boolean isWaitingExecute = false;
+	private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private static final AtomicLong closeCount = new AtomicLong();//总的关闭次数
 
 	public CloseRunnable(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, Executor executor)
 	{
 		super(executor);
 		this.channelContext = channelContext;
-		this.t = t;
+		this.throwable = t;
 		this.remark = remark;
 	}
 
 	@Override
 	public void runTask()
 	{
-		synchronized (this)
+//		ReentrantReadWriteLock reentrantReadWriteLock = getLock();
+//		WriteLock writeLock = reentrantReadWriteLock.writeLock();
+//		if (!writeLock.tryLock())
+//		{
+//			return;
+//		}
+		
+		try
 		{
 			closeCount.incrementAndGet();
-			if (t != null)
+			if (throwable != null)
 			{
 				log.error("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
 			} else
@@ -86,7 +95,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				{
 					try
 					{
-						groupContext.getAioListener().onBeforeClose(channelContext, t, remark, isRemove);
+						groupContext.getAioListener().onBeforeClose(channelContext, throwable, remark, isRemove);
 					} catch (Throwable e)
 					{
 						log.error(e.toString(), e);
@@ -112,6 +121,14 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 					AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
 					if (asynchronousSocketChannel != null)
 					{
+						try
+						{
+							asynchronousSocketChannel.shutdownInput();
+							asynchronousSocketChannel.shutdownOutput();
+						} catch (Exception e)
+						{
+							log.error(e.toString());
+						}
 						asynchronousSocketChannel.close();
 					}
 				} catch (Throwable e)
@@ -123,7 +140,7 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				{
 					try
 					{
-						aioListener.onAfterClose(channelContext, t, remark, isRemove);
+						aioListener.onAfterClose(channelContext, throwable, remark, isRemove);
 					} catch (Throwable e)
 					{
 						log.error(e.toString(), e);
@@ -134,7 +151,6 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 				log.error(e.toString(), e);
 			} finally
 			{
-				this.setWaitingExecute(false);
 				if (!isRemove)
 				{
 					try
@@ -144,9 +160,18 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 					{
 						log.error(e.toString(), e);
 					}
+					
+					this.setWaitingExecute(false);
 				}
 			}
+		} catch (Exception e)
+		{
+			log.error(e.toString(), e);
+		} finally
+		{
+//			writeLock.unlock();
 		}
+	
 	}
 
 	@Override
@@ -182,17 +207,17 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	/**
 	 * @return the t
 	 */
-	public Throwable getT()
+	public Throwable getThrowable()
 	{
-		return t;
+		return throwable;
 	}
 
 	/**
 	 * @param t the t to set
 	 */
-	public void setT(Throwable t)
+	public void setThrowable(Throwable throwable)
 	{
-		this.t = t;
+		this.throwable = throwable;
 	}
 
 	@Override
@@ -235,4 +260,13 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	{
 		this.isRemove = isRemove;
 	}
+
+	/**
+	 * @return the lock
+	 */
+	public ReentrantReadWriteLock getLock()
+	{
+		return lock;
+	}
+
 }
