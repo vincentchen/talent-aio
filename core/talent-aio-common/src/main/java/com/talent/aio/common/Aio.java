@@ -66,7 +66,6 @@ public class Aio
 
 	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, boolean isRemove)
 	{
-		
 //		if (t != null)
 //		{
 //			log.error(t.toString(), t);
@@ -92,11 +91,8 @@ public class Aio
 			return;
 		}
 		
-		
-		
 		try
 		{
-			
 			if (closeRunnable.isWaitingExecute())
 			{
 				log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t == null ? "无" : t.toString(),
@@ -116,11 +112,6 @@ public class Aio
 			channelContext.getSendRunnableNormPrior().setCanceled(true);
 			//		channelContext.getSendRunnableHighPrior().setCanceled(true);
 			
-			
-			if (closeRunnable.isWaitingExecute())//double check
-			{
-				return;
-			}
 			closeRunnable.setRemove(isRemove);
 			closeRunnable.setRemark(remark);
 			closeRunnable.setThrowable(t);
@@ -133,7 +124,6 @@ public class Aio
 		{
 			writeLock.unlock();
 		}
-		
 	}
 
 	/**
