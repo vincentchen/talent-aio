@@ -202,7 +202,7 @@
             </Property>
           </Properties>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;ClientChannelContext&lt;Object, ImPacket, Object&gt;&gt;"/>
           </AuxValues>
         </Component>
       </SubComponents>

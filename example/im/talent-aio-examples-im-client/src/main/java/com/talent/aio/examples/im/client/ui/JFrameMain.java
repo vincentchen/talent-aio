@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -17,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JList;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -59,6 +62,7 @@ public class JFrameMain extends javax.swing.JFrame
 	//这两个用来统计性能数据的
 	public static final AtomicLong receivedPackets = new AtomicLong();
 	public static final AtomicLong sentPackets = new AtomicLong();
+	public static boolean isNeedUpdateList = false;
 	
 	//用来建链的线程池
 	ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,  
@@ -155,6 +159,11 @@ public class JFrameMain extends javax.swing.JFrame
 					updateConnectionCount();
 					updateReceivedLabel();
 					updateSentLabel();
+					
+					if (isNeedUpdateList)
+					{
+						clients.updateUI();
+					}
 
 					try
 					{
@@ -673,47 +682,45 @@ public class JFrameMain extends javax.swing.JFrame
 
     private void delBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delBtnActionPerformed
         // TODO add your handling code here:
-    	ChannelContext<Object, ImPacket, Object>[] ccs = null;
 //    	synchronized (clients)
 //		{
-			int[] selecteds = clients.getSelectedIndices();
-			if (selecteds != null && selecteds.length > 0)
-			{
-				ccs = new ChannelContext[selecteds.length];
-				//这里有并发问题，所以要先把要删除的连接选出来，然后再集中删除
-				for (int i = 0; i < selecteds.length; i++)
-				{
-					int index = selecteds[i];
-					try
-					{
-						ChannelContext<Object, ImPacket, Object> channelContext = (ChannelContext<Object, ImPacket, Object>) listModel.getElementAt(index);
-						ccs[i] = channelContext;
-					} catch (Exception e)
-					{
-						log.error(e.toString(), e);
-					}
-				}
-			} else
+			List<ClientChannelContext<Object, ImPacket, Object>> selecteds = clients.getSelectedValuesList();
+			if (selecteds == null || selecteds.size() == 0)
 			{
 				log.error("请选中要删除的连接");
 				return;
+			} else
+			{
+				List<ClientChannelContext<Object, ImPacket, Object>> dest = new ArrayList<>(selecteds.size());
+				for (ClientChannelContext<Object, ImPacket, Object> cc : selecteds)
+				{
+					if (cc != null)
+					{
+						dest.add(cc);
+					}
+				}
+				
+				for (ClientChannelContext<Object, ImPacket, Object> cc : dest)
+				{
+					if (cc != null)
+					{
+						try
+						{
+							Aio.remove(cc, "管理员删除");
+							listModel.removeElement(cc);//TODO 这里会报空指针，原因待查
+						} catch (Exception e)
+						{
+//							log.error(e.toString(), e);
+							
+						}
+					}
+				}
+				
+				
+				
 			}
 //		}
     	
-		if (ccs != null)
-		{
-			for (ChannelContext<Object, ImPacket, Object> cc : ccs)
-			{
-				if (cc != null)
-				{
-					Aio.remove(cc, "管理员删除");
-					
-					listModel.removeElement(cc);
-					clients.updateUI();
-				}
-				
-			}
-		}
     	
     	//.getSelectedValues();
     	
@@ -777,7 +784,7 @@ public class JFrameMain extends javax.swing.JFrame
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList<String> clients;
+    private javax.swing.JList<ClientChannelContext<Object, ImPacket, Object>> clients;
     private javax.swing.JLabel closedCountLabel;
     private javax.swing.JLabel connectedCountLabel;
     private javax.swing.JLabel connectionCountLabel;
@@ -806,7 +813,7 @@ public class JFrameMain extends javax.swing.JFrame
     private javax.swing.JTextField serverip;
     // End of variables declaration//GEN-END:variables
 
-	public javax.swing.JList<String> getClients()
+	public JList<ClientChannelContext<Object, ImPacket, Object>> getClients()
 	{
 		return clients;
 	}
@@ -1109,7 +1116,7 @@ public class JFrameMain extends javax.swing.JFrame
 	/**
 	 * @param clients the clients to set
 	 */
-	public void setClients(javax.swing.JList<String> clients)
+	public void setClients(JList<ClientChannelContext<Object, ImPacket, Object>> clients)
 	{
 		this.clients = clients;
 	}

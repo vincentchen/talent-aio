@@ -64,17 +64,12 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	}
 
 	@Override
-	public boolean onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext, boolean isConnected)
+	public void onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext, boolean isConnected)
 	{
 		if (isConnected)
 		{
-			JFrameMain jFrameMain = JFrameMain.getInstance();
-//			synchronized (jFrameMain.getClients())
-//			{
-				jFrameMain.getClients().updateUI();
-//			}
+			JFrameMain.isNeedUpdateList = true;
 		}
-		return true;
 	}
 
 	@Override
@@ -270,9 +265,22 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	@Override
 	public void onAfterClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
 	{
-		log.info("已经关闭连接:{}", channelContext);
-
 		JFrameMain.updateConnectionCount();
+		
+		if (!isRemove)
+		{
+			JFrameMain.isNeedUpdateList = true;
+		}
+		
+//		try
+//		{
+//			JFrameMain jFrameMain = JFrameMain.getInstance();
+//			jFrameMain.getClients().updateUI();
+//		} catch (Exception e)
+//		{
+//			
+//		}
+		
 //		JFrameMain jFrameMain = JFrameMain.getInstance();
 //		try
 //		{

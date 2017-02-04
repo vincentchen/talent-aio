@@ -118,7 +118,7 @@ public class JoinRespHandler implements ImBsAioHandlerIntf
 		{
 			//被拒绝
 			//			log.error("refused to join in group {}", body.getGroup());
-			String xx = ClientNodes.getKey(channelContext) + "被拒绝进入组" + respBody.getGroup();
+			String xx = channelContext + "被拒绝进入组" + respBody.getGroup();
 			JFrameMain.getInstance().getMsgTextArea().append(xx + System.lineSeparator());
 		}
 		
