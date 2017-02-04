@@ -130,7 +130,7 @@ public class JFrameMain extends javax.swing.JFrame
 	 */
 	private JFrameMain()
 	{
-		listModel = new DefaultListModel();
+		listModel = new DefaultListModel<ClientChannelContext<Object, ImPacket, Object>>();
 		initComponents();
 		
 		
@@ -465,7 +465,6 @@ public class JFrameMain extends javax.swing.JFrame
 	//		clientCountLabel.setText(clientSize + "个客户端");
 	//	}
 
-	@SuppressWarnings("unchecked")
 	private void lianjieActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_lianjieActionPerformed
 		try
@@ -779,8 +778,7 @@ public class JFrameMain extends javax.swing.JFrame
 		});
 	}
 
-	@SuppressWarnings("rawtypes")
-	private DefaultListModel listModel = null;
+	private DefaultListModel<ClientChannelContext<Object, ImPacket, Object>> listModel = null;
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables

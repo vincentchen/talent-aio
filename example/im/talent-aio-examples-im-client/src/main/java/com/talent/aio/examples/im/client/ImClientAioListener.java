@@ -143,6 +143,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		info = info == null ? "" : info;
 		seq = seq == null ? 0 : seq;
 		
+		@SuppressWarnings("unused")
 		String data = token + did + info + seq + "fdsfeofa";
 //		String sign = null;
 //		try
@@ -172,11 +173,14 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public void onBeforeSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet)
+	public void onAfterSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, boolean isSentSuccess)
 	{
-		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
-		JFrameMain.sentPackets.incrementAndGet();
-		com.talent.aio.examples.im.client.ui.JFrameMain.updateSentLabel();
+		if (isSentSuccess)
+		{
+			CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
+			JFrameMain.sentPackets.incrementAndGet();
+//			com.talent.aio.examples.im.client.ui.JFrameMain.updateSentLabel();
+		}
 	}
 
 	/** 
@@ -193,7 +197,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
-		com.talent.aio.examples.im.client.ui.JFrameMain.updateReceivedLabel();
+//		com.talent.aio.examples.im.client.ui.JFrameMain.updateReceivedLabel();
 		
 		
 		
@@ -243,7 +247,6 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 					+ "汇总：耗时{}毫秒，接收消息{}条共{}B，发送消息约{}条共{}B \r\n"
 					+ "每秒：接收消息{}条共{}B，发送消息约{}条共{}B\r\n"
 					+ "接收消息每条平均{}B，发送消息每条平均{}B\r\n"
-					+ "注：发送消息的条数用的是约数，但99.9%的情况下打印出来都是精确的，本例中最后打印的那条统计数100%是精确的\r\n"
 					+ "-------------------->>", 
 					numberFormat.format(in), numberFormat.format(receivedPacket), numberFormat.format(receivedBytes), numberFormat.format(sentPacket), numberFormat.format(sentBytes),
 							numberFormat.format(perReceivedPacket), numberFormat.format(perReceivedBytes), numberFormat.format(perSentPacket), numberFormat.format(perSentBytes),
