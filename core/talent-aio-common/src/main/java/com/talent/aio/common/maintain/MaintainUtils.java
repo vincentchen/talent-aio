@@ -60,9 +60,7 @@ public class MaintainUtils
 	public static <Ext, P extends Packet, R> void addToMaintain(ChannelContext<Ext, P, R> channelContext)
 	{
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-
 		groupContext.getConnections().add(channelContext);
-		groupContext.getClientNodes().put(channelContext);
 	}
 
 	/**
@@ -99,16 +97,6 @@ public class MaintainUtils
 			log.error(e1.toString(), e1);
 		}
 		
-		
-		try
-		{
-			groupContext.getClientNodes().remove(channelContext);
-		} catch (Exception e1)
-		{
-			log.error(e1.toString(), e1);
-		}
-		
-
 		if (StringUtils.isNotBlank(channelContext.getUserid()))
 		{
 			try

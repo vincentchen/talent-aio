@@ -1,14 +1,3 @@
-/**
- * **************************************************************************
- *
- * @说明: 
- * @项目名称: talent-aio-common
- *
- * @author: tanyaowu 
- * @创建时间: 2016年11月17日 上午11:10:22
- *
- * **************************************************************************
- */
 package com.talent.aio.common.utils;
 
 import java.nio.channels.AsynchronousSocketChannel;
@@ -55,7 +44,7 @@ public class AioUtils
 		AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
 		if (!asynchronousSocketChannel.isOpen())
 		{
-			log.error("asynchronousSocketChannel is not open, {}", channelContext.toString());
+			log.warn("asynchronousSocketChannel is not open, {}", channelContext.toString());
 			Aio.close(channelContext, "asynchronousSocketChannel is not open");
 			return false;
 		}

@@ -35,12 +35,12 @@ public class ClientNodes<Ext, P extends Packet, R>
 	 */
 	public static <Ext, P extends Packet, R> String getKey(ChannelContext<Ext, P, R> channelContext)
 	{
-		Node remotenode = channelContext.getClientNode();
-		if (remotenode == null)
+		Node clientNode = channelContext.getClientNode();
+		if (clientNode == null)
 		{
-			throw new RuntimeException("remotenode is null");
+			throw new RuntimeException("client node is null");
 		}
-		String key = getKey(remotenode.getIp(), remotenode.getPort());
+		String key = getKey(clientNode.getIp(), clientNode.getPort());
 		return key;
 	}
 

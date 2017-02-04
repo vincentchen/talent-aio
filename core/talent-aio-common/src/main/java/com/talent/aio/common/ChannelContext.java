@@ -3,6 +3,7 @@ package com.talent.aio.common;
 
 import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.slf4j.Logger;
@@ -28,7 +29,11 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 {
 	private static Logger log = LoggerFactory.getLogger(ChannelContext.class);
 
-	private static final java.util.concurrent.atomic.AtomicLong ID = new AtomicLong();
+	private static final AtomicLong ID_SEQ = new AtomicLong();
+	
+	public static final String UNKNOWN_ADDRESS_IP = "$UNKNOWN";
+	
+	public static final AtomicInteger UNKNOWN_ADDRESS_PORT_SEQ = new AtomicInteger();
 
 	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
 
@@ -74,7 +79,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 	private Ext ext;
 
-	private long id = ID.incrementAndGet();
+	private long id = ID_SEQ.incrementAndGet();
 
 	private Node clientNode;
 	
@@ -91,8 +96,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public ChannelContext(GroupContext<Ext, P, R> groupContext, AsynchronousSocketChannel asynchronousSocketChannel)
 	{
 		super();
-		this.setAsynchronousSocketChannel(asynchronousSocketChannel);
 		this.setGroupContext(groupContext);
+		this.setAsynchronousSocketChannel(asynchronousSocketChannel);
 	}
 
 	/**
@@ -156,15 +161,24 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		{
 			try
 			{
-				clientNode = createClientNode(asynchronousSocketChannel);
+				Node clientNode = createClientNode(asynchronousSocketChannel);
+				setClientNode(clientNode);
 			} catch (IOException e)
 			{
-				log.error(e.toString(), e);
+				log.info(e.toString(), e);
+				assignAnUnknownClientNode();
 			}
 		} else
 		{
-			clientNode = null;
+			assignAnUnknownClientNode();
 		}
+	}
+	
+
+	private void assignAnUnknownClientNode()
+	{
+		Node clientNode = new Node(UNKNOWN_ADDRESS_IP, UNKNOWN_ADDRESS_PORT_SEQ.incrementAndGet());
+		setClientNode(clientNode);
 	}
 
 	/**
@@ -186,9 +200,31 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	/**
 	 * @param remoteNode the remoteNode to set
 	 */
-	public void setClientNode(Node clientNode)
+	private void setClientNode(Node clientNode)
 	{
+		if (this.clientNode != null)
+		{
+			try
+			{
+				groupContext.getClientNodes().remove(this);
+			} catch (Exception e1)
+			{
+				log.error(e1.toString(), e1);
+			}
+		}
+		
 		this.clientNode = clientNode;
+		
+		if (this.clientNode != null)
+		{
+			try
+			{
+				groupContext.getClientNodes().put(this);
+			} catch (Exception e1)
+			{
+				log.error(e1.toString(), e1);
+			}
+		}
 	}
 
 	/**
@@ -363,6 +399,13 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setClosed(boolean isClosed)
 	{
 		this.isClosed = isClosed;
+		if (isClosed)
+		{
+			if (clientNode == null || (!UNKNOWN_ADDRESS_IP.equals(clientNode.getIp())))
+			{
+				assignAnUnknownClientNode();
+			}
+		}
 	}
 
 	/**

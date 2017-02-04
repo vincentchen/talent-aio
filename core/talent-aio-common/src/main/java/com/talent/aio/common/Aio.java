@@ -64,7 +64,7 @@ public class Aio
 
 	}
 
-	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark, boolean isRemove)
+	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark, boolean isRemove)
 	{
 //		if (t != null)
 //		{
@@ -73,13 +73,13 @@ public class Aio
 		
 		if (channelContext.isClosed() && !isRemove)
 		{
-			log.info("{}已经关闭，备注:{}，异常:{}", channelContext, remark, t == null ? "无" : t.toString());
+			log.info("{}已经关闭，备注:{}，异常:{}", channelContext, remark, throwable == null ? "无" : throwable.toString());
 			return;
 		}
 		
 		if (channelContext.isRemoved())
 		{
-			log.info("{}已经删除，备注:{}，异常:{}", channelContext, remark, t == null ? "无" : t.toString());
+			log.info("{}已经删除，备注:{}，异常:{}", channelContext, remark, throwable == null ? "无" : throwable.toString());
 			return;
 		}
 		
@@ -95,7 +95,7 @@ public class Aio
 		{
 			if (closeRunnable.isWaitingExecute())
 			{
-				log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), t == null ? "无" : t.toString(),
+				log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), throwable == null ? "无" : throwable.toString(),
 						closeRunnable.getThrowable() == null ? "无" : closeRunnable.getThrowable().toString());
 				return;
 			}
@@ -114,12 +114,12 @@ public class Aio
 			
 			closeRunnable.setRemove(isRemove);
 			closeRunnable.setRemark(remark);
-			closeRunnable.setThrowable(t);
+			closeRunnable.setThrowable(throwable);
 			closeRunnable.getExecutor().execute(closeRunnable);
 			closeRunnable.setWaitingExecute(true);
 		} catch (Exception e)
 		{
-			log.error(t.toString(), e);
+			log.error(throwable.toString(), e);
 		} finally 
 		{
 			writeLock.unlock();
@@ -133,27 +133,27 @@ public class Aio
 	 * @param <P> the generic type
 	 * @param <R> the generic type
 	 * @param channelContext the channel context
-	 * @param t the t
+	 * @param throwable the t
 	 * @param remark the remark
 	 */
-	public static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark)
+	public static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark)
 	{
-		close(channelContext, t, remark, false);
+		close(channelContext, throwable, remark, false);
 	}
 
 	/**
 	 * 和close方法一样，只不过不再进行重连等维护性的操作
 	 * @param channelContext
-	 * @param t
+	 * @param throwable
 	 * @param remark
 	 *
 	 * @author: tanyaowu
 	 * @创建时间:　2017年1月11日 下午7:53:19
 	 *
 	 */
-	public static <Ext, P extends Packet, R> void remove(ChannelContext<Ext, P, R> channelContext, Throwable t, String remark)
+	public static <Ext, P extends Packet, R> void remove(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark)
 	{
-		close(channelContext, t, remark, true);
+		close(channelContext, throwable, remark, true);
 	}
 
 	/**
@@ -187,53 +187,53 @@ public class Aio
 	/**
 	 * 
 	 * @param groupContext
-	 * @param remoteip
-	 * @param remoteport
-	 * @param t
+	 * @param clientIp
+	 * @param clientPort
+	 * @param throwable
 	 * @param remark
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年1月11日 下午7:53:59
+	 * @创建时间:　2017年2月4日 下午1:38:32
 	 *
 	 */
-	public static <Ext, P extends Packet, R> void close(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport, Throwable t, String remark)
+	public static <Ext, P extends Packet, R> void close(GroupContext<Ext, P, R> groupContext, String clientIp, Integer clientPort, Throwable throwable, String remark)
 	{
-		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(remoteip, remoteport);
-		close(channelContext, t, remark);
+		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(clientIp, clientPort);
+		close(channelContext, throwable, remark);
 	}
 
 	/**
 	 * 和close方法一样，只不过不再进行重连等维护性的操作
 	 * @param groupContext
-	 * @param remoteip
-	 * @param remoteport
-	 * @param t
+	 * @param clientIp
+	 * @param clientPort
+	 * @param throwable
 	 * @param remark
 	 *
 	 * @author: tanyaowu
 	 * @创建时间:　2017年1月11日 下午7:54:03
 	 *
 	 */
-	public static <Ext, P extends Packet, R> void remove(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport, Throwable t, String remark)
+	public static <Ext, P extends Packet, R> void remove(GroupContext<Ext, P, R> groupContext, String clientIp, Integer clientPort, Throwable throwable, String remark)
 	{
-		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(remoteip, remoteport);
-		remove(channelContext, t, remark);
+		ChannelContext<Ext, P, R> channelContext = groupContext.getClientNodes().find(clientIp, clientPort);
+		remove(channelContext, throwable, remark);
 	}
 
 	/**
 	 * 
 	 * @param groupContext
-	 * @param remoteip
-	 * @param remoteport
+	 * @param clientIp
+	 * @param clientPort
 	 * @return
 	 *
 	 * @author: tanyaowu
 	 * @创建时间:　2016年12月29日 下午2:42:25
 	 *
 	 */
-	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByClientNode(GroupContext<Ext, P, R> groupContext, String remoteip, Integer remoteport)
+	public static <Ext, P extends Packet, R> ChannelContext<Ext, P, R> getChannelContextByClientNode(GroupContext<Ext, P, R> groupContext, String clientIp, Integer clientPort)
 	{
-		return groupContext.getClientNodes().find(remoteip, remoteport);
+		return groupContext.getClientNodes().find(clientIp, clientPort);
 	}
 
 	/**
