@@ -31,13 +31,6 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private static final java.util.concurrent.atomic.AtomicLong ID = new AtomicLong();
 
 	//	private java.util.concurrent.Semaphore sendSemaphore = new Semaphore(1);
-	
-
-	/** The ip. */
-	protected String serverIp;
-
-	/** The port. */
-	protected int serverPort;
 
 	private GroupContext<Ext, P, R> groupContext = null;
 
@@ -84,6 +77,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	private long id = ID.incrementAndGet();
 
 	private Node clientNode;
+	
+	private Node serverNode;
 
 	/**
 	 * @param groupContext
@@ -110,7 +105,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月6日 下午12:21:41
 	 *
 	 */
-	public abstract Node getClientNode(AsynchronousSocketChannel asynchronousSocketChannel) throws IOException;
+	public abstract Node createClientNode(AsynchronousSocketChannel asynchronousSocketChannel) throws IOException;
 
 	@Override
 	public String toString()
@@ -161,7 +156,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		{
 			try
 			{
-				clientNode = getClientNode(asynchronousSocketChannel);
+				clientNode = createClientNode(asynchronousSocketChannel);
 			} catch (IOException e)
 			{
 				log.error(e.toString(), e);
@@ -634,39 +629,6 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		}
 
 	}
-	
-	
-	/**
-	 * @return the serverIp
-	 */
-	public String getServerIp()
-	{
-		return serverIp;
-	}
-
-	/**
-	 * @param serverIp the serverIp to set
-	 */
-	public void setServerIp(String serverIp)
-	{
-		this.serverIp = serverIp;
-	}
-
-	/**
-	 * @return the serverPort
-	 */
-	public int getServerPort()
-	{
-		return serverPort;
-	}
-
-	/**
-	 * @param serverPort the serverPort to set
-	 */
-	public void setServerPort(int serverPort)
-	{
-		this.serverPort = serverPort;
-	}
 
 	/**
 	 * @return the isRemoved
@@ -682,6 +644,22 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setRemoved(boolean isRemoved)
 	{
 		this.isRemoved = isRemoved;
+	}
+
+	/**
+	 * @return the serverNode
+	 */
+	public Node getServerNode()
+	{
+		return serverNode;
+	}
+
+	/**
+	 * @param serverNode the serverNode to set
+	 */
+	public void setServerNode(Node serverNode)
+	{
+		this.serverNode = serverNode;
 	}
 
 }

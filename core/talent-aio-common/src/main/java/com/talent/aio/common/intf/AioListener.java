@@ -30,13 +30,12 @@ public interface AioListener<Ext, P extends Packet, R>
 	 * @param channelContext
 	 * @param isConnected 是否连接成功,true:表示连接成功，false:表示连接失败
 	 * @param isReconnect 是否是重连, true: 表示这是重新连接，false: 表示这是第一次连接
-	 * @return true: 表示保留这个连接，false: 表示这个连接需要立即删除
 	 *
 	 * @author: tanyaowu
 	 * @创建时间:　2016年12月16日 下午3:28:24
 	 *
 	 */
-	boolean onAfterConnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected, boolean isReconnect);
+	void onAfterConnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected, boolean isReconnect);
 
 	/**
 	 * 消息包发送之前触发本方法
