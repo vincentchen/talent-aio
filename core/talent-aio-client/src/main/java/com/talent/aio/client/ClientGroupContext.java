@@ -96,8 +96,7 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 * @创建时间:　2017年2月2日 下午1:30:08
 	 *
 	 */
-	public ClientGroupContext(ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf,
-			ExecutorService groupExecutor)
+	public ClientGroupContext(ClientAioHandler<Ext, P, R> aioHandler, ClientAioListener<Ext, P, R> aioListener, ReconnConf<Ext, P, R> reconnConf, ExecutorService groupExecutor)
 	{
 		super();
 
@@ -107,8 +106,6 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		this.reconnConf = reconnConf;
 		this.groupExecutor = groupExecutor;
 	}
-
-	
 
 	//	/**
 	//	 * Instantiates a new server group context.
@@ -208,6 +205,10 @@ public class ClientGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public void setClientAioListener(ClientAioListener<Ext, P, R> clientAioListener)
 	{
 		this.clientAioListener = clientAioListener;
+		if (this.clientAioListener == null)
+		{
+			this.clientAioListener = new DefaultClientAioListener<Ext, P, R>();
+		}
 	}
 
 	/** 
