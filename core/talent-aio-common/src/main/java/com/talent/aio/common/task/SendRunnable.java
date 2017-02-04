@@ -2,6 +2,8 @@ package com.talent.aio.common.task;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.slf4j.Logger;
@@ -11,7 +13,6 @@ import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.WriteCompletionHandler;
 import com.talent.aio.common.intf.AioHandler;
-import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
@@ -60,10 +61,20 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
 		ByteBuffer byteBuffer = groupContext.getAioHandler().encode(packet, channelContext);
 		int packetCount = 1;
-		sendByteBuffer(byteBuffer, packetCount);
+		sendByteBuffer(byteBuffer, packetCount, packet);
 	}
 
-	public void sendByteBuffer(ByteBuffer byteBuffer, Integer packetCount)
+	/**
+	 * 
+	 * @param byteBuffer
+	 * @param packetCount
+	 * @param packets
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月4日 下午9:10:01
+	 *
+	 */
+	public void sendByteBuffer(ByteBuffer byteBuffer, Integer packetCount, Object packets)
 	{
 		if (byteBuffer == null)
 		{
@@ -86,7 +97,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		{
 			log.error(e.toString(), e);
 		}
-		asynchronousSocketChannel.write(byteBuffer, packetCount, writeCompletionHandler);
+		asynchronousSocketChannel.write(byteBuffer, packets, writeCompletionHandler);
 		channelContext.getStat().setLatestTimeOfSentPacket(SystemTimer.currentTimeMillis());
 	}
 
@@ -126,7 +137,6 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 
 		P packet = null;
 		GroupContext<Ext, P, R> groupContext = this.channelContext.getGroupContext();
-		AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
 		AioHandler<Ext, P, R> aioHandler = groupContext.getAioHandler();
 
 		if (queueSize > 1)
@@ -135,25 +145,16 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			int allBytebufferCapacity = 0;
 
 			int packetCount = 0;
+			List<P> packets = new ArrayList<>();
 			for (int i = 0; i < queueSize; i++)
 			{
 				if ((packet = msgQueue.poll()) != null)
 				{
 					ByteBuffer byteBuffer = aioHandler.encode(packet, channelContext);
+					packets.add(packet);
 					allBytebufferCapacity += byteBuffer.limit();
 					packetCount++;
 					byteBuffers[i] = byteBuffer;
-
-					if (aioListener != null)
-					{
-						try
-						{
-							aioListener.onBeforeSent(channelContext, packet);
-						} catch (Exception e)
-						{
-							log.error(e.toString(), e);
-						}
-					}
 				} else
 				{
 					break;
@@ -169,22 +170,12 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 					allByteBuffer.put(byteBuffer);
 				}
 			}
-			this.sendByteBuffer(allByteBuffer, packetCount);
+			sendByteBuffer(allByteBuffer, packetCount, packets);
 
 		} else
 		{
 			if ((packet = msgQueue.poll()) != null)
 			{
-				if (aioListener != null)
-				{
-					try
-					{
-						aioListener.onBeforeSent(channelContext, packet);
-					} catch (Exception e)
-					{
-						log.error(e.toString(), e);
-					}
-				}
 				sendPacket(packet);
 			}
 		}

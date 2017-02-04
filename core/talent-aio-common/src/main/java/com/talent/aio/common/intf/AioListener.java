@@ -38,15 +38,16 @@ public interface AioListener<Ext, P extends Packet, R>
 	void onAfterConnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected, boolean isReconnect);
 
 	/**
-	 * 消息包发送之前触发本方法
+	 * 消息包发送之后触发本方法
 	 * @param channelContext
 	 * @param packet
+	 * @param isSentSuccess true:发送成功，false:发送失败
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2016年12月8日 下午1:14:03
+	 * @创建时间:　2017年2月4日 下午9:18:38
 	 *
 	 */
-	void onBeforeSent(ChannelContext<Ext, P, R> channelContext, P packet);
+	void onAfterSent(ChannelContext<Ext, P, R> channelContext, P packet, boolean isSentSuccess);
 
 	/**
 	 * 解码成功后触发本方法

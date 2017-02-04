@@ -12,11 +12,13 @@
 package com.talent.aio.common;
 
 import java.nio.channels.CompletionHandler;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.stat.GroupStat;
 
@@ -30,7 +32,7 @@ import com.talent.aio.common.stat.GroupStat;
  *  (1) | 2016年11月15日 | tanyaowu | 新建类
  *
  */
-public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, Integer>
+public class WriteCompletionHandler<Ext, P extends Packet, R> implements CompletionHandler<Integer, Object>
 {
 
 	private static Logger log = LoggerFactory.getLogger(WriteCompletionHandler.class);
@@ -68,46 +70,83 @@ public class WriteCompletionHandler<Ext, P extends Packet, R> implements Complet
 	 * @see java.nio.channels.CompletionHandler#completed(java.lang.Object, java.lang.Object)
 	 * 
 	 * @param result
-	 * @param packetCount
+	 * @param packets
 	 * @重写人: tanyaowu
 	 * @重写时间: 2016年11月16日 下午1:40:59
 	 * 
 	 */
 	@Override
-	public void completed(Integer result, Integer packetCount)
+	public void completed(Integer result, Object packets)
 	{
 		this.writeSemaphore.release();
-		if (result > 0)
+		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+		GroupStat groupStat = groupContext.getGroupStat();
+		AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
+		boolean isSentSuccess = result > 0;
+		
+		if (isSentSuccess)
 		{
-			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-			GroupStat groupStat = groupContext.getGroupStat();
-
-			groupStat.getSentPacket().addAndGet(packetCount);//.incrementAndGet();
 			groupStat.getSentBytes().addAndGet(result);
-//			channelContext.getStat().setLatestTimeOfSentPacket(SystemTimer.currentTimeMillis());
-		} else if (result == 0)
+		}
+		
+		int packetCount = 0;
+		if (packets instanceof Packet)
 		{
-			log.error("发送长度为{}", result);
-			Aio.close(channelContext, "写数据返回:" + result);
-		} else if (result < 0)
+			@SuppressWarnings("unchecked")
+			P packet = (P) packets;
+			if (isSentSuccess)
+			{
+				packetCount = 1;
+				groupStat.getSentPacket().addAndGet(packetCount);
+			}
+			
+			try
+			{
+				aioListener.onAfterSent(channelContext, packet, isSentSuccess);
+			} catch (Exception e)
+			{
+				log.error(e.toString(), e);
+			}
+		} else
+		{
+			@SuppressWarnings("unchecked")
+			List<P> ps = (List<P>) packets;
+			if (isSentSuccess)
+			{
+				packetCount = ps.size();
+				groupStat.getSentPacket().addAndGet(packetCount);
+			}
+			
+			for (P p : ps)
+			{
+				try
+				{
+					aioListener.onAfterSent(channelContext, p, isSentSuccess);
+				} catch (Exception e)
+				{
+					log.error(e.toString(), e);
+				}
+			}
+		}
+		
+		if (!isSentSuccess)
 		{
 			log.error("发送长度为{}", result);
 			Aio.close(channelContext, "写数据返回:" + result);
 		}
-
 	}
 
 	/** 
 	 * @see java.nio.channels.CompletionHandler#failed(java.lang.Throwable, java.lang.Object)
 	 * 
 	 * @param exc
-	 * @param attachment
+	 * @param packets
 	 * @重写人: tanyaowu
 	 * @重写时间: 2016年11月16日 下午1:40:59
 	 * 
 	 */
 	@Override
-	public void failed(Throwable exc, Integer packetCount)
+	public void failed(Throwable exc, Object packets)
 	{
 		try
 		{

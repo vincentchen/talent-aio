@@ -91,17 +91,6 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 
 			try
 			{
-//				if (aioListener != null)
-//				{
-//					try
-//					{
-//						groupContext.getAioListener().onBeforeClose(channelContext, throwable, remark, isRemove);
-//					} catch (Throwable e)
-//					{
-//						log.error(e.toString(), e);
-//					}
-//				}
-				
 				channelContext.setClosed(true);
 				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
 				channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
@@ -139,15 +128,12 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 					log.error(e.toString());
 				}
 				
-				if (aioListener != null)
+				try
 				{
-					try
-					{
-						aioListener.onAfterClose(channelContext, throwable, remark, isRemove);
-					} catch (Throwable e)
-					{
-						log.error(e.toString(), e);
-					}
+					aioListener.onAfterClose(channelContext, throwable, remark, isRemove);
+				} catch (Throwable e)
+				{
+					log.error(e.toString(), e);
 				}
 			} catch (Throwable e)
 			{
