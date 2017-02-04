@@ -301,6 +301,11 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	public void setServerAioListener(ServerAioListener<Ext, P, R> serverAioListener)
 	{
 		this.serverAioListener = serverAioListener;
+		
+		if (this.serverAioListener == null)
+		{
+			this.serverAioListener = new DefaultServerAioListener<Ext, P, R>();
+		}
 	}
 
 	/** 
