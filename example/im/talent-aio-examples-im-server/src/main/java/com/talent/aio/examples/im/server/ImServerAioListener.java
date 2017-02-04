@@ -76,9 +76,9 @@ public class ImServerAioListener implements ServerAioListener<Object, ImPacket, 
 	}
 
 	@Override
-	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
+	public void onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
-		return true;
+		return;
 	}
 
 	/** 
