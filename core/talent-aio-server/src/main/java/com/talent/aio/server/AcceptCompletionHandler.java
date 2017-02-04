@@ -79,7 +79,6 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			asynchronousSocketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, asynchronousSocketChannel);
-			channelContext.setClosed(false);
 			channelContext.setServerNode(aioServer.getServerNode());
 			ServerAioListener<Ext, P, R> serverAioListener = serverGroupContext.getServerAioListener();
 			serverAioListener.onAfterConnected(channelContext, true, false);
