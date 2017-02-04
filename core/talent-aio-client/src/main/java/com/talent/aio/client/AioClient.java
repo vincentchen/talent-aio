@@ -7,10 +7,12 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +24,7 @@ import com.talent.aio.client.intf.ClientAioListener;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.common.ChannelContext.Stat;
+import com.talent.aio.common.Node;
 import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.ReadCompletionHandler;
 import com.talent.aio.common.ReconnConf;
@@ -103,60 +106,57 @@ public class AioClient<Ext, P extends Packet, R>
 
 	/**
 	 * 
-	 * @param serverIp
-	 * @param serverPort
+	 * @param serverNode
 	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年2月3日 下午10:30:14
+	 * @创建时间:　2017年2月4日 上午10:48:47
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort) throws Exception
+	public ClientChannelContext<Ext, P, R> connect(Node serverNode) throws Exception
 	{
-		return connect(serverIp, serverPort, null, 0, null);
+		return connect(serverNode, null);
 	}
 	
 	/**
 	 * 
-	 * @param serverIp
-	 * @param serverPort
+	 * @param serverNode
+	 * @param timeout 超时时间，单位秒
 	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年2月2日 下午1:26:17
+	 * @创建时间:　2017年2月4日 上午10:48:42
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort, Integer timeout) throws Exception
+	public ClientChannelContext<Ext, P, R> connect(Node serverNode, Integer timeout) throws Exception
 	{
-		return connect(serverIp, serverPort, null, 0, timeout);
+		return connect(serverNode, null, 0, timeout);
 	}
 
 	/**
 	 * 
-	 * @param serverIp
-	 * @param serverPort
+	 * @param serverNode
 	 * @param bindIp
 	 * @param bindPort
-	 * @param timeout
+	 * @param timeout 超时时间，单位秒
 	 * @return
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年2月3日 下午10:27:28
+	 * @创建时间:　2017年2月4日 上午10:48:35
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort, String bindIp, Integer bindPort, Integer timeout) throws Exception
+	public ClientChannelContext<Ext, P, R> connect(Node serverNode, String bindIp, Integer bindPort, Integer timeout) throws Exception
 	{
-		return connect(serverIp, serverPort, bindIp, bindPort, null, timeout);
+		return connect(serverNode, bindIp, bindPort, null, timeout);
 	}
 
 	
 	/**
 	 * 
-	 * @param serverIp
-	 * @param serverPort
+	 * @param serverNode
 	 * @param bindIp
 	 * @param bindPort
 	 * @param initClientChannelContext
@@ -165,10 +165,10 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @throws Exception
 	 *
 	 * @author: tanyaowu
-	 * @创建时间:　2017年2月3日 下午10:25:26
+	 * @创建时间:　2017年2月4日 上午10:48:23
 	 *
 	 */
-	private ClientChannelContext<Ext, P, R> connect(String serverIp, Integer serverPort, String bindIp, Integer bindPort, ClientChannelContext<Ext, P, R> initClientChannelContext, Integer timeout)
+	private ClientChannelContext<Ext, P, R> connect(Node serverNode, String bindIp, Integer bindPort, ClientChannelContext<Ext, P, R> initClientChannelContext, Integer timeout)
 			throws Exception
 	{
 		AsynchronousSocketChannel asynchronousSocketChannel = AsynchronousSocketChannel.open(channelGroup);
@@ -195,59 +195,83 @@ public class AioClient<Ext, P extends Packet, R>
 
 		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 
-		boolean isReconnect = false;
-		ClientChannelContext<Ext, P, R> channelContext = null;//new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
-		//		
+		boolean isReconnect = initClientChannelContext != null;
+		ClientChannelContext<Ext, P, R> channelContext = initClientChannelContext;
+		
+		Future<Void> future = asynchronousSocketChannel.connect(new InetSocketAddress(serverNode.getIp(), serverNode.getPort()));
+		
+		Integer _timeout = timeout;
+		if (_timeout == null)
+		{
+			_timeout = DEFAULT_TIMEOUT;
+		}
+		
 		try
 		{
-			Future<Void> future = asynchronousSocketChannel.connect(new InetSocketAddress(serverIp, serverPort));
-
-			if (initClientChannelContext != null) //表示是重连
-			{
-				channelContext = initClientChannelContext;
-				isReconnect = true;
-			} else
-			{
-				channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
-				channelContext.setServerIp(serverIp);
-				channelContext.setServerPort(serverPort);
-			}
-
-			Integer _timeout = timeout;
-			if (_timeout == null)
-			{
-				_timeout = DEFAULT_TIMEOUT;
-			}
 			future.get(_timeout, TimeUnit.SECONDS);
 			
-			
-			if (isReconnect)
+			try
 			{
-				channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
-				channelContext.getDecodeRunnable().setCanceled(false);
-				channelContext.getHandlerRunnableNormPrior().setCanceled(false);
-				//		channelContext.getHandlerRunnableHighPrior().setCanceled(false);
-				channelContext.getSendRunnableNormPrior().setCanceled(false);
-				//		channelContext.getSendRunnableHighPrior().setCanceled(false);
+				if (channelContext == null)
+				{
+					channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+					channelContext.setServerNode(serverNode);
+				}
+				
+				if (isReconnect)
+				{
+					channelContext.setAsynchronousSocketChannel(asynchronousSocketChannel);
+					channelContext.getDecodeRunnable().setCanceled(false);
+					channelContext.getHandlerRunnableNormPrior().setCanceled(false);
+					//		channelContext.getHandlerRunnableHighPrior().setCanceled(false);
+					channelContext.getSendRunnableNormPrior().setCanceled(false);
+					//		channelContext.getSendRunnableHighPrior().setCanceled(false);
 
-				clientGroupContext.getCloseds().remove(channelContext);
+					clientGroupContext.getCloseds().remove(channelContext);
+				}
+				clientGroupContext.getConnecteds().add(channelContext);
+
+				channelContext.setBindIp(bindIp);
+				channelContext.setBindPort(bindPort);
+
+				channelContext.setReconnCount(0);
+				channelContext.setClosed(false);
+				
+				ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
+				ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
+				asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
+				
+				log.info("connected to {}", serverNode);
+				if (clientAioListener != null)
+				{
+					clientAioListener.onAfterConnected(channelContext, true, isReconnect);
+				}
+				
+				return channelContext;
+				
+			} catch (Exception e)
+			{
+				throw new Exception(e);
 			}
-			clientGroupContext.getConnecteds().add(channelContext);
-
-			channelContext.setBindIp(bindIp);
-			channelContext.setBindPort(bindPort);
-
-			channelContext.setReconnCount(0);
-			channelContext.setClosed(false);
-		} catch (Exception e)
+		} catch (InterruptedException | ExecutionException | TimeoutException e)
 		{
 			log.error(e.toString(), e);
+			
+			if (channelContext == null)
+			{
+				channelContext = new ClientChannelContext<>(clientGroupContext, asynchronousSocketChannel);
+				channelContext.setServerNode(serverNode);
+			}
+			
+			channelContext.setClosed(true);
+			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
 
-			if (!isReconnect)
+			if (!isReconnect)  //不是重连，则是第一次连接，需要把channelContext加到closeds行列
 			{
 				clientGroupContext.getCloseds().add(channelContext);
 			}
 
+			//检查是否需要重连
 			ReconnConf<Ext, P, R> reconnConf = clientGroupContext.getReconnConf();
 			if (reconnConf != null && reconnConf.getInterval() > 0)
 			{
@@ -257,41 +281,18 @@ public class AioClient<Ext, P extends Packet, R>
 				}
 			}
 
-			channelContext.setClosed(true);
-			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
-
 			if (clientAioListener != null)
 			{
-//				clientAioListener.onFailConnected(channelContext, isReconnect, e);
-				boolean f = clientAioListener.onAfterConnected(channelContext, false, isReconnect);
-				if (!f)
-				{
-					log.warn("不允许连接:{}", channelContext);
-					Aio.remove(channelContext, "不允许连接");
-					return null;
-				}
+				clientAioListener.onAfterConnected(channelContext, false, isReconnect);
 			}
 
 			return channelContext;
 		}
-		log.info("connected to {}:{}", serverIp, serverPort);
+		
 
-		if (clientAioListener != null)
-		{
-			boolean f = clientAioListener.onAfterConnected(channelContext, true, isReconnect);
-			if (!f)
-			{
-				log.warn("不允许连接:{}", channelContext);
-				Aio.remove(channelContext, "不允许连接");
-				return null;
-			}
-		}
+		
 
-		ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-		ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
-		asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
-
-		return channelContext;
+		
 
 	}
 
@@ -324,7 +325,7 @@ public class AioClient<Ext, P extends Packet, R>
 	 */
 	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext, Integer timeout) throws Exception
 	{
-		connect(channelContext.getServerIp(), channelContext.getServerPort(), channelContext.getBindIp(), channelContext.getBindPort(), channelContext, timeout);
+		connect(channelContext.getServerNode(), channelContext.getBindIp(), channelContext.getBindPort(), channelContext, timeout);
 		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
 		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 		if (channelContext.isClosed())
