@@ -11,15 +11,12 @@
  */
 package com.talent.aio.examples.im.server;
 
-import java.nio.channels.AsynchronousSocketChannel;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.examples.im.common.CommandStat;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.server.AioServer;
 import com.talent.aio.server.intf.ServerAioListener;
 
 /**
@@ -69,11 +66,11 @@ public class ImServerAioListener implements ServerAioListener<Object, ImPacket, 
 	 * @重写时间: 2016年12月20日 上午11:03:45
 	 * 
 	 */
-	@Override
-	public boolean onAfterAccepted(AsynchronousSocketChannel asynchronousSocketChannel, AioServer<Object, ImPacket, Object> aioServer)
-	{
-		return true;
-	}
+//	@Override
+//	public boolean onAfterAccepted(AsynchronousSocketChannel asynchronousSocketChannel, AioServer<Object, ImPacket, Object> aioServer)
+//	{
+//		return true;
+//	}
 
 	@Override
 	public void onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
@@ -91,9 +88,13 @@ public class ImServerAioListener implements ServerAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public void onBeforeSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet)
+	public void onAfterSent(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, boolean isSentSuccess)
 	{
-		CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
+		if (isSentSuccess)
+		{
+			CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
+		}
+		
 
 	}
 
