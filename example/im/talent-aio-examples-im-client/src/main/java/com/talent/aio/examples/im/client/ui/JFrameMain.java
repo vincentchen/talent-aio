@@ -27,6 +27,7 @@ import com.talent.aio.client.ClientGroupContext;
 import com.talent.aio.client.ClientGroupStat;
 import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.Node;
 import com.talent.aio.common.ObjWithLock;
 import com.talent.aio.common.stat.GroupStat;
 import com.talent.aio.common.utils.SystemTimer;
@@ -125,14 +126,15 @@ public class JFrameMain extends javax.swing.JFrame
 	 */
 	private JFrameMain()
 	{
+		listModel = new DefaultListModel();
 		initComponents();
+		
 		
 		//#2ecc71 OK
 		//##f1c40f warn
 		Color okColor = new Color(0x2e, 0xcc, 0x71);
 		Color warnColor = new Color(0xe7, 0x4c, 0x3c);
 		clients.setCellRenderer(new ImListCellRenderer(okColor, warnColor));
-		clients.setModel(listModel);
 		try
 		{
 			imClientStarter = new ImClientStarter();
@@ -235,6 +237,7 @@ public class JFrameMain extends javax.swing.JFrame
         });
 
         clients.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
+        clients.setModel(listModel);
         jScrollPane1.setViewportView(clients);
 
         msgField.setText("he");
@@ -468,6 +471,7 @@ public class JFrameMain extends javax.swing.JFrame
 			int count = end - start;
 			final CountDownLatch countDownLatch = new CountDownLatch(count);
 			
+			final Node serverNode = new Node(serverip_, port_);
 			for (int i = 0; i < count; i++)
 			{
 				threadPoolExecutor.execute(new Runnable()
@@ -477,13 +481,13 @@ public class JFrameMain extends javax.swing.JFrame
 					{
 						try
 						{
-							ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverip_, port_);
+							ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverNode);
 							if (channelContext != null)
 							{
-								synchronized (clients)
-								{
+//								synchronized (clients)
+//								{
 									listModel.addElement(channelContext);
-								}
+//								}
 							}
 						} catch (Exception e)
 						{
@@ -670,8 +674,8 @@ public class JFrameMain extends javax.swing.JFrame
     private void delBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delBtnActionPerformed
         // TODO add your handling code here:
     	ChannelContext<Object, ImPacket, Object>[] ccs = null;
-    	synchronized (clients)
-		{
+//    	synchronized (clients)
+//		{
 			int[] selecteds = clients.getSelectedIndices();
 			if (selecteds != null && selecteds.length > 0)
 			{
@@ -694,7 +698,7 @@ public class JFrameMain extends javax.swing.JFrame
 				log.error("请选中要删除的连接");
 				return;
 			}
-		}
+//		}
     	
 		if (ccs != null)
 		{
@@ -703,6 +707,9 @@ public class JFrameMain extends javax.swing.JFrame
 				if (cc != null)
 				{
 					Aio.remove(cc, "管理员删除");
+					
+					listModel.removeElement(cc);
+					clients.updateUI();
 				}
 				
 			}
@@ -766,7 +773,7 @@ public class JFrameMain extends javax.swing.JFrame
 	}
 
 	@SuppressWarnings("rawtypes")
-	private DefaultListModel listModel = new DefaultListModel();
+	private DefaultListModel listModel = null;
 
 	//    private Set<ChannelContext> clients_ = new HashSet<>();
     // Variables declaration - do not modify//GEN-BEGIN:variables

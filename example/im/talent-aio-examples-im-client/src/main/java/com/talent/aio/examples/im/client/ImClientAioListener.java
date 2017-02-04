@@ -69,16 +69,16 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		if (isConnected)
 		{
 			JFrameMain jFrameMain = JFrameMain.getInstance();
-			synchronized (jFrameMain.getClients())
-			{
+//			synchronized (jFrameMain.getClients())
+//			{
 				jFrameMain.getClients().updateUI();
-			}
+//			}
 		}
 		return true;
 	}
 
 	@Override
-	public boolean onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
+	public void onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
 //		JFrameMain jFrameMain = JFrameMain.getInstance();
 //		synchronized (jFrameMain)
@@ -100,7 +100,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		if (!isConnected)
 		{
 			//没连上
-			return true;
+			return;
 		}
 		
 		String did = "did";
@@ -117,7 +117,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 			log.error(e.toString(), e);
 		}
 		
-		return true;
+		return;
 	}
 	
 	
@@ -273,22 +273,22 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		log.info("已经关闭连接:{}", channelContext);
 
 		JFrameMain.updateConnectionCount();
-		JFrameMain jFrameMain = JFrameMain.getInstance();
-		try
-		{
-//			synchronized (jFrameMain.getClients())
-//			{
-				if (isRemove)
-				{
-					jFrameMain.getListModel().removeElement(channelContext);
-				}
-				jFrameMain.getClients().updateUI();
-//			}
-			
-		} catch (Exception e)
-		{
-
-		}
+//		JFrameMain jFrameMain = JFrameMain.getInstance();
+//		try
+//		{
+////			synchronized (jFrameMain.getClients())
+////			{
+//				if (isRemove)
+//				{
+//					jFrameMain.getListModel().removeElement(channelContext);
+//				}
+//				jFrameMain.getClients().updateUI();
+////			}
+//			
+//		} catch (Exception e)
+//		{
+//
+//		}
 	}
 
 }
