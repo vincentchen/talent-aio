@@ -251,7 +251,7 @@ public class AioClient<Ext, P extends Packet, R>
 				
 			} catch (Exception e)
 			{
-				throw new Exception(e);
+				throw new RuntimeException(e);
 			}
 		} catch (InterruptedException | ExecutionException | TimeoutException e)
 		{
