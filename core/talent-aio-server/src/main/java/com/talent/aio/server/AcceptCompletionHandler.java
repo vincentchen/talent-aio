@@ -6,11 +6,9 @@ import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.talent.aio.common.Aio;
 import com.talent.aio.common.ReadCompletionHandler;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.server.intf.ServerAioListener;
@@ -82,18 +80,11 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, asynchronousSocketChannel);
 			channelContext.setClosed(false);
-			channelContext.setServerIp(aioServer.getServerIp());
-			channelContext.setServerPort(aioServer.getServerPort());
+			channelContext.setServerNode(aioServer.getServerNode());
 			ServerAioListener<Ext, P, R> serverAioListener = serverGroupContext.getServerAioListener();
 			if (serverAioListener != null)
 			{
-				boolean f = serverAioListener.onAfterConnected(channelContext, true, false);
-				if (!f)
-				{
-					log.warn("不允许连接:{}", channelContext);
-					Aio.remove(channelContext, "不允许连接");
-					return;
-				}
+				serverAioListener.onAfterConnected(channelContext, true, false);
 			}
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
@@ -123,10 +114,7 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 		AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
 		serverSocketChannel.accept(aioServer, this);
 
-		String ip = aioServer.getServerIp();
-		String ipstr = StringUtils.isNotBlank(ip) ? ip : "0.0.0.0";
-		ipstr += ":" + aioServer.getServerPort();
-		log.error("[" + ipstr + "]监听出现异常", exc);
+		log.error("[" + aioServer.getServerNode() + "]监听出现异常", exc);
 
 	}
 

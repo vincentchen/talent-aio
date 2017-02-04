@@ -57,7 +57,7 @@ public class ServerChannelContext<Ext, P extends Packet, R> extends ChannelConte
 	{}
 
 	/** 
-	 * @see com.talent.aio.common.ChannelContext#getClientNode(java.nio.channels.AsynchronousSocketChannel)
+	 * @see com.talent.aio.common.ChannelContext#createClientNode(java.nio.channels.AsynchronousSocketChannel)
 	 * 
 	 * @param asynchronousSocketChannel
 	 * @return
@@ -67,7 +67,7 @@ public class ServerChannelContext<Ext, P extends Packet, R> extends ChannelConte
 	 * 
 	 */
 	@Override
-	public Node getClientNode(AsynchronousSocketChannel asynchronousSocketChannel) throws IOException
+	public Node createClientNode(AsynchronousSocketChannel asynchronousSocketChannel) throws IOException
 	{
 		InetSocketAddress inetSocketAddress = (InetSocketAddress) asynchronousSocketChannel.getRemoteAddress();
 		Node clientNode = new Node(inetSocketAddress.getHostString(), inetSocketAddress.getPort());

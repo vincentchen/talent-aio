@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.Node;
 import com.talent.aio.common.intf.Packet;
 
 /**
@@ -53,10 +54,8 @@ public class AioServer<Ext, P extends Packet, R>
 	private ServerGroupContext<Ext, P, R> serverGroupContext;
 
 	private AsynchronousServerSocketChannel serverSocketChannel;
-	
-	private String serverIp;
-	
-	private Integer serverPort;
+		
+	private Node serverNode;
 
 	/**
 	 * 
@@ -98,8 +97,7 @@ public class AioServer<Ext, P extends Packet, R>
 
 	public void start(String serverIp, int serverPort) throws IOException
 	{
-		this.setServerIp(serverIp);
-		this.setServerPort(serverPort);
+		this.serverNode = new Node(serverIp, serverPort);
 		ExecutorService groupExecutor = serverGroupContext.getGroupExecutor();
 
 		AsynchronousChannelGroup channelGroup = AsynchronousChannelGroup.withThreadPool(groupExecutor);
@@ -128,35 +126,18 @@ public class AioServer<Ext, P extends Packet, R>
 	}
 
 	/**
-	 * @return the serverIp
+	 * @return the serverNode
 	 */
-	public String getServerIp()
+	public Node getServerNode()
 	{
-		return serverIp;
+		return serverNode;
 	}
 
-	/**
-	 * @param serverIp the serverIp to set
-	 */
-	public void setServerIp(String serverIp)
-	{
-		this.serverIp = serverIp;
-	}
-
-	/**
-	 * @return the serverPort
-	 */
-	public Integer getServerPort()
-	{
-		return serverPort;
-	}
-
-	/**
-	 * @param serverPort the serverPort to set
-	 */
-	public void setServerPort(Integer serverPort)
-	{
-		this.serverPort = serverPort;
-	}
-
+//	/**
+//	 * @param serverNode the serverNode to set
+//	 */
+//	public void setServerNode(Node serverNode)
+//	{
+//		this.serverNode = serverNode;
+//	}
 }
