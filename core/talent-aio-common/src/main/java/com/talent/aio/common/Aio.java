@@ -394,21 +394,64 @@ public class Aio
 	 */
 	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet, ChannelContextFilter<Ext, P, R> channelContextFilter)
 	{
-		ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = groupContext.getGroups().clients(groupid);
-		if (objWithReadWriteLock == null)
+		ObjWithLock<Set<ChannelContext<Ext, P, R>>> setWithLock = groupContext.getGroups().clients(groupid);
+		if (setWithLock == null)
 		{
 			log.debug("组[{}]不存在", groupid);
 			return;
 		}
 
-		Lock lock = objWithReadWriteLock.getLock().readLock();
+		sendToSet(groupContext, setWithLock, packet, channelContextFilter);
+	}
+
+	/**
+	 * 
+	 * @param groupContext
+	 * @param groupid
+	 * @param packet
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年1月13日 下午3:33:54
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet)
+	{
+		sendToGroup(groupContext, groupid, packet, null);
+	}
+	
+	public static <Ext, P extends Packet, R> void sendToAll(GroupContext<Ext, P, R> groupContext, P packet, ChannelContextFilter<Ext, P, R> channelContextFilter)
+	{
+		ObjWithLock<Set<ChannelContext<Ext, P, R>>> setWithLock = groupContext.getConnections().getSetWithLock();
+		if (setWithLock == null)
+		{
+			log.debug("没有任何连接");
+			return;
+		}
+
+		sendToSet(groupContext, setWithLock, packet, channelContextFilter);
+	}
+	
+	/**
+	 * 发消息到指定集合
+	 * @param groupContext
+	 * @param setWithLock
+	 * @param packet
+	 * @param channelContextFilter
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月5日 上午9:10:55
+	 *
+	 */
+	public static <Ext, P extends Packet, R> void sendToSet(GroupContext<Ext, P, R> groupContext, ObjWithLock<Set<ChannelContext<Ext, P, R>>> setWithLock, P packet, ChannelContextFilter<Ext, P, R> channelContextFilter)
+	{
+		Lock lock = setWithLock.getLock().readLock();
 		try
 		{
 			lock.lock();
-			Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+			Set<ChannelContext<Ext, P, R>> set = setWithLock.getObj();
 			if (set.size() == 0)
 			{
-				log.debug("组[{}]里没有客户端", groupid);
+				log.debug("集合为空");
 				return;
 			}
 			for (ChannelContext<Ext, P, R> channelContext : set)
@@ -430,21 +473,6 @@ public class Aio
 		{
 			lock.unlock();
 		}
-	}
-
-	/**
-	 * 
-	 * @param groupContext
-	 * @param groupid
-	 * @param packet
-	 *
-	 * @author: tanyaowu
-	 * @创建时间:　2017年1月13日 下午3:33:54
-	 *
-	 */
-	public static <Ext, P extends Packet, R> void sendToGroup(GroupContext<Ext, P, R> groupContext, String groupid, P packet)
-	{
-		sendToGroup(groupContext, groupid, packet, null);
 	}
 
 	/**

@@ -110,7 +110,7 @@ public class DecodeRunnable<Ext, P extends Packet, R> extends AbstractQueueRunna
 						submit(packet, len);
 						
 						AioListener<Ext, P, R> aioListener = channelContext.getGroupContext().getAioListener();
-						aioListener.onAfterDecoded(channelContext, packet, len);
+						aioListener.onAfterReceived(channelContext, packet, len);
 						
 
 						if (byteBuffer.hasRemaining())//组包后，还剩有数据

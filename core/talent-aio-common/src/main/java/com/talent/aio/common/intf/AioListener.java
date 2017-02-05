@@ -59,7 +59,7 @@ public interface AioListener<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月15日 上午10:22:49
 	 *
 	 */
-	void onAfterDecoded(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize);
+	void onAfterReceived(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize);
 
 //	/**
 //	 * 连接关闭前触发本方法
