@@ -99,7 +99,7 @@ public class ImServerAioListener implements ServerAioListener<Object, ImPacket, 
 	}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterDecoded(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * @see com.talent.aio.common.intf.AioListener#onAfterReceived(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
 	 * 
 	 * @param channelContext
 	 * @param packet
@@ -109,7 +109,7 @@ public class ImServerAioListener implements ServerAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
+	public void onAfterReceived(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
 
