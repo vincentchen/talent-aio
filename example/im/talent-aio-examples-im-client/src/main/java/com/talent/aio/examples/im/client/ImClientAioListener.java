@@ -149,6 +149,10 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		
 		long receivedPacket = JFrameMain.receivedPackets.incrementAndGet();
 		long sentPacket = JFrameMain.sentPackets.get();
+		if (receivedPacket <= 0 || sentPacket <= 0)
+		{
+			return;
+		}
 		
 		long time = SystemTimer.currentTimeMillis();
 
