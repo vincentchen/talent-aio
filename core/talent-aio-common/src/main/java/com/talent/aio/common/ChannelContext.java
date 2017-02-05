@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.maintain.MaintainUtils;
-import com.talent.aio.common.task.CloseRunnable;
 import com.talent.aio.common.task.DecodeRunnable;
 import com.talent.aio.common.task.HandlerRunnable;
 import com.talent.aio.common.task.SendRunnable;
@@ -42,7 +41,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 	private DecodeRunnable<Ext, P, R> decodeRunnable = null;
 
-	private CloseRunnable<Ext, P, R> closeRunnable = null;
+//	private CloseRunnable<Ext, P, R> closeRunnable = null;
 //	private HandlerRunnable<Ext, P, R> handlerRunnableHighPrior = null;
 	private HandlerRunnable<Ext, P, R> handlerRunnableNormPrior = null;
 
@@ -246,7 +245,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		if (groupContext != null)
 		{
 			decodeRunnable = new DecodeRunnable<>(this, groupContext.getDecodeExecutor());
-			closeRunnable = new CloseRunnable<>(this, null, null, groupContext.getCloseExecutor());
+//			closeRunnable = new CloseRunnable<>(this, null, null, groupContext.getCloseExecutor());
 
 //			handlerRunnableHighPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorHighPrior());
 			handlerRunnableNormPrior = new HandlerRunnable<>(this, groupContext.getHandlerExecutorNormPrior());
@@ -409,21 +408,21 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		}
 	}
 
-	/**
-	 * @return the closeRunnable
-	 */
-	public CloseRunnable<Ext, P, R> getCloseRunnable()
-	{
-		return closeRunnable;
-	}
-
-	/**
-	 * @param closeRunnable the closeRunnable to set
-	 */
-	public void setCloseRunnable(CloseRunnable<Ext, P, R> closeRunnable)
-	{
-		this.closeRunnable = closeRunnable;
-	}
+//	/**
+//	 * @return the closeRunnable
+//	 */
+//	public CloseRunnable<Ext, P, R> getCloseRunnable()
+//	{
+//		return closeRunnable;
+//	}
+//
+//	/**
+//	 * @param closeRunnable the closeRunnable to set
+//	 */
+//	public void setCloseRunnable(CloseRunnable<Ext, P, R> closeRunnable)
+//	{
+//		this.closeRunnable = closeRunnable;
+//	}
 
 	/**
 	 * @return the stat

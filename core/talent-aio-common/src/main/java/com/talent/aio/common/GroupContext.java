@@ -86,10 +86,10 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	 */
 	private SynThreadPoolExecutor<SynRunnableIntf> decodeExecutor = null;
 
-	/**
-	 * 关闭连接的线程池
-	 */
-	private SynThreadPoolExecutor<SynRunnableIntf> closeExecutor = null;
+//	/**
+//	 * 关闭连接的线程池
+//	 */
+//	private SynThreadPoolExecutor<SynRunnableIntf> closeExecutor = null;
 
 //	/**
 //	 * 高优先级的业务处理线程池
@@ -148,7 +148,7 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		executorNormPrior.prestartAllCoreThreads();
 
 		decodeExecutor = executorNormPrior;
-		closeExecutor = executorNormPrior;//executorHighPrior;
+//		closeExecutor = executorNormPrior;//executorHighPrior;
 //		handlerExecutorHighPrior = executorNormPrior;//executorHighPrior;
 		handlerExecutorNormPrior = executorNormPrior;
 //		sendExecutorHighPrior = executorNormPrior;//executorHighPrior;
@@ -360,21 +360,21 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 		this.heartbeatTimeout = heartbeatTimeout;
 	}
 
-	/**
-	 * @return the closeExecutor
-	 */
-	public SynThreadPoolExecutor<SynRunnableIntf> getCloseExecutor()
-	{
-		return closeExecutor;
-	}
-
-	/**
-	 * @param closeExecutor the closeExecutor to set
-	 */
-	public void setCloseExecutor(SynThreadPoolExecutor<SynRunnableIntf> closeExecutor)
-	{
-		this.closeExecutor = closeExecutor;
-	}
+//	/**
+//	 * @return the closeExecutor
+//	 */
+//	public SynThreadPoolExecutor<SynRunnableIntf> getCloseExecutor()
+//	{
+//		return closeExecutor;
+//	}
+//
+//	/**
+//	 * @param closeExecutor the closeExecutor to set
+//	 */
+//	public void setCloseExecutor(SynThreadPoolExecutor<SynRunnableIntf> closeExecutor)
+//	{
+//		this.closeExecutor = closeExecutor;
+//	}
 
 	/**
 	 * @return the connections
