@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import javax.swing.DefaultListModel;
@@ -67,7 +68,8 @@ public class JFrameMain extends javax.swing.JFrame
 	public static boolean isNeedUpdateReceivedCount = false;
 	public static boolean isNeedUpdateSentCount = false;
 	
-
+	public static int max_list_count = 20;  //列表最多显示多少条数据，多余的不显示
+	
 	/** 
 	 * 设置窗口图标 
 	 */
@@ -510,19 +512,22 @@ public class JFrameMain extends javax.swing.JFrame
 			final Node serverNode = new Node(serverip_, port_);
 			
 			
-			
-			
 			WriteLock writeLock = updatingListLock.writeLock();
 			writeLock.lock();
 			try
 			{
 				for (int i = 0; i < count; i++)
 				{
+					
 					ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverNode);
-					if (channelContext != null)
+					if (listModel.size() < max_list_count)
 					{
-						listModel.addElement(channelContext);
+						if (channelContext != null)
+						{
+							listModel.addElement(channelContext);
+						}
 					}
+					
 				}
 			} catch (Exception e)
 			{
@@ -680,48 +685,84 @@ public class JFrameMain extends javax.swing.JFrame
 				log.error("请选中要删除的连接");
 				return;
 			} else
+		{
+			List<ClientChannelContext<Object, ImPacket, Object>> dest = new ArrayList<>(selecteds.size());
+			for (ClientChannelContext<Object, ImPacket, Object> cc : selecteds)
 			{
-				List<ClientChannelContext<Object, ImPacket, Object>> dest = new ArrayList<>(selecteds.size());
-				for (ClientChannelContext<Object, ImPacket, Object> cc : selecteds)
+				if (cc != null)
+				{
+					dest.add(cc);
+				}
+			}
+
+			WriteLock updatingListWriteLock = updatingListLock.writeLock();
+			updatingListWriteLock.lock();
+			try
+			{
+				for (ClientChannelContext<Object, ImPacket, Object> cc : dest)
 				{
 					if (cc != null)
 					{
-						dest.add(cc);
+						try
+						{
+							Aio.remove(cc, "管理员删除");
+							listModel.removeElement(cc);
+						} catch (Exception e)
+						{
+							log.error(e.toString(), e);
+						}
 					}
 				}
-				
-				
-				WriteLock writeLock = updatingListLock.writeLock();
-				writeLock.lock();
+			} catch (Exception e)
+			{
+				log.error(e.toString(), e);
+			} finally
+			{
+				updatingListWriteLock.unlock();
+			}
+
+			
+			ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
+			ObjWithLock<Set<ChannelContext<Object, ImPacket, Object>>> setWithLock = clientGroupContext.getConnections().getSetWithLock();
+			Set<ChannelContext<Object, ImPacket, Object>> set = setWithLock.getObj();
+			ReadLock readLock = setWithLock.getLock().readLock();
+			if (listModel.size() < max_list_count && set.size() > listModel.size())
+			{
+				updatingListWriteLock.lock();
 				try
 				{
-					for (ClientChannelContext<Object, ImPacket, Object> cc : dest)
+//					listModel.clear();
+					readLock.lock();
+					for (ChannelContext<Object, ImPacket, Object> channelContext : set)
 					{
-						if (cc != null)
+						if (listModel.size() < max_list_count)
 						{
-							try
+							if (channelContext != null)
 							{
-								Aio.remove(cc, "管理员删除");
-								listModel.removeElement(cc);
-							} catch (Exception e)
-							{
-								log.error(e.toString(), e);
+								if (listModel.contains(channelContext))
+								{
+									continue;
+								} else
+								{
+									listModel.addElement((ClientChannelContext<Object, ImPacket, Object>) channelContext);
+								}
 							}
+						} else
+						{
+							break;
 						}
 					}
 				} catch (Exception e)
 				{
 					log.error(e.toString(), e);
-				} finally {
-					writeLock.unlock();
+				} finally
+				{
+					updatingListWriteLock.unlock();
+					readLock.unlock();
 				}
-				
-				
-				
-				
-				
-				
 			}
+
+		}
 //		}
     	
     	
