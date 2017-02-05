@@ -76,7 +76,6 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	@Override
 	public void onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
-		JFrameMain.isNeedUpdateList = true;
 		JFrameMain.isNeedUpdateConnectionCount = true;
 		
 		if (!isConnected)
@@ -149,7 +148,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		
 		long receivedPacket = JFrameMain.receivedPackets.incrementAndGet();
 		long sentPacket = JFrameMain.sentPackets.get();
-		if (receivedPacket <= 0 || sentPacket <= 0)
+		if (receivedPacket <= 10 || sentPacket <= 10)
 		{
 			return;
 		}
@@ -157,7 +156,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		long time = SystemTimer.currentTimeMillis();
 
 		JFrameMain frameMain = JFrameMain.getInstance();
-		if (receivedPacket == 1 || receivedPacket == 0 || receivedPacket % 100000 == 0)
+		if (receivedPacket % 100000 == 0)
 		{
 			long sendStartTime = frameMain.getSendStartTime();
 			long in = time - sendStartTime;

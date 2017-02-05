@@ -12,10 +12,9 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -62,14 +61,12 @@ public class JFrameMain extends javax.swing.JFrame
 	public static final AtomicLong receivedPackets = new AtomicLong();
 	public static final AtomicLong sentPackets = new AtomicLong();
 	public static boolean isNeedUpdateList = false;
+	public static final ReentrantReadWriteLock updatingListLock = new ReentrantReadWriteLock();
+	
 	public static boolean isNeedUpdateConnectionCount = false;
 	public static boolean isNeedUpdateReceivedCount = false;
 	public static boolean isNeedUpdateSentCount = false;
 	
-	//用来建链的线程池
-	ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,  
-            60L, TimeUnit.SECONDS,  
-            new java.util.concurrent.LinkedBlockingQueue<Runnable>()); 
 
 	/** 
 	 * 设置窗口图标 
@@ -169,8 +166,6 @@ public class JFrameMain extends javax.swing.JFrame
 			throw new RuntimeException(e);
 		}
 		
-		threadPoolExecutor.prestartAllCoreThreads();
-		
 		new Thread(new Runnable()
 		{
 			@Override
@@ -184,8 +179,20 @@ public class JFrameMain extends javax.swing.JFrame
 					
 					if (isNeedUpdateList)
 					{
-						isNeedUpdateList =  false;
-						clients.updateUI();
+						WriteLock writeLock = updatingListLock.writeLock();
+						if (writeLock.tryLock())
+						{
+							try
+							{
+								isNeedUpdateList =  false;
+								clients.updateUI();
+							} catch (Exception e)
+							{
+								log.error(e.toString(), e);
+							} finally {
+								writeLock.unlock();
+							}
+						}
 					}
 
 					try
@@ -261,7 +268,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         lianjie.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
         lianjie.setForeground(new java.awt.Color(51, 0, 255));
-        lianjie.setText("连接并进入群组");
+        lianjie.setText("连接并进入群");
         lianjie.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lianjieActionPerformed(evt);
@@ -287,7 +294,7 @@ public class JFrameMain extends javax.swing.JFrame
         msgTextArea.setColumns(20);
         msgTextArea.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         msgTextArea.setRows(5);
-        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接并进入群组”，在与服务器连接后，将会自动进入群组。\n5、点击“群发”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 1000*2000=2000000)\n\n\n");
+        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接并进入群”，在与服务器连接后，将会自动进入群组。\n5、点击“群聊”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 1000*2000=2000000)\n\n\n");
         msgTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 msgTextAreaMouseClicked(evt);
@@ -500,43 +507,29 @@ public class JFrameMain extends javax.swing.JFrame
 			//                int count = end - start + 1;
 
 			int count = end - start;
-			final CountDownLatch countDownLatch = new CountDownLatch(count);
-			
 			final Node serverNode = new Node(serverip_, port_);
-			for (int i = 0; i < count; i++)
+			
+			
+			
+			
+			WriteLock writeLock = updatingListLock.writeLock();
+			writeLock.lock();
+			try
 			{
-				threadPoolExecutor.execute(new Runnable()
+				for (int i = 0; i < count; i++)
 				{
-					@Override
-					public void run()
+					ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverNode);
+					if (channelContext != null)
 					{
-						try
-						{
-							ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverNode);
-							if (channelContext != null)
-							{
-//								synchronized (clients)
-//								{
-									listModel.addElement(channelContext);
-//								}
-							}
-						} catch (Exception e)
-						{
-							log.error(e.toString(), e);
-						} finally
-						{
-							countDownLatch.countDown();
-						}
+						listModel.addElement(channelContext);
 					}
-				});
+				}
+			} catch (Exception e)
+			{
+				log.error(e.toString(), e);
+			} finally {
+				writeLock.unlock();
 			}
-			countDownLatch.await();
-			
-			
-			
-//			threadPoolExecutor.shutdown();
-			
-			//			updateClientCount();
 
 		} catch (Exception e)
 		{
@@ -567,7 +560,7 @@ public class JFrameMain extends javax.swing.JFrame
 	//		return id;
 	//	}
 
-	private long sendStartTime;
+	private long sendStartTime = SystemTimer.currentTimeMillis();
 	private long startRecievedBytes; //点击发送时的收到的字节数
 	private long startSentBytes; //点击发送时的发送的字节数
 
@@ -697,21 +690,34 @@ public class JFrameMain extends javax.swing.JFrame
 					}
 				}
 				
-				for (ClientChannelContext<Object, ImPacket, Object> cc : dest)
+				
+				WriteLock writeLock = updatingListLock.writeLock();
+				writeLock.lock();
+				try
 				{
-					if (cc != null)
+					for (ClientChannelContext<Object, ImPacket, Object> cc : dest)
 					{
-						try
+						if (cc != null)
 						{
-							Aio.remove(cc, "管理员删除");
-							listModel.removeElement(cc);//TODO 这里会报空指针，原因待查
-						} catch (Exception e)
-						{
-//							log.error(e.toString(), e);
-							
+							try
+							{
+								Aio.remove(cc, "管理员删除");
+								listModel.removeElement(cc);
+							} catch (Exception e)
+							{
+								log.error(e.toString(), e);
+							}
 						}
 					}
+				} catch (Exception e)
+				{
+					log.error(e.toString(), e);
+				} finally {
+					writeLock.unlock();
 				}
+				
+				
+				
 				
 				
 				
