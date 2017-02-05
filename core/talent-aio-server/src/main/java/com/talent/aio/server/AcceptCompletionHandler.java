@@ -81,7 +81,13 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			ServerChannelContext<Ext, P, R> channelContext = new ServerChannelContext<>(serverGroupContext, asynchronousSocketChannel);
 			channelContext.setServerNode(aioServer.getServerNode());
 			ServerAioListener<Ext, P, R> serverAioListener = serverGroupContext.getServerAioListener();
-			serverAioListener.onAfterConnected(channelContext, true, false);
+			try
+			{
+				serverAioListener.onAfterConnected(channelContext, true, false);
+			} catch (Exception e)
+			{
+				log.error(e.toString(), e);
+			}
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
 			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
