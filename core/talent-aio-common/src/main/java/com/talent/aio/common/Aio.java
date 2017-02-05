@@ -11,6 +11,7 @@
  */
 package com.talent.aio.common;
 
+import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -19,13 +20,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.talent.aio.common.intf.AioListener;
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.maintain.MaintainUtils;
 import com.talent.aio.common.maintain.Syns;
-import com.talent.aio.common.task.CloseRunnable;
 import com.talent.aio.common.task.SendRunnable;
 import com.talent.aio.common.threadpool.SynThreadPoolExecutor;
 import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 import com.talent.aio.common.utils.AioUtils;
+import com.talent.aio.common.utils.SystemTimer;
 
 /**
  * The Class Aio.
@@ -66,39 +69,41 @@ public class Aio
 
 	private static <Ext, P extends Packet, R> void close(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark, boolean isRemove)
 	{
-//		if (t != null)
-//		{
-//			log.error(t.toString(), t);
-//		}
-		
-		if (channelContext.isClosed() && !isRemove)
-		{
-			log.info("{}已经关闭，备注:{}，异常:{}", channelContext, remark, throwable == null ? "无" : throwable.toString());
-			return;
-		}
-		
-		if (channelContext.isRemoved())
-		{
-			log.info("{}已经删除，备注:{}，异常:{}", channelContext, remark, throwable == null ? "无" : throwable.toString());
-			return;
-		}
-		
-		CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
-		ReentrantReadWriteLock reentrantReadWriteLock = closeRunnable.getLock();
+//		CloseRunnable<Ext, P, R> closeRunnable = channelContext.getCloseRunnable();
+		ReentrantReadWriteLock reentrantReadWriteLock = channelContext.getCloseLock();//.getLock();
 		WriteLock writeLock = reentrantReadWriteLock.writeLock();
-		if (!writeLock.tryLock())
+		boolean isLock = writeLock.tryLock();
+		if (!isLock)
 		{
-			return;
+			if (isRemove)
+			{
+				if (channelContext.isRemoved())
+				{
+					return;
+				} else
+				{
+					writeLock.lock();
+				}
+			} else
+			{
+				return;
+			}
 		}
 		
 		try
 		{
-			if (closeRunnable.isWaitingExecute())
+			if (channelContext.isClosed() && !isRemove)
 			{
-				log.error("{},已经在等待关闭\r\n本次关闭备注:{}\r\n第一次的备注:{}\r\n本次关闭异常:{}\r\n第一次时异常:{}", channelContext, remark, closeRunnable.getRemark(), throwable == null ? "无" : throwable.toString(),
-						closeRunnable.getThrowable() == null ? "无" : closeRunnable.getThrowable().toString());
+				log.info("{}已经关闭，备注:{}，异常:{}", channelContext, remark, throwable == null ? "无" : throwable.toString());
 				return;
 			}
+			
+			if (channelContext.isRemoved())
+			{
+				log.info("{}已经删除，备注:{}，异常:{}", channelContext, remark, throwable == null ? "无" : throwable.toString());
+				return;
+			}
+			
 			//必须先取消任务再清空队列
 			channelContext.getDecodeRunnable().setCanceled(true);
 			channelContext.getHandlerRunnableNormPrior().setCanceled(true);
@@ -111,12 +116,100 @@ public class Aio
 			//		channelContext.getHandlerRunnableHighPrior().clearMsgQueue();
 			channelContext.getSendRunnableNormPrior().clearMsgQueue();
 			//		channelContext.getSendRunnableHighPrior().clearMsgQueue();
+
 			
-			closeRunnable.setRemove(isRemove);
-			closeRunnable.setRemark(remark);
-			closeRunnable.setThrowable(throwable);
-			closeRunnable.getExecutor().execute(closeRunnable);
-			closeRunnable.setWaitingExecute(true);
+			if (throwable != null)
+			{
+				log.info("关闭连接:{},{}", channelContext.toString(), remark);
+			} else
+			{
+				log.info("关闭连接:{},{}", channelContext.toString(), remark);
+			}
+
+			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+			AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
+
+			ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+			if (!isRemove)
+			{
+				if (reconnConf != null && reconnConf.getInterval() > 0)
+				{
+					if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
+					{
+						//需要重连，所以并不删除
+					} else
+					{
+						isRemove = true;
+					}
+				} else
+				{
+					isRemove = true;
+				}
+			}
+
+			try
+			{
+				channelContext.setClosed(true);
+				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
+				channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+
+				if (isRemove)
+				{
+					MaintainUtils.removeFromMaintain(channelContext);
+					channelContext.setRemoved(true);
+				} else
+				{
+					groupContext.getCloseds().add(channelContext);
+					groupContext.getConnecteds().remove(channelContext);
+					try
+					{
+						reconnConf.getQueue().put(channelContext);
+					} catch (Exception e)
+					{
+						log.error(e.toString(), e);
+					}
+				}
+				
+				try
+				{
+					AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
+					if (asynchronousSocketChannel != null)
+					{
+						if (asynchronousSocketChannel.isOpen())
+						{
+							try
+							{
+								asynchronousSocketChannel.shutdownInput();
+								asynchronousSocketChannel.shutdownOutput();
+							} catch (Exception e)
+							{
+								log.error(e.toString(), e);
+							}
+							asynchronousSocketChannel.close();
+						}
+					}
+				} catch (Throwable e)
+				{
+					log.error(e.toString());
+				}
+				
+				try
+				{
+					aioListener.onAfterClose(channelContext, throwable, remark, isRemove);
+				} catch (Throwable e)
+				{
+					log.error(e.toString(), e);
+				}
+			} catch (Throwable e)
+			{
+				log.error(e.toString(), e);
+			} finally
+			{
+				
+			}
+		
+			
+			
 		} catch (Exception e)
 		{
 			log.error(throwable.toString(), e);

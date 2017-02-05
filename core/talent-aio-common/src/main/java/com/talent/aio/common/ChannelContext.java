@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 
 //	private SendRunnable<Ext, P, R> sendRunnableHighPrior = null;
 	private SendRunnable<Ext, P, R> sendRunnableNormPrior = null;
-
+	private ReentrantReadWriteLock closeLock = new ReentrantReadWriteLock();
 	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
 	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>(this);
 	
@@ -703,6 +704,14 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 	public void setServerNode(Node serverNode)
 	{
 		this.serverNode = serverNode;
+	}
+
+	/**
+	 * @return the closeLock
+	 */
+	public ReentrantReadWriteLock getCloseLock()
+	{
+		return closeLock;
 	}
 
 }
