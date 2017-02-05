@@ -108,12 +108,12 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 			{
 				while (true)
 				{
-					ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = ServerGroupContext.this.getConnections().getSetWithLock();
-					ReadLock readLock = objWithReadWriteLock.getLock().readLock();
+					ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithLock = ServerGroupContext.this.getConnections().getSetWithLock();
+					ReadLock readLock = objWithLock.getLock().readLock();
 					try
 					{
 						readLock.lock();
-						Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+						Set<ChannelContext<Ext, P, R>> set = objWithLock.getObj();
 
 						for (ChannelContext<Ext, P, R> entry : set)
 						{

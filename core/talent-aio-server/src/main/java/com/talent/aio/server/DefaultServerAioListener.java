@@ -67,7 +67,7 @@ public class DefaultServerAioListener<Ext, P extends Packet, R> implements Serve
 	{}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterDecoded(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * @see com.talent.aio.common.intf.AioListener#onAfterReceived(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
 	 * 
 	 * @param channelContext
 	 * @param packet
@@ -77,7 +77,7 @@ public class DefaultServerAioListener<Ext, P extends Packet, R> implements Serve
 	 * 
 	 */
 	@Override
-	public void onAfterDecoded(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize)
+	public void onAfterReceived(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize)
 	{}
 
 	/** 
