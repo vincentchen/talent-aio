@@ -522,11 +522,10 @@ public class AioClient<Ext, P extends Packet, R>
 //						return;
 					}
 					
-					if (channelContext.isRemoved())
+					if (channelContext.isRemoved() || !channelContext.isClosed())  //已经删除的和已经连上的，不需要重新再连
 					{
 						continue;
 					}
-					
 					
 					long currtime = SystemTimer.currentTimeMillis();
 					long closetime = channelContext.getStat().getTimeClosed();
@@ -542,7 +541,7 @@ public class AioClient<Ext, P extends Packet, R>
 						}
 					}
 					
-					if (channelContext.isRemoved())
+					if (channelContext.isRemoved() || !channelContext.isClosed())  //已经删除的和已经连上的，不需要重新再连
 					{
 						continue;
 					}
