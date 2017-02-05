@@ -50,117 +50,99 @@ public class CloseRunnable<Ext, P extends Packet, R> extends AbstractSynRunnable
 	@Override
 	public void runTask()
 	{
-//		ReentrantReadWriteLock reentrantReadWriteLock = getLock();
-//		WriteLock writeLock = reentrantReadWriteLock.writeLock();
-//		if (!writeLock.tryLock())
-//		{
-//			return;
-//		}
-		
-		try
+		closeCount.incrementAndGet();
+		if (throwable != null)
 		{
-			closeCount.incrementAndGet();
-			if (throwable != null)
-			{
-				log.error("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
-			} else
-			{
-				log.info("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
-			}
+			log.error("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
+		} else
+		{
+			log.info("第{}次关闭连接:{},{}", closeCount.get(), channelContext.toString(), remark);
+		}
 
-			GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-			AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
+		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
+		AioListener<Ext, P, R> aioListener = groupContext.getAioListener();
 
-			ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
-			if (!isRemove)
+		ReconnConf<Ext, P, R> reconnConf = channelContext.getGroupContext().getReconnConf();
+		if (!isRemove)
+		{
+			if (reconnConf != null && reconnConf.getInterval() > 0)
 			{
-				if (reconnConf != null && reconnConf.getInterval() > 0)
+				if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
 				{
-					if (reconnConf.getRetryCount() <= 0 || reconnConf.getRetryCount() >= channelContext.getReconnCount())
-					{
-						//需要重连，所以并不删除
-					} else
-					{
-						isRemove = true;
-					}
+					//需要重连，所以并不删除
 				} else
 				{
 					isRemove = true;
 				}
-			}
-
-			try
+			} else
 			{
-				channelContext.setClosed(true);
-				channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
-				channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+				isRemove = true;
+			}
+		}
 
-				if (isRemove)
-				{
-					MaintainUtils.removeFromMaintain(channelContext);
-					channelContext.setRemoved(true);
-				} else
-				{
-					groupContext.getCloseds().add(channelContext);
-					groupContext.getConnecteds().remove(channelContext);
-				}
-				
+		try
+		{
+			channelContext.setClosed(true);
+			channelContext.getGroupContext().getGroupStat().getClosed().incrementAndGet();
+			channelContext.getStat().setTimeClosed(SystemTimer.currentTimeMillis());
+
+			if (isRemove)
+			{
+				MaintainUtils.removeFromMaintain(channelContext);
+				channelContext.setRemoved(true);
+			} else
+			{
+				groupContext.getCloseds().add(channelContext);
+				groupContext.getConnecteds().remove(channelContext);
 				try
 				{
-					AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
-					if (asynchronousSocketChannel != null)
-					{
-						if (asynchronousSocketChannel.isOpen())
-						{
-							try
-							{
-								asynchronousSocketChannel.shutdownInput();
-								asynchronousSocketChannel.shutdownOutput();
-							} catch (Exception e)
-							{
-								log.error(e.toString(), e);
-							}
-							asynchronousSocketChannel.close();
-						}
-					}
-				} catch (Throwable e)
-				{
-					log.error(e.toString());
-				}
-				
-				try
-				{
-					aioListener.onAfterClose(channelContext, throwable, remark, isRemove);
-				} catch (Throwable e)
+					reconnConf.getQueue().put(channelContext);
+				} catch (Exception e)
 				{
 					log.error(e.toString(), e);
 				}
+			}
+			
+			try
+			{
+				AsynchronousSocketChannel asynchronousSocketChannel = channelContext.getAsynchronousSocketChannel();
+				if (asynchronousSocketChannel != null)
+				{
+					if (asynchronousSocketChannel.isOpen())
+					{
+						try
+						{
+							asynchronousSocketChannel.shutdownInput();
+							asynchronousSocketChannel.shutdownOutput();
+						} catch (Exception e)
+						{
+							log.error(e.toString(), e);
+						}
+						asynchronousSocketChannel.close();
+					}
+				}
+			} catch (Throwable e)
+			{
+				log.error(e.toString());
+			}
+			
+			try
+			{
+				aioListener.onAfterClose(channelContext, throwable, remark, isRemove);
 			} catch (Throwable e)
 			{
 				log.error(e.toString(), e);
-			} finally
-			{
-				if (!isRemove)
-				{
-					try
-					{
-						reconnConf.getQueue().put(channelContext);
-					} catch (InterruptedException e)
-					{
-						log.error(e.toString(), e);
-					}
-					
-					this.setWaitingExecute(false);
-				}
 			}
-		} catch (Exception e)
+		} catch (Throwable e)
 		{
 			log.error(e.toString(), e);
 		} finally
 		{
-//			writeLock.unlock();
+			if (!isRemove)
+			{
+				this.setWaitingExecute(false);
+			}
 		}
-	
 	}
 
 	@Override
