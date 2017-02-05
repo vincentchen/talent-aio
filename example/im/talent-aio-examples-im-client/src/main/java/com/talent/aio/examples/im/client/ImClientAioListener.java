@@ -176,10 +176,10 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 			long sentBytes = nowSentBytes - initSentBytes;
 
 			double perReceivedPacket = Math.ceil(((double) receivedPacket / (double) in) * (double) 1000);
-			double perReceivedBytes = Math.ceil(((double) receivedBytes / (double) in));
+			double perReceivedBytes = Math.ceil(((double) receivedBytes / (double) in) * (double) 1000 );
 			
 			double perSentPacket = Math.ceil(((double) sentPacket / (double) in) * (double) 1000);
-			double perSentBytes = Math.ceil(((double) sentBytes / (double) in));
+			double perSentBytes = Math.ceil(((double) sentBytes / (double) in) * (double) 1000);
 
 			
 			NumberFormat numberFormat = NumberFormat.getInstance();
