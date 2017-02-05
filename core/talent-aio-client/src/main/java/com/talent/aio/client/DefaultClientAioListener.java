@@ -70,7 +70,7 @@ public class DefaultClientAioListener<Ext, P extends Packet, R> implements Clien
 	}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterDecoded(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * @see com.talent.aio.common.intf.AioListener#onAfterReceived(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
 	 * 
 	 * @param channelContext
 	 * @param packet
@@ -80,7 +80,7 @@ public class DefaultClientAioListener<Ext, P extends Packet, R> implements Clien
 	 * 
 	 */
 	@Override
-	public void onAfterDecoded(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize)
+	public void onAfterReceived(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize)
 	{
 	}
 

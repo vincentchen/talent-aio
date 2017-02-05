@@ -362,10 +362,10 @@ public class AioClient<Ext, P extends Packet, R>
 					ReadLock readLock = null;
 					try
 					{
-						ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithReadWriteLock = clientGroupContext.getConnections().getSetWithLock();
-						readLock = objWithReadWriteLock.getLock().readLock();
+						ObjWithLock<Set<ChannelContext<Ext, P, R>>> objWithLock = clientGroupContext.getConnections().getSetWithLock();
+						readLock = objWithLock.getLock().readLock();
 						readLock.lock();
-						Set<ChannelContext<Ext, P, R>> set = objWithReadWriteLock.getObj();
+						Set<ChannelContext<Ext, P, R>> set = objWithLock.getObj();
 						long currtime = SystemTimer.currentTimeMillis();
 						for (ChannelContext<Ext, P, R> entry : set)
 						{
