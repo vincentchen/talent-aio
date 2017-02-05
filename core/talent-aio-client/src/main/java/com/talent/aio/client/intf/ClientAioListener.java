@@ -38,7 +38,7 @@ public interface ClientAioListener <Ext, P extends Packet, R> extends AioListene
 	 * @创建时间:　2017年2月3日 上午9:58:01
 	 *
 	 */
-	void onAfterReconnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected);
+	void onAfterReconnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected) throws Exception;
 	
 //	/**
 //	 * 连接失败后触发的方法

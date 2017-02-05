@@ -242,7 +242,13 @@ public class AioClient<Ext, P extends Packet, R>
 				asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
 				
 				log.info("connected to {}", serverNode);
-				clientAioListener.onAfterConnected(channelContext, true, isReconnect);
+				try
+				{
+					clientAioListener.onAfterConnected(channelContext, true, isReconnect);
+				} catch (Exception e)
+				{
+					log.error(e.toString(), e);
+				}
 				
 				return channelContext;
 				
@@ -324,11 +330,23 @@ public class AioClient<Ext, P extends Packet, R>
 		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
 		if (channelContext.isClosed())
 		{
-			clientAioListener.onAfterReconnected(channelContext, false);
+			try
+			{
+				clientAioListener.onAfterReconnected(channelContext, false);
+			} catch (Exception e)
+			{
+				log.error(e.toString(), e);
+			}
 			return null;
 		}
 
-		clientAioListener.onAfterReconnected(channelContext, true);
+		try
+		{
+			clientAioListener.onAfterReconnected(channelContext, true);
+		} catch (Exception e)
+		{
+			log.error(e.toString(), e);
+		}
 		return channelContext;
 	}
 
