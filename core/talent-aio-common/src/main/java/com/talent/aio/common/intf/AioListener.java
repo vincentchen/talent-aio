@@ -35,7 +35,7 @@ public interface AioListener<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月16日 下午3:28:24
 	 *
 	 */
-	void onAfterConnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected, boolean isReconnect);
+	void onAfterConnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected, boolean isReconnect) throws Exception;
 
 	/**
 	 * 消息包发送之后触发本方法
@@ -47,7 +47,7 @@ public interface AioListener<Ext, P extends Packet, R>
 	 * @创建时间:　2017年2月4日 下午9:18:38
 	 *
 	 */
-	void onAfterSent(ChannelContext<Ext, P, R> channelContext, P packet, boolean isSentSuccess);
+	void onAfterSent(ChannelContext<Ext, P, R> channelContext, P packet, boolean isSentSuccess) throws Exception;
 
 	/**
 	 * 解码成功后触发本方法
@@ -59,7 +59,7 @@ public interface AioListener<Ext, P extends Packet, R>
 	 * @创建时间:　2016年12月15日 上午10:22:49
 	 *
 	 */
-	void onAfterReceived(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize);
+	void onAfterReceived(ChannelContext<Ext, P, R> channelContext, P packet, int packetSize) throws Exception;
 
 //	/**
 //	 * 连接关闭前触发本方法
@@ -83,5 +83,5 @@ public interface AioListener<Ext, P extends Packet, R>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月17日 上午9:17:55
 	 */
-	void onAfterClose(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark, boolean isRemove);
+	void onAfterClose(ChannelContext<Ext, P, R> channelContext, Throwable throwable, String remark, boolean isRemove) throws Exception;
 }
