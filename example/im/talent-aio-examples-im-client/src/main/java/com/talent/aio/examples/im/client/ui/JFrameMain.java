@@ -68,7 +68,7 @@ public class JFrameMain extends javax.swing.JFrame
 	public static boolean isNeedUpdateReceivedCount = false;
 	public static boolean isNeedUpdateSentCount = false;
 	
-	public static int max_list_count = 20;  //列表最多显示多少条数据，多余的不显示
+	public static int MAX_LIST_COUNT = 20;  //列表最多显示多少条数据，多余的不显示
 	
 	/** 
 	 * 设置窗口图标 
@@ -520,7 +520,7 @@ public class JFrameMain extends javax.swing.JFrame
 				{
 					
 					ClientChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().connect(serverNode);
-					if (listModel.size() < max_list_count)
+					if (listModel.size() < MAX_LIST_COUNT)
 					{
 						if (channelContext != null)
 						{
@@ -726,7 +726,7 @@ public class JFrameMain extends javax.swing.JFrame
 			ObjWithLock<Set<ChannelContext<Object, ImPacket, Object>>> setWithLock = clientGroupContext.getConnections().getSetWithLock();
 			Set<ChannelContext<Object, ImPacket, Object>> set = setWithLock.getObj();
 			ReadLock readLock = setWithLock.getLock().readLock();
-			if (listModel.size() < max_list_count && set.size() > listModel.size())
+			if (listModel.size() < MAX_LIST_COUNT && set.size() > listModel.size())
 			{
 				updatingListWriteLock.lock();
 				try
@@ -735,7 +735,7 @@ public class JFrameMain extends javax.swing.JFrame
 					readLock.lock();
 					for (ChannelContext<Object, ImPacket, Object> channelContext : set)
 					{
-						if (listModel.size() < max_list_count)
+						if (listModel.size() < MAX_LIST_COUNT)
 						{
 							if (channelContext != null)
 							{
