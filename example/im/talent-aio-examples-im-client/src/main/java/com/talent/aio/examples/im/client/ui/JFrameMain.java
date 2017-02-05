@@ -16,7 +16,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -63,6 +62,9 @@ public class JFrameMain extends javax.swing.JFrame
 	public static final AtomicLong receivedPackets = new AtomicLong();
 	public static final AtomicLong sentPackets = new AtomicLong();
 	public static boolean isNeedUpdateList = false;
+	public static boolean isNeedUpdateConnectionCount = false;
+	public static boolean isNeedUpdateReceivedCount = false;
+	public static boolean isNeedUpdateSentCount = false;
 	
 	//用来建链的线程池
 	ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1,  
@@ -97,32 +99,52 @@ public class JFrameMain extends javax.swing.JFrame
 		return instance;
 	}
 	
-	public static void updateConnectionCount(){
-		NumberFormat numberFormat = NumberFormat.getInstance();
-        
-		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
-		int connectionCount = clientGroupContext.getConnections().size();
-		instance.connectionCountLabel.setText("总连接"+numberFormat.format(connectionCount));
-		
-		int connectedCount = clientGroupContext.getConnecteds().size();
-		instance.connectedCountLabel.setText("正常链路"+numberFormat.format(connectedCount));
-		
-		int closedCount = clientGroupContext.getCloseds().size();
-		instance.closedCountLabel.setText("断链"+numberFormat.format(closedCount));
-		
-//		log.error("{},{},{}", connectionCount, connectedCount, closedCount);
+	public static void updateConnectionCount()
+	{
+		if (isNeedUpdateConnectionCount)
+		{
+			isNeedUpdateConnectionCount = false;
+
+			NumberFormat numberFormat = NumberFormat.getInstance();
+
+			ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
+			int connectionCount = clientGroupContext.getConnections().size();
+			instance.connectionCountLabel.setText("总连接" + numberFormat.format(connectionCount));
+
+			int connectedCount = clientGroupContext.getConnecteds().size();
+			instance.connectedCountLabel.setText("正常链路" + numberFormat.format(connectedCount));
+
+			int closedCount = clientGroupContext.getCloseds().size();
+			instance.closedCountLabel.setText("断链" + numberFormat.format(closedCount));
+
+			//			log.error("{},{},{}", connectionCount, connectedCount, closedCount);
+		}
 	}
-	public static void updateReceivedLabel(){
-		NumberFormat numberFormat = NumberFormat.getInstance();
-		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
-		GroupStat groupStat = clientGroupContext.getGroupStat();
-		instance.receivedLabel.setText(numberFormat.format(groupStat.getReceivedPacket().get()) + "条共" + numberFormat.format(groupStat.getReceivedBytes().get()) + "B");
+
+	public static void updateReceivedLabel()
+	{
+		if (isNeedUpdateReceivedCount)
+		{
+			isNeedUpdateReceivedCount = false;
+
+			NumberFormat numberFormat = NumberFormat.getInstance();
+			ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
+			GroupStat groupStat = clientGroupContext.getGroupStat();
+			instance.receivedLabel.setText(numberFormat.format(groupStat.getReceivedPacket().get()) + "条共" + numberFormat.format(groupStat.getReceivedBytes().get()) + "B");
+		}
 	}
-	public static void updateSentLabel(){
-		NumberFormat numberFormat = NumberFormat.getInstance();
-		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
-		GroupStat groupStat = clientGroupContext.getGroupStat();
-		instance.sentLabel.setText(numberFormat.format(groupStat.getSentPacket().get()) + "条共" + numberFormat.format(groupStat.getSentBytes().get()) + "B");
+
+	public static void updateSentLabel()
+	{
+		if (isNeedUpdateSentCount)
+		{
+			isNeedUpdateSentCount = false;
+			NumberFormat numberFormat = NumberFormat.getInstance();
+			ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getClientGroupContext();
+			GroupStat groupStat = clientGroupContext.getGroupStat();
+			instance.sentLabel.setText(numberFormat.format(groupStat.getSentPacket().get()) + "条共" + numberFormat.format(groupStat.getSentBytes().get()) + "B");
+
+		}
 	}
 
 	/**
@@ -162,12 +184,13 @@ public class JFrameMain extends javax.swing.JFrame
 					
 					if (isNeedUpdateList)
 					{
+						isNeedUpdateList =  false;
 						clients.updateUI();
 					}
 
 					try
 					{
-						Thread.sleep(2000L);
+						Thread.sleep(100L);
 					} catch (InterruptedException e)
 					{
 						log.error(e.toString(), e);
@@ -253,7 +276,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         sendBtn.setFont(new java.awt.Font("宋体", 1, 14)); // NOI18N
         sendBtn.setForeground(new java.awt.Color(51, 0, 255));
-        sendBtn.setText("群发");
+        sendBtn.setText("群聊");
         sendBtn.setEnabled(false);
         sendBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -264,7 +287,7 @@ public class JFrameMain extends javax.swing.JFrame
         msgTextArea.setColumns(20);
         msgTextArea.setFont(new java.awt.Font("宋体", 0, 18)); // NOI18N
         msgTextArea.setRows(5);
-        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接并进入群组”，在与服务器连接后，将会自动进入群组。\n5、点击“群发”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 100*2000=200000)\n\n\n");
+        msgTextArea.setText("使用说明：\n1、设置好Server和端口\n2、设置好连接数量(可以用默认的)\n3、设置好群组名(可以用默认的)\n\n4、点击“连接并进入群组”，在与服务器连接后，将会自动进入群组。\n5、点击“群发”，将会收到连接数量乘以群发次数条消息(本例中的数据是: 1000*2000=2000000)\n\n\n");
         msgTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 msgTextAreaMouseClicked(evt);
@@ -288,7 +311,7 @@ public class JFrameMain extends javax.swing.JFrame
 
         jLabel6.setText("次");
 
-        loginnameSufEndField.setText("100");
+        loginnameSufEndField.setText("1000");
         loginnameSufEndField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 loginnameSufEndFieldActionPerformed(evt);
@@ -550,6 +573,8 @@ public class JFrameMain extends javax.swing.JFrame
 
 	private void sendBtnActionPerformed(java.awt.event.ActionEvent evt)
 	{//GEN-FIRST:event_sendBtnActionPerformed
+		sendBtn.setEnabled(false);
+		
 		ClientGroupContext<Object, ImPacket, Object> clientGroupContext = imClientStarter.getAioClient().getClientGroupContext();
 		setStartRecievedBytes(clientGroupContext.getGroupStat().getReceivedBytes().get());
 		setStartSentBytes(clientGroupContext.getGroupStat().getSentBytes().get());
@@ -557,12 +582,7 @@ public class JFrameMain extends javax.swing.JFrame
 		JFrameMain.getInstance().getMsgTextArea().setText("");
 		receivedPackets.set(0);
 		sentPackets.set(0);
-		//		List<String> ids = clients.getSelectedValuesList();
-		//		if (ids == null || ids.size() == 0)
-		//		{
-		//			log.error("没有选中任何客户端");
-		//		}
-
+		
 		String msg = msgField.getText();
 		int loopcount = Integer.parseInt(loopcountField.getText());
 		String toGroup = groupField.getText();
@@ -572,60 +592,38 @@ public class JFrameMain extends javax.swing.JFrame
 		builder.setType(ChatType.pub);
 		builder.setText(msg);
 
-		ChatReqBody chatReqBody = builder.build();//new ChatReqBody(ChatType.pub, msg, toGroup, null, null);
-		//		int count = 0;
+		ChatReqBody chatReqBody = builder.build();
 		setSendStartTime(SystemTimer.currentTimeMillis());
 
-		ObjWithLock<Set<ChannelContext<Object, ImPacket, Object>>> objWithReadWriteLock = clientGroupContext.getConnections().getSetWithLock();
-		ReadLock readLock = objWithReadWriteLock.getLock().readLock();
-		try
+		byte[] body = chatReqBody.toByteArray();
+		ImPacket packet = new ImPacket(body, Command.CHAT_REQ);
+
+		if (listModel.size() == 0)
 		{
-			readLock.lock();
-			Set<ChannelContext<Object, ImPacket, Object>> set = objWithReadWriteLock.getObj();
-
-			byte[] body = chatReqBody.toByteArray();
-			ImPacket packet = new ImPacket(body, Command.CHAT_REQ);
-
-			for (ChannelContext<Object, ImPacket, Object> entry : set)
-			{
-				ClientChannelContext<Object, ImPacket, Object> channelContext = (ClientChannelContext<Object, ImPacket, Object>) entry;
-
-				for (int i = 0; i < loopcount; i++)
-				{
-					Aio.send(channelContext, packet);
-				}
-				break;//此处只用一个客户端发送，防止初次用户不能理解消息量为什么这么大。
-
-			}
-		} catch (Throwable e)
-		{
-			log.error("", e);
-		} finally
-		{
-			readLock.unlock();
+			return;
 		}
-
-		//		for (String id : ids)
-		//		{
-		//			for (int i = 0; i < loopcount; i++)
-		//			{
-		//				try
-		//				{
-		//					ChannelContext<Object, ImPacket, Object> channelContext = imClientStarter.getAioClient().getClientGroupContext().getClientNodes().find(id);
-		//					if (channelContext != null)
-		//					{
-		//						byte[] body = Json.toJson(chatReqBody).getBytes(ImPacket.CHARSET);
-		//						ImPacket packet = new ImPacket(body, Command.CHAT_REQ);
-		//						Aio.send(channelContext, packet);
-		//					}
-		//
-		//				} catch (Exception e1)
-		//				{
-		//					log.error(e1.toString(), e1);
-		//				}
-		//			}
-		//		}
-
+		ClientChannelContext<Object, ImPacket, Object> channelContext = listModel.getElementAt(0);
+		for (int i = 0; i < loopcount; i++)
+		{
+			Aio.send(channelContext, packet);
+		}
+		
+		new Thread(new Runnable(){
+			@Override
+			public void run()
+			{
+				try
+				{
+					Thread.sleep(2000);
+				} catch (InterruptedException e)
+				{
+					log.error(e.toString(), e);
+				}
+				sendBtn.setEnabled(true);
+			}
+		}).start();
+		
+		
 	}//GEN-LAST:event_sendBtnActionPerformed
 
 	private void groupFieldActionPerformed(java.awt.event.ActionEvent evt)

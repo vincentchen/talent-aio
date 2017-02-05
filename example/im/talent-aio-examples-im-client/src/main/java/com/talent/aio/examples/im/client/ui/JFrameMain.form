@@ -220,7 +220,7 @@
         <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
           <Color blue="ff" green="0" red="33" type="rgb"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="&#x7fa4;&#x53d1;"/>
+        <Property name="text" type="java.lang.String" value="&#x7fa4;&#x804a;"/>
         <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
@@ -241,7 +241,7 @@
               <Font name="&#x5b8b;&#x4f53;" size="18" style="0"/>
             </Property>
             <Property name="rows" type="int" value="5"/>
-            <Property name="text" type="java.lang.String" value="&#x4f7f;&#x7528;&#x8bf4;&#x660e;&#xff1a;&#xa;1&#x3001;&#x8bbe;&#x7f6e;&#x597d;Server&#x548c;&#x7aef;&#x53e3;&#xa;2&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x8fde;&#x63a5;&#x6570;&#x91cf;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;3&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x7fa4;&#x7ec4;&#x540d;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;&#xa;4&#x3001;&#x70b9;&#x51fb;&#x201c;&#x8fde;&#x63a5;&#x5e76;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x201d;&#xff0c;&#x5728;&#x4e0e;&#x670d;&#x52a1;&#x5668;&#x8fde;&#x63a5;&#x540e;&#xff0c;&#x5c06;&#x4f1a;&#x81ea;&#x52a8;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x3002;&#xa;5&#x3001;&#x70b9;&#x51fb;&#x201c;&#x7fa4;&#x53d1;&#x201d;&#xff0c;&#x5c06;&#x4f1a;&#x6536;&#x5230;&#x8fde;&#x63a5;&#x6570;&#x91cf;&#x4e58;&#x4ee5;&#x7fa4;&#x53d1;&#x6b21;&#x6570;&#x6761;&#x6d88;&#x606f;(&#x672c;&#x4f8b;&#x4e2d;&#x7684;&#x6570;&#x636e;&#x662f;: 100*2000=200000)&#xa;&#xa;&#xa;"/>
+            <Property name="text" type="java.lang.String" value="&#x4f7f;&#x7528;&#x8bf4;&#x660e;&#xff1a;&#xa;1&#x3001;&#x8bbe;&#x7f6e;&#x597d;Server&#x548c;&#x7aef;&#x53e3;&#xa;2&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x8fde;&#x63a5;&#x6570;&#x91cf;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;3&#x3001;&#x8bbe;&#x7f6e;&#x597d;&#x7fa4;&#x7ec4;&#x540d;(&#x53ef;&#x4ee5;&#x7528;&#x9ed8;&#x8ba4;&#x7684;)&#xa;&#xa;4&#x3001;&#x70b9;&#x51fb;&#x201c;&#x8fde;&#x63a5;&#x5e76;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x201d;&#xff0c;&#x5728;&#x4e0e;&#x670d;&#x52a1;&#x5668;&#x8fde;&#x63a5;&#x540e;&#xff0c;&#x5c06;&#x4f1a;&#x81ea;&#x52a8;&#x8fdb;&#x5165;&#x7fa4;&#x7ec4;&#x3002;&#xa;5&#x3001;&#x70b9;&#x51fb;&#x201c;&#x7fa4;&#x53d1;&#x201d;&#xff0c;&#x5c06;&#x4f1a;&#x6536;&#x5230;&#x8fde;&#x63a5;&#x6570;&#x91cf;&#x4e58;&#x4ee5;&#x7fa4;&#x53d1;&#x6b21;&#x6570;&#x6761;&#x6d88;&#x606f;(&#x672c;&#x4f8b;&#x4e2d;&#x7684;&#x6570;&#x636e;&#x662f;: 1000*2000=2000000)&#xa;&#xa;&#xa;"/>
           </Properties>
           <Events>
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="msgTextAreaMouseClicked"/>
@@ -275,7 +275,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="loginnameSufEndField">
       <Properties>
-        <Property name="text" type="java.lang.String" value="100"/>
+        <Property name="text" type="java.lang.String" value="1000"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loginnameSufEndFieldActionPerformed"/>

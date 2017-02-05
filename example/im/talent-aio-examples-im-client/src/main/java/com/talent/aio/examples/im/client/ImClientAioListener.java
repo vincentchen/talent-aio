@@ -69,28 +69,15 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		if (isConnected)
 		{
 			JFrameMain.isNeedUpdateList = true;
+			JFrameMain.isNeedUpdateConnectionCount = true;
 		}
 	}
 
 	@Override
 	public void onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
-//		JFrameMain jFrameMain = JFrameMain.getInstance();
-//		synchronized (jFrameMain)
-//		{
-//			try
-//			{
-//				jFrameMain.getListModel().addElement(channelContext);
-////				jFrameMain.getClients().setModel(jFrameMain.getListModel());
-//			} catch (Exception e)
-//			{
-//
-//			}
-//
-////			jFrameMain.updateClientCount();
-//		}
-		
-		JFrameMain.updateConnectionCount();
+		JFrameMain.isNeedUpdateList = true;
+		JFrameMain.isNeedUpdateConnectionCount = true;
 		
 		if (!isConnected)
 		{
@@ -114,54 +101,6 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		
 		return;
 	}
-	
-	
-	
-	
-	
-	
-	
-	/**
-	 * 构建鉴权包
-	 * @return
-	 * @throws Exception 
-	 */
-	public static ImPacket createAuthPacket(String did, String token, String info, Long seq) throws Exception
-	{
-		ImPacket imReqPacket = new ImPacket();
-		imReqPacket.setCommand(Command.AUTH_REQ);
-
-		AuthReqBody.Builder authReqBodyBuilder = com.talent.aio.examples.im.common.packets.AuthReqBody.newBuilder();
-		authReqBodyBuilder.setDeviceId(did);
-		authReqBodyBuilder.setSeq(seq);
-		authReqBodyBuilder.setDeviceType(DeviceType.DEVICE_TYPE_ANDROID);
-		authReqBodyBuilder.setDeviceInfo(info);
-		authReqBodyBuilder.setToken(token);
-
-		did = did == null ? "" : did;
-		token = token == null ? "" : token;
-		info = info == null ? "" : info;
-		seq = seq == null ? 0 : seq;
-		
-		@SuppressWarnings("unused")
-		String data = token + did + info + seq + "fdsfeofa";
-//		String sign = null;
-//		try
-//		{
-//			sign = Md5.getMD5(data);
-//		} catch (Exception e)
-//		{
-//			log.error(e.getLocalizedMessage(), e);
-//			throw new RuntimeException(e);
-//		}
-//		authReqBodyBuilder.setSign(sign);
-
-		AuthReqBody authReqBody = authReqBodyBuilder.build();
-		imReqPacket.setBody(authReqBody.toByteArray());
-		return imReqPacket;
-	}
-	
-	
 
 	/** 
 	 * @see com.talent.aio.common.intf.AioListener#onBeforeSent(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
@@ -179,12 +118,13 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 		{
 			CommandStat.getCount(packet.getCommand()).sent.incrementAndGet();
 			JFrameMain.sentPackets.incrementAndGet();
-//			com.talent.aio.examples.im.client.ui.JFrameMain.updateSentLabel();
+
+			JFrameMain.isNeedUpdateSentCount = true;
 		}
 	}
 
 	/** 
-	 * @see com.talent.aio.common.intf.AioListener#onAfterDecoded(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
+	 * @see com.talent.aio.common.intf.AioListener#onAfterReceived(com.talent.aio.common.ChannelContext, com.talent.aio.common.intf.Packet, int)
 	 * 
 	 * @param channelContext
 	 * @param packet
@@ -194,14 +134,14 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	 * 
 	 */
 	@Override
-	public void onAfterDecoded(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
+	public void onAfterReceived(ChannelContext<Object, ImPacket, Object> channelContext, ImPacket packet, int packetSize)
 	{
 		CommandStat.getCount(packet.getCommand()).received.incrementAndGet();
 //		com.talent.aio.examples.im.client.ui.JFrameMain.updateReceivedLabel();
 		
 		
 		
-		
+		JFrameMain.isNeedUpdateReceivedCount = true;
 		
 		
 		
@@ -268,38 +208,54 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	@Override
 	public void onAfterClose(ChannelContext<Object, ImPacket, Object> channelContext, Throwable throwable, String remark, boolean isRemove)
 	{
-		JFrameMain.updateConnectionCount();
-		
 		if (!isRemove)
 		{
 			JFrameMain.isNeedUpdateList = true;
 		}
 		
-//		try
-//		{
-//			JFrameMain jFrameMain = JFrameMain.getInstance();
-//			jFrameMain.getClients().updateUI();
-//		} catch (Exception e)
-//		{
-//			
-//		}
+		JFrameMain.isNeedUpdateConnectionCount = true;
+	}
+	
+	
+
+	/**
+	 * 构建鉴权包
+	 * @return
+	 * @throws Exception 
+	 */
+	public static ImPacket createAuthPacket(String did, String token, String info, Long seq) throws Exception
+	{
+		ImPacket imReqPacket = new ImPacket();
+		imReqPacket.setCommand(Command.AUTH_REQ);
+
+		AuthReqBody.Builder authReqBodyBuilder = com.talent.aio.examples.im.common.packets.AuthReqBody.newBuilder();
+		authReqBodyBuilder.setDeviceId(did);
+		authReqBodyBuilder.setSeq(seq);
+		authReqBodyBuilder.setDeviceType(DeviceType.DEVICE_TYPE_ANDROID);
+		authReqBodyBuilder.setDeviceInfo(info);
+		authReqBodyBuilder.setToken(token);
+
+		did = did == null ? "" : did;
+		token = token == null ? "" : token;
+		info = info == null ? "" : info;
+		seq = seq == null ? 0 : seq;
 		
-//		JFrameMain jFrameMain = JFrameMain.getInstance();
+		@SuppressWarnings("unused")
+		String data = token + did + info + seq + "fdsfeofa";
+//		String sign = null;
 //		try
 //		{
-////			synchronized (jFrameMain.getClients())
-////			{
-//				if (isRemove)
-//				{
-//					jFrameMain.getListModel().removeElement(channelContext);
-//				}
-//				jFrameMain.getClients().updateUI();
-////			}
-//			
+//			sign = Md5.getMD5(data);
 //		} catch (Exception e)
 //		{
-//
+//			log.error(e.getLocalizedMessage(), e);
+//			throw new RuntimeException(e);
 //		}
+//		authReqBodyBuilder.setSign(sign);
+
+		AuthReqBody authReqBody = authReqBodyBuilder.build();
+		imReqPacket.setBody(authReqBody.toByteArray());
+		return imReqPacket;
 	}
 
 }
