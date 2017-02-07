@@ -63,20 +63,24 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 	{
 	}
 
-	@Override
-	public void onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext, boolean isConnected)
-	{
-		if (isConnected)
-		{
-			JFrameMain.isNeedUpdateList = true;
-			JFrameMain.isNeedUpdateConnectionCount = true;
-		}
-	}
+//	@Override
+//	public void onAfterReconnected(ChannelContext<Object, ImPacket, Object> initChannelContext, boolean isConnected)
+//	{
+//		if (isConnected)
+//		{
+//			JFrameMain.isNeedUpdateList = true;
+//			JFrameMain.isNeedUpdateConnectionCount = true;
+//		}
+//	}
 
 	@Override
 	public void onAfterConnected(ChannelContext<Object, ImPacket, Object> channelContext, boolean isConnected, boolean isReconnect)
 	{
 		JFrameMain.isNeedUpdateConnectionCount = true;
+		if (isReconnect && isConnected)
+		{
+			JFrameMain.isNeedUpdateList = true;
+		}
 		
 		if (!isConnected)
 		{
