@@ -323,31 +323,31 @@ public class AioClient<Ext, P extends Packet, R>
 	 * @创建时间:　2017年2月3日 下午10:28:50
 	 *
 	 */
-	public ClientChannelContext<Ext, P, R> reconnect(ClientChannelContext<Ext, P, R> channelContext, Integer timeout) throws Exception
+	public void reconnect(ClientChannelContext<Ext, P, R> channelContext, Integer timeout) throws Exception
 	{
 		connect(channelContext.getServerNode(), channelContext.getBindIp(), channelContext.getBindPort(), channelContext, timeout);
-		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
-		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
-		if (channelContext.isClosed())
-		{
-			try
-			{
-				clientAioListener.onAfterReconnected(channelContext, false);
-			} catch (Exception e)
-			{
-				log.error(e.toString(), e);
-			}
-			return null;
-		}
+//		ClientGroupContext<Ext, P, R> clientGroupContext = (ClientGroupContext<Ext, P, R>) channelContext.getGroupContext();
+//		ClientAioListener<Ext, P, R> clientAioListener = clientGroupContext.getClientAioListener();
+//		if (channelContext.isClosed())
+//		{
+//			try
+//			{
+//				clientAioListener.onAfterReconnected(channelContext, false);
+//			} catch (Exception e)
+//			{
+//				log.error(e.toString(), e);
+//			}
+//			return null;
+//		}
 
-		try
-		{
-			clientAioListener.onAfterReconnected(channelContext, true);
-		} catch (Exception e)
-		{
-			log.error(e.toString(), e);
-		}
-		return channelContext;
+//		try
+//		{
+//			clientAioListener.onAfterReconnected(channelContext, true);
+//		} catch (Exception e)
+//		{
+//			log.error(e.toString(), e);
+//		}
+//		return channelContext;
 	}
 
 	/**

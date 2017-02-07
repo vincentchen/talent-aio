@@ -109,9 +109,9 @@ public class DefaultClientAioListener<Ext, P extends Packet, R> implements Clien
 	 * @重写时间: 2017年2月4日 下午9:46:22
 	 * 
 	 */
-	@Override
-	public void onAfterReconnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected)
-	{
-	}
+//	@Override
+//	public void onAfterReconnected(ChannelContext<Ext, P, R> channelContext, boolean isConnected)
+//	{
+//	}
 
 }
