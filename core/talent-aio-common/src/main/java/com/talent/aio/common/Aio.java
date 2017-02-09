@@ -11,6 +11,7 @@
  */
 package com.talent.aio.common;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
@@ -547,6 +548,12 @@ public class Aio
 				log.debug("集合为空");
 				return;
 			}
+			if (!groupContext.isEncodeCareWithChannelContext())
+			{
+				ByteBuffer byteBuffer  = groupContext.getAioHandler().encode(packet, groupContext, null);
+				packet.setPreEncodedByteBuffer(byteBuffer);
+			}
+			
 			for (ChannelContext<Ext, P, R> channelContext : set)
 			{
 				if (channelContextFilter != null)

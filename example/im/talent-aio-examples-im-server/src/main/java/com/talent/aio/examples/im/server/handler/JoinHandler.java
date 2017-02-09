@@ -14,23 +14,15 @@ import com.talent.aio.examples.im.common.packets.JoinReqBody;
 import com.talent.aio.examples.im.common.packets.JoinRespBody;
 
 /**
- * 手机端进入房间
  * 
- * @filename:	 com.talent.im.server.handler.bs.TcpJoinHandler
- * @copyright:   Copyright (c)2010
- * @company:     talent
- * @author:      谭耀武
- * @version:     1.0
- * @create time: 2014年4月3日 下午5:19:16
- * @record
- * <table cellPadding="3" cellSpacing="0" style="width:600px">
- * <thead style="font-weight:bold;background-color:#e3e197">
- * 	<tr>   <td>date</td>	<td>author</td>		<td>version</td>	<td>description</td></tr>
- * </thead>
- * <tbody style="background-color:#ffffeb">
- * 	<tr><td>2014年4月3日</td>	<td>谭耀武</td>	<td>1.0</td>	<td>create</td></tr>
- * </tbody>
- * </table>
+ * 
+ * @author tanyaowu 
+ * @创建时间 2017年2月8日 下午3:30:31
+ *
+ * @操作列表
+ *  编号	| 操作时间	| 操作人员	 | 操作说明
+ *  (1) | 2017年2月8日 | tanyaowu | 新建类
+ *
  */
 public class JoinHandler implements ImBsAioHandlerIntf
 {
@@ -46,14 +38,11 @@ public class JoinHandler implements ImBsAioHandlerIntf
 
 		JoinReqBody reqBody = JoinReqBody.parseFrom(packet.getBody());
 		
-		
-		
 		if (log.isInfoEnabled())
 		{
 			log.info("{}收到join包{}", channelContext.toString(), reqBody.toString());
 		}
 		
-//		JoinReqBody joinReqBody = Json.toBean(bodyStr, JoinReqBody.class);
 		String group = reqBody.getGroup();
 		if (StringUtils.isBlank(group))
 		{
@@ -62,14 +51,12 @@ public class JoinHandler implements ImBsAioHandlerIntf
 			return null;
 		}
 
-//		channelContext.getGroupContext().getGroups().bind(groupid, channelContext);
 		com.talent.aio.common.Aio.bindGroup(channelContext, group);
 
 		
 		JoinGroupResult joinGroupResult = JoinGroupResult.JOIN_GROUP_RESULT_OK;
 		JoinRespBody joinRespBody = JoinRespBody.newBuilder().setTime(SystemTimer.currentTimeMillis()).setResult(joinGroupResult).setGroup(group).build();
 		byte[] body = joinRespBody.toByteArray();
-		
 		
 		ImPacket respPacket = new ImPacket();
 		respPacket.setCommand(Command.JOIN_GROUP_RESP);

@@ -21,7 +21,7 @@ package com.talent.aio.common.syn;
  *  (1) | 2017年2月7日 | tanyaowu | 新建类
  *
  */
-public class SynSet
+public class ReadWriteSet<E>
 {
 
 	/**
@@ -31,7 +31,7 @@ public class SynSet
 	 * @创建时间:　2017年2月7日 下午1:27:13
 	 * 
 	 */
-	public SynSet()
+	public ReadWriteSet()
 	{
 		// TODO Auto-generated constructor stub
 	}

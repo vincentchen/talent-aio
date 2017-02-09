@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.client.intf.ClientAioHandler;
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.examples.im.client.handler.AuthRespHandler;
 import com.talent.aio.examples.im.client.handler.ChatRespHandler;
@@ -114,7 +115,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 	 * 
 	 */
 	@Override
-	public ByteBuffer encode(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext)
+	public ByteBuffer encode(ImPacket packet, GroupContext<Object, ImPacket, Object> groupContext, ChannelContext<Object, ImPacket, Object> channelContext)
 	{
 		if (packet.getCommand() == Command.HEARTBEAT_REQ)
 		{
@@ -159,14 +160,14 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		int allLen = packet.calcHeaderLength(is4ByteLength) + bodyLen;
 
 		ByteBuffer buffer = ByteBuffer.allocate(allLen);
-		buffer.order(channelContext.getGroupContext().getByteOrder());
+		buffer.order(groupContext.getByteOrder());
 
 		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, isCompress);
 		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.getSynSeq() > 0);
 		firstbyte = ImPacket.encode4ByteLength(firstbyte, is4ByteLength);
-//		String bstr = Integer.toBinaryString(firstbyte);
-//		log.error("二进制:{}",bstr);
-		
+		//		String bstr = Integer.toBinaryString(firstbyte);
+		//		log.error("二进制:{}",bstr);
+
 		buffer.put(firstbyte);
 		buffer.put(packet.getCommand().getCode());
 
@@ -268,9 +269,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		{
 			imPacket = new ImPacket();
 			imPacket.setCommand(command);
-			
-			
-			
+
 			if (seq != 0)
 			{
 				imPacket.setSynSeq(seq);

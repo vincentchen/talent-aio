@@ -74,6 +74,7 @@ public class ImServerStarter
 		aioHandler = new ImServerAioHandler();
 		aioListener = new ImServerAioListener();
 		serverGroupContext = new ServerGroupContext<>(aioHandler, aioListener);
+		serverGroupContext.setEncodeCareWithChannelContext(false);
 		aioServer = new AioServer<>(serverGroupContext);
 		aioServer.start(ip, port);
 

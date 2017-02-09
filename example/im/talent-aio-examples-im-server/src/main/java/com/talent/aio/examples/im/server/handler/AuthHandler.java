@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.talent.aio.examples.im.server.handler;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,30 +8,20 @@ import com.talent.aio.common.Aio;
 import com.talent.aio.common.ChannelContext;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.examples.im.common.packets.AuthReqBody;
 import com.talent.aio.examples.im.common.packets.DeviceType;
-import com.talent.aio.examples.im.common.utils.Md5;
 
 
 /**
  * 
- * 鉴权处理者
- * @filename:	 com.talent.im.server.handler.bs.AuthorizationHandler
- * @copyright:   Copyright (c)2010
- * @company:     talent
- * @author:      谭耀武
- * @version:     1.0
- * @create time: 2014年3月19日 下午4:23:04
- * @record
- * <table cellPadding="3" cellSpacing="0" style="width:600px">
- * <thead style="font-weight:bold;background-color:#e3e197">
- * 	<tr>   <td>date</td>	<td>author</td>		<td>version</td>	<td>description</td></tr>
- * </thead>
- * <tbody style="background-color:#ffffeb">
- * 	<tr><td>2014年3月19日</td>	<td>谭耀武</td>	<td>1.0</td>	<td>create</td></tr>
- * </tbody>
- * </table>
+ * 
+ * @author tanyaowu 
+ * @创建时间 2017年2月8日 下午3:29:46
+ *
+ * @操作列表
+ *  编号	| 操作时间	| 操作人员	 | 操作说明
+ *  (1) | 2017年2月8日 | tanyaowu | 新建类
+ *
  */
 public class AuthHandler implements ImBsAioHandlerIntf
 {

@@ -21,7 +21,7 @@ package com.talent.aio.common.syn;
  *  (1) | 2017年2月7日 | tanyaowu | 新建类
  *
  */
-public class SynList
+public class ReadWriteList<E>
 {
 
 	/**
@@ -31,7 +31,7 @@ public class SynList
 	 * @创建时间:　2017年2月7日 下午1:27:24
 	 * 
 	 */
-	public SynList()
+	public ReadWriteList()
 	{
 		// TODO Auto-generated constructor stub
 	}

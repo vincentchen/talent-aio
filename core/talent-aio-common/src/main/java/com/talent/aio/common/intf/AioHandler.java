@@ -14,6 +14,7 @@ package com.talent.aio.common.intf;
 import java.nio.ByteBuffer;
 
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.exception.AioDecodeException;
 
 /**
@@ -44,7 +45,7 @@ public interface AioHandler<Ext, P extends Packet, R>
 	 * @author: tanyaowu
 	 * @创建时间:　2016年11月15日 上午11:38:52
 	 */
-	ByteBuffer encode(P packet, ChannelContext<Ext, P, R> channelContext);
+	ByteBuffer encode(P packet, GroupContext<Ext, P, R> groupContext, ChannelContext<Ext, P, R> channelContext);
 
 	/**
 	 * 根据ByteBuffer解码成业务需要的Packet对象.

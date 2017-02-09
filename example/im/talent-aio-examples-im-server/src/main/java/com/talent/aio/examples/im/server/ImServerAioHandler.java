@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
+import com.talent.aio.common.GroupContext;
 import com.talent.aio.common.exception.AioDecodeException;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.CommandStat;
@@ -45,8 +46,7 @@ import com.talent.aio.server.intf.ServerAioHandler;
 public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Object>
 {
 	private static Logger log = LoggerFactory.getLogger(ImServerAioHandler.class);
-	
-	
+
 	private static Map<Command, ImBsAioHandlerIntf> handlerMap = new HashMap<>();
 	static
 	{
@@ -54,9 +54,9 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		handlerMap.put(Command.CHAT_REQ, new ChatHandler());
 		handlerMap.put(Command.JOIN_GROUP_REQ, new JoinHandler());
 		handlerMap.put(Command.HEARTBEAT_REQ, new HeartbeatHandler());
-		
+
 	}
-	
+
 	/**
 	 * 
 	 *
@@ -65,7 +65,8 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 	 * 
 	 */
 	public ImServerAioHandler()
-	{}
+	{
+	}
 
 	/**
 	 * @param args
@@ -75,7 +76,8 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 	 * 
 	 */
 	public static void main(String[] args)
-	{}
+	{
+	}
 
 	/** 
 	 * @see com.talent.aio.common.intf.AioHandler#handler(com.talent.aio.common.intf.Packet)
@@ -116,7 +118,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 	 * 
 	 */
 	@Override
-	public ByteBuffer encode(ImPacket packet, ChannelContext<Object, ImPacket, Object> channelContext)
+	public ByteBuffer encode(ImPacket packet, GroupContext<Object, ImPacket, Object> groupContext, ChannelContext<Object, ImPacket, Object> channelContext)
 	{
 		byte[] body = packet.getBody();
 		int bodyLen = 0;
@@ -154,14 +156,14 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		int allLen = packet.calcHeaderLength(is4ByteLength) + bodyLen;
 
 		ByteBuffer buffer = ByteBuffer.allocate(allLen);
-		buffer.order(channelContext.getGroupContext().getByteOrder());
+		buffer.order(groupContext.getByteOrder());
 
 		byte firstbyte = ImPacket.encodeCompress(ImPacket.VERSION, isCompress);
 		firstbyte = ImPacket.encodeHasSynSeq(firstbyte, packet.getSynSeq() > 0);
 		firstbyte = ImPacket.encode4ByteLength(firstbyte, is4ByteLength);
-//		String bstr = Integer.toBinaryString(firstbyte);
-//		log.error("二进制:{}",bstr);
-		
+		//		String bstr = Integer.toBinaryString(firstbyte);
+		//		log.error("二进制:{}",bstr);
+
 		buffer.put(firstbyte);
 		buffer.put(packet.getCommand().getCode());
 
@@ -192,7 +194,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		}
 		return buffer;
 	}
-	
+
 	private static ImPacket heartbeatPacket = new ImPacket(Command.HEARTBEAT_REQ);
 
 	/** 
@@ -214,7 +216,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 			return heartbeatPacket;
 		}
 		buffer.position(buffer.position() - 1);//位置复元
-		
+
 		int readableLength = buffer.limit() - buffer.position();
 
 		int headerLength = ImPacket.LEAST_HEADER_LENGHT;
@@ -272,9 +274,7 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 		{
 			imPacket = new ImPacket();
 			imPacket.setCommand(command);
-			
-			
-			
+
 			if (seq != 0)
 			{
 				imPacket.setSynSeq(seq);
@@ -306,7 +306,6 @@ public class ImServerAioHandler implements ServerAioHandler<Object, ImPacket, Ob
 			return imPacket;
 
 		}
-
 
 	}
 

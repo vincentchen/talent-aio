@@ -1,5 +1,7 @@
 package com.talent.aio.common.intf;
 
+import java.nio.ByteBuffer;
+
 /**
  * 
  * @author tanyaowu 
@@ -31,6 +33,11 @@ public class Packet
 	 * 同步发送时，需要的同步序列号
 	 */
 	private Integer synSeq = 0;
+	
+	/**
+	 * 预编码过的bytebuffer，如果此值不为null，框架则会忽略原来的encode()过程
+	 */
+	private ByteBuffer preEncodedByteBuffer = null;
 //
 //	/**
 //	 * @return the priority
@@ -62,6 +69,22 @@ public class Packet
 	public void setSynSeq(Integer synSeq)
 	{
 		this.synSeq = synSeq;
+	}
+
+	/**
+	 * @return the preEncodedByteBuffer
+	 */
+	public ByteBuffer getPreEncodedByteBuffer()
+	{
+		return preEncodedByteBuffer;
+	}
+
+	/**
+	 * @param preEncodedByteBuffer the preEncodedByteBuffer to set
+	 */
+	public void setPreEncodedByteBuffer(ByteBuffer preEncodedByteBuffer)
+	{
+		this.preEncodedByteBuffer = preEncodedByteBuffer;
 	}
 
 }

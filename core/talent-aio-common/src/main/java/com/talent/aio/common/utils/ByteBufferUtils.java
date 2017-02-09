@@ -79,9 +79,9 @@ public class ByteBufferUtils
 		int size = endindex - startindex;
 		ByteBuffer ret = ByteBuffer.allocate(size);
 		src.position(startindex);
-		for (int i = 0; i < size; i++)
+		for (int i = startindex; i < endindex; i++)
 		{
-			ret.put(src.get());
+			ret.put(src.get(i));
 		}
 		return ret;
 	}

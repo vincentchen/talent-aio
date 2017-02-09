@@ -16,6 +16,7 @@ import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
+import com.talent.aio.common.utils.ByteBufferUtils;
 import com.talent.aio.common.utils.SystemTimer;
 
 /**
@@ -59,7 +60,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 	public void sendPacket(P packet)
 	{
 		GroupContext<Ext, P, R> groupContext = channelContext.getGroupContext();
-		ByteBuffer byteBuffer = groupContext.getAioHandler().encode(packet, channelContext);
+		ByteBuffer byteBuffer = getByteBuffer(packet, groupContext, groupContext.getAioHandler());
 		int packetCount = 1;
 		sendByteBuffer(byteBuffer, packetCount, packet);
 	}
@@ -150,7 +151,17 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			{
 				if ((packet = msgQueue.poll()) != null)
 				{
-					ByteBuffer byteBuffer = aioHandler.encode(packet, channelContext);
+//					ByteBuffer byteBuffer = packet.getPreEncodedByteBuffer();//aioHandler.encode(packet, groupContext, channelContext);
+//					if (byteBuffer != null)
+//					{
+//						byteBuffer = ByteBufferUtils.copy(byteBuffer, 0, byteBuffer.limit());
+//					} else
+//					{
+//						byteBuffer = aioHandler.encode(packet, groupContext, channelContext);
+//					}
+					
+					ByteBuffer byteBuffer = getByteBuffer(packet, groupContext, aioHandler);
+
 					packets.add(packet);
 					allBytebufferCapacity += byteBuffer.limit();
 					packetCount++;
@@ -180,4 +191,18 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			}
 		}
 	}
+
+	private ByteBuffer getByteBuffer(P packet, GroupContext<Ext, P, R> groupContext, AioHandler<Ext, P, R> aioHandler)
+	{
+		ByteBuffer byteBuffer = packet.getPreEncodedByteBuffer();
+		if (byteBuffer != null)
+		{
+			byteBuffer = ByteBufferUtils.copy(byteBuffer, 0, byteBuffer.limit());
+		} else
+		{
+			byteBuffer = aioHandler.encode(packet, groupContext, channelContext);
+		}
+		return byteBuffer;
+	}
+
 }

@@ -54,9 +54,9 @@ public class ImClientStarter
 		aioClientHandler = new ImClientAioHandler();
 		aioListener = new ImClientAioListener();
 		clientGroupContext = new ClientGroupContext<>(aioClientHandler, aioListener, reconnConf);
-//		clientGroupContext.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 		clientGroupContext.setReadBufferSize(2048);
 		clientGroupContext.setByteOrder(ByteOrder.BIG_ENDIAN);
+		clientGroupContext.setEncodeCareWithChannelContext(false);
 		aioClient = new AioClient<>(clientGroupContext);
 	}
 

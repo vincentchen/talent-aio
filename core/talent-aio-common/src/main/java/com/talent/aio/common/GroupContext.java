@@ -117,6 +117,11 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	protected Groups<Ext, P, R> groups = new Groups<>();
 	protected Users<Ext, P, R> users = new Users<>();
 	protected Syns<Ext, P, R> syns = new Syns<>();
+	
+	/**
+	 * packet编码成bytebuffer时，是否与ChannelContext相关，false: packet编码与ChannelContext无关
+	 */
+	private boolean isEncodeCareWithChannelContext  = true;
 
 	protected String id;
 	
@@ -508,5 +513,22 @@ public abstract class GroupContext<Ext, P extends Packet, R>
 	{
 		this.closeds = closeds;
 	}
+
+	/**
+	 * @return the isEncodeCareWithChannelContext
+	 */
+	public boolean isEncodeCareWithChannelContext()
+	{
+		return isEncodeCareWithChannelContext;
+	}
+
+	/**
+	 * @param isEncodeCareWithChannelContext the isEncodeCareWithChannelContext to set
+	 */
+	public void setEncodeCareWithChannelContext(boolean isEncodeCareWithChannelContext)
+	{
+		this.isEncodeCareWithChannelContext = isEncodeCareWithChannelContext;
+	}
+
 
 }
