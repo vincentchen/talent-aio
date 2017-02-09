@@ -1,0 +1,973 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0033)http://www.iteye.com/topic/894148 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛</title>
+    <meta name="description" content="   今天看了一下 HotSpot JVM （下简称JVM）的内存管理，先来简单说说我的理解吧。   JVM将堆分成了 二个大区  Young 和 Old 如下图：           而Young 区又分为 Eden、Servivor1、Servivor2, 两个Survivor 区相对地作为为From 和 To 逻辑区域, 当Servivor1作为 From 时 ， Servivor2 就作为  ...">
+    <meta name="keywords" content="Java综合 Java">
+    <link rel="shortcut icon" href="http://www.iteye.com/images/favicon.ico" type="image/x-icon">
+    <link href="http://www.iteye.com/rss/board/Java" rel="alternate" title="ITeye论坛" type="application/rss+xml">
+    <link rel="search" type="application/opensearchdescription+xml" href="http://www.iteye.com/open_search.xml" title="ITeye">
+    <link href="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/forum.css" media="screen" rel="stylesheet" type="text/css">
+    <script type="text/javascript" async="" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/gcfm"></script><script type="text/javascript" async="" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/ga.js.下载"></script><script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/application.js.下载" type="text/javascript"></script>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-535605-1']);
+  _gaq.push(['_setDomainName', 'iteye.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+
+      <link href="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/SyntaxHighlighter.css" media="screen" rel="stylesheet" type="text/css">
+  <script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/shCoreCommon.js.下载" type="text/javascript"></script>
+<script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/hotkey.js.下载" type="text/javascript"></script>
+  <script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/code_favorites.js.下载" type="text/javascript"></script>
+          <script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/dragdrop.js.下载" type="text/javascript"></script>
+          <style type="text/css">.dp-default .number { color: #C00000; }</style><style type="text/css">.dp-default .number { color: #C00000; }</style><script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/get_ads.php" type="text/javascript"></script></head>
+  <body><div id="BAIDU_DUP_fp_wrapper" style="position: absolute; left: -1px; bottom: -1px; z-index: 0; width: 0px; height: 0px; overflow: hidden; visibility: hidden; display: none;"><iframe id="BAIDU_DUP_fp_iframe" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/o.html" style="width: 0px; height: 0px; visibility: hidden; display: none;"></iframe></div>
+    <div id="page">
+      <div id="header">
+        <div class="clearfix"><div id="user_nav">
+      <a href="http://www.iteye.com/login" class="welcome" title="登录">您还未登录 !</a>
+    <a href="http://www.iteye.com/login">登录</a>
+    <a href="http://www.iteye.com/signup" class="nobg">注册</a>
+  </div>
+</div>
+        <div class="clearfix">
+          <div id="branding">
+            <a href="http://www.iteye.com/"><img alt="ITeye-最棒的软件开发交流社区" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/logo.gif" title="ITeye-最棒的软件开发交流社区"></a>
+          </div>
+          <div id="gg">
+          	
+          	<div class="J_adv" data-view="true" data-mod="ad_popu_168" data-mtp="34" data-order="92" data-con="ad_content_483" style="width: 728px; height: 90px;"><!-- 广告占位容器 --><div id="cpro_u1617757"><iframe id="iframeu1617757_0" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/gcfm.html" width="728" height="90" align="center,center" vspace="0" hspace="0" marginwidth="0" marginheight="0" scrolling="no" frameborder="0" style="border:0; vertical-align:bottom;margin:0;" allowtransparency="true"></iframe></div><!-- 投放代码 --><script type="text/javascript">   /*服务器频道首页置顶Banner960*90，创建于2014-7-3*/    (window.cproArray = window.cproArray || []).push({        id: 'u1617757'      });  </script>  <script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/c.js.下载" type="text/javascript"></script></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="content" class="clearfix">
+        <div id="main">
+          
+
+
+
+          
+
+<div class="h-entry" style="display:none">
+  <a href="http://mingjian01.iteye.com/" class="p-author" target="_blank">mingjian01</a>
+</div>
+
+
+<div class="clearfix">
+  <div class="crumbs">
+    <a href="http://www.iteye.com/forums">论坛首页</a> <span class="arrow">→</span>
+    <a href="http://www.iteye.com/forums/board/Java">Java企业应用论坛</a> <span class="arrow">→</span>
+    <h1>HotSpot VM 内存堆的两个Servivor区</h1>
+  </div>
+</div>
+
+
+  <div id="forum_tag_list">
+    <a href="http://www.iteye.com/forums/board/Java">全部</a>
+          <a href="http://www.iteye.com/forums/tag/Hibernate">Hibernate</a>
+          <a href="http://www.iteye.com/forums/tag/Spring">Spring</a>
+          <a href="http://www.iteye.com/forums/tag/Struts">Struts</a>
+          <a href="http://www.iteye.com/forums/tag/iBATIS">iBATIS</a>
+          <a href="http://www.iteye.com/forums/tag/%E4%BC%81%E4%B8%9A%E5%BA%94%E7%94%A8">企业应用</a>
+          <a href="http://www.iteye.com/forums/tag/Lucene">Lucene</a>
+          <a href="http://www.iteye.com/forums/tag/SOA">SOA</a>
+              <a href="http://www.iteye.com/forums/tag/Java%E7%BB%BC%E5%90%88">Java综合</a>
+          <a href="http://www.iteye.com/forums/tag/Tomcat">Tomcat</a>
+          <a href="http://www.iteye.com/forums/tag/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F">设计模式</a>
+          <a href="http://www.iteye.com/forums/tag/OO">OO</a>
+          <a href="http://www.iteye.com/forums/tag/JBoss">JBoss</a>
+      </div>
+
+
+<div class="actions">
+  <div class="buttons"></div>
+  <div class="wrapper">
+    <div id="forum_recommended_f4"></div>
+    <div class="pagination"><span class="disabled prev_page">« 上一页</span> <span class="current">1</span> <a href="http://www.iteye.com/topic/894148?page=2" rel="next">2</a> <a href="http://www.iteye.com/topic/894148?page=3">3</a> <a href="http://www.iteye.com/topic/894148?page=2" class="next_page" rel="next">下一页 »</a></div>
+    <div class="info">浏览 15383 次</div>
+  </div>
+</div>
+
+
+
+<table id="forum_main" cellspacing="1">
+  <thead>
+    <tr>
+      <th colspan="2" class="topic_title">
+        <div class="wrapper"><span class="locked">锁定老帖子</span> <a href="http://www.iteye.com/topic/894148">主题：HotSpot VM 内存堆的两个Servivor区</a></div>
+        <div id="topic_rate_box">精华帖 (1) :: 良好帖 (6) :: 新手帖 (0) :: 隐藏帖 (0)</div>
+      </th>
+    </tr>
+    <tr>
+      <td class="first_col">作者</td>
+      <td class="last_col">正文
+      
+      </td>
+    </tr>
+  </thead>
+  <tbody id="posts">
+    <tr id="1879384">
+  <td class="postauthor">
+    <ul>
+      <li class="name">mingjian01</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://mingjian01.iteye.com/" target="_blank"><img alt="mingjian01的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/5ca79c90-459c-3986-b8c0-4fc6b7ad368a.jpg" title="mingjian01的博客: 小白的思考" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 45</li>
+      <li>积分: 50</li>
+      <li>来自: 广州</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-24&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+	      	    
+		  		
+<div class="newfors">
+  <em>相关知识库：</em>
+  
+  <a target="_blank" href="http://lib.csdn.net/base/javase">
+  	<img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/1453169124297_297.jpg" width="30" height="30" alt="" class="imgradius">
+    <span>Java SE知识库</span>
+  </a>
+  
+  <a target="_blank" href="http://lib.csdn.net/base/wechat">
+  	<img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/1452500582376_376.jpg" width="30" height="30" alt="" class="imgradius">
+    <span>微信开发知识库</span>
+  </a>
+  
+  <a target="_blank" href="http://lib.csdn.net/base/reactnative">
+  	<img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/1473751990490_490.jpg" width="30" height="30" alt="" class="imgradius">
+    <span>React Native知识库</span>
+  </a>
+  
+  <a target="_blank" href="http://lib.csdn.net/base/css3">
+  	<img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/1478154582437_437.jpg" width="30" height="30" alt="" class="imgradius">
+    <span>CSS3知识库</span>
+  </a>
+  </div>
+
+		            
+          
+        
+      
+                                            <div id="related_topics" style="position: relative;">相关文章: <span class="close"><a href="http://www.iteye.com/topic/894148#" onclick="$(&#39;related_topics&#39;).hide();if($(&#39;hunter_recommended&#39;)){$(&#39;hunter_recommended&#39;).style.width=&#39;780px&#39;};if($(&#39;topic_tags&#39;)){$(&#39;topic_tags&#39;).style.width=&#39;790px&#39;};return false;" title="关闭">&nbsp;</a></span>
+              <ul>
+                                  <li><a href="http://www.iteye.com/topic/727846" title="分析java的for循环和数组初始化的执行过程" target="_blank">分析java的for循环和数组初始化的执行过程</a></li>
+                                  <li><a href="http://www.iteye.com/topic/425595" title="提出结论，给出论据（一）" target="_blank">提出结论，给出论据（一）</a></li>
+                                  <li><a href="http://www.iteye.com/topic/206207" title="show代码。找兼职。" target="_blank">show代码。找兼职。</a></li>
+                              </ul>
+              <br><span>推荐群组: <a href="http://hllvm.group.iteye.com/" target="_blank">高级语言虚拟机</a></span>
+              <br><a href="http://www.iteye.com/wiki/topic/894148" target="_blank">更多相关推荐</a>
+            </div>
+            <script type="text/javascript">
+              document.observe("dom:loaded", function() {
+                if($('hunter_recommended')) {
+                  $('hunter_recommended').setStyle({cssFloat: 'left', width: '557px'})
+                }
+                if($('topic_tags')) {
+                  $('topic_tags').setStyle({width: '567px'})
+                }
+                new Draggable("related_topics");
+              });
+            </script>
+                          
+          <div id="topic_tags" class="news_tag" style="width: 567px;">
+                          <a href="http://www.iteye.com/forums/tag/Java%E7%BB%BC%E5%90%88">Java综合</a>
+                      </div>
+        
+      
+      <p>&nbsp;&nbsp; 今天看了一下 HotSpot JVM （下简称JVM）的内存管理，先来简单说说我的理解吧。<br><br><br>&nbsp;&nbsp; JVM将堆分成了 二个大区&nbsp; Young 和 Old 如下图：<br>&nbsp;&nbsp; <img alt="" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/e0819488-b51c-3d3e-a4ee-8fe24d6201b7.png"><br>&nbsp;&nbsp;&nbsp;&nbsp; <br><br><br><br>&nbsp;&nbsp; 而Young 区又分为 Eden、Servivor1、Servivor2, 两个Survivor 区相对地作为为From 和 To 逻辑区域, 当Servivor1作为 From 时 ， Servivor2 就作为 To, 反之亦然<br><br>&nbsp;&nbsp; 如下图：<br><br>&nbsp;&nbsp; <img alt="" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/a3c547a0-fa10-3a2d-9bfb-8444bd9abfe6.png"><br><br><br>&nbsp;&nbsp; 因此当Eden区满的时候 GC执行，这时会将 Eden 区和 From 区中还被引用的对象会被移到 To区 ，个别大对象和部分From对象在To已满的情况下会被放到Old区,如下图：<br><br>&nbsp;&nbsp; <img alt="" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/c54dafa7-8e5c-3c99-88fb-eceb2784b652.png"><br><br><br><br>GC操作执行完之后 Eden和 From 区将会为空（无引用对象被回收，有引用对象被移到To和Old区） ，并且From 和 To在逻辑上的 概念调换 ， From 概念上变成了To,To变成了From（如果Servior1 原来作为 From 区 ，现在Servior1 现在就作为 To 区），GC执行后结果如下图：<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img alt="" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/238de140-39a1-30ad-8025-7e67cb728fb8.png"></p>
+<h3>HotSpot VM 内存堆的两个Servivor区</h3>
+<p>&nbsp;&nbsp;&nbsp;&nbsp; <br><br><br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 第一次发贴，有什么问题请大家指正一下。有个地方不太清楚 ，为什么需要From 和 To 两个平行的区呢，为什么不直接从Survivor 移到 Old？ 这样设计的好处是什么？难道是因为在移动对象的时候需要压缩调整对象空间，所以这种整体移动的设计会快一点吗？希望大家一起来讨论一下 ^_^<br><br><br>顺便附上资料 《内存管理白皮书》</p>
+<p>&nbsp;</p>
+    </div>
+    
+  <div class="attachments">
+    
+      
+        <ul>
+          <li><a href="http://dl.iteye.com/topics/download/739110c7-bd4e-350d-a4e5-8e9cd169f760">memorymanagement-whitepaper-1-150020.pdf</a> (7.5 MB)</li>
+          
+          <li>下载次数: 901</li>
+        </ul>
+      
+    
+    
+  </div>
+
+
+          <div id="topic_copyright">声明：ITeye文章版权属于作者，受法律保护。没有作者书面许可不得转载。 </div>
+      <div id="forum_recommended_f5"><span>推荐链接</span><ul></ul></div>
+              <div id="forum_recommended_f0"></div>
+        </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://mingjian01.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://mingjian01.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=mingjian01" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://mingjian01.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=mingjian01" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+              </div>
+                    </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1882508">
+  <td class="postauthor">
+    <ul>
+      <li class="name">cesc</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://cesc.iteye.com/" target="_blank"><img alt="cesc的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/a2e2280f-7283-3a7f-bcb5-ddf0b026e45d.jpg" title="cesc的博客: " width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 30</li>
+      <li>积分: 40</li>
+      <li>来自: 杭州</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-25&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      楼主讲的挺不错的，针对你的疑问，一般new区的对象往往需要经历几次GC之后才会放入old区，一般是通过-XX:MaxTenuringThreshold这个参数来设置的GC几次才放入old区。
+<br>设计成From 和 To 两个平行的区，我觉得是为了筛选真正符合old区的要求的对象（即需要长时间持有的引用的对象），然后再将他们放入old区。
+<br>本人才疏学浅，欢迎大家拍砖，讨论。
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://cesc.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://cesc.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=cesc" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://cesc.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=cesc" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1882508" title="cesc回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1882508" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1882697">
+  <td class="postauthor">
+    <ul>
+      <li class="name">haigui.chen</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://chenxiba.iteye.com/" target="_blank"><img alt="haigui.chen的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/user-logo.gif" title="haigui.chen的博客: 用扯淡的时间来思考" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 25</li>
+      <li>积分: 30</li>
+      <li>来自: 南京</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-25&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      感觉这是和GC的copying算法相关吧，既然是拷贝，就得有地方做from，有地方做to？
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://chenxiba.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://chenxiba.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=haigui.chen" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://chenxiba.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=haigui.chen" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1882697" title="haigui.chen回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1882697" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1883215">
+  <td class="postauthor">
+    <ul>
+      <li class="name">mingjian01</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://mingjian01.iteye.com/" target="_blank"><img alt="mingjian01的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/5ca79c90-459c-3986-b8c0-4fc6b7ad368a.jpg" title="mingjian01的博客: 小白的思考" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 45</li>
+      <li>积分: 50</li>
+      <li>来自: 广州</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-26&nbsp;&nbsp;
+        最后修改：2011-01-26
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      <div class="quote_title">cesc 写道</div><div class="quote_div">楼主讲的挺不错的，针对你的疑问，一般new区的对象往往需要经历几次GC之后才会放入old区，一般是通过-XX:MaxTenuringThreshold这个参数来设置的GC几次才放入old区。
+<br>设计成From 和 To 两个平行的区，我觉得是为了筛选真正符合old区的要求的对象（即需要长时间持有的引用的对象），然后再将他们放入old区。
+<br>本人才疏学浅，欢迎大家拍砖，讨论。</div>
+<br>
+<br>
+<br>嗯，我想也应该是这样的。我现在的理解是这样的：
+<br>1.young 区和old 区使用的回收对象算法不一样，因为回收young 区满了需要回收时，Old不需要被回收，而当Old区满了要回收对象时，整个内存堆都要清理，而且使用者可以设置 young区和old区的回收是多线程还是单线程的，所以设计者是希望对象能够多点时间留在young 区，以提高回收对象的效率。
+<br>
+<br>2.当回收非引用对象后，还需要对内存区进行压缩（使引用对象在内存排列更紧凑，以提高新对象申请内存的速度），如果使用一个区会使压缩操作效率变慢同时也不方便。
+<br>
+<br>基于以上两点，设计者将Servivor分成两个平行的区，分别交替操作。这个是我个人的理解，不知道是否正确
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://mingjian01.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://mingjian01.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=mingjian01" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://mingjian01.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=mingjian01" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1883215" title="mingjian01回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1883215" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1884176">
+  <td class="postauthor">
+    <ul>
+      <li class="name">RednaxelaFX</li>
+      <li>等级: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/dimd2.gif" alt="二钻会员" title="二钻会员"></li>
+      <li><a href="http://rednaxelafx.iteye.com/" target="_blank"><img alt="RednaxelaFX的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/e7f2a3da-4ed0-3627-ba26-c63a7a4f5f13.jpg" title="RednaxelaFX的博客: Script Ahead, Code Behind" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 576</li>
+      <li>积分: 1110</li>
+      <li>来自: 海外</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-26&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      <div class="quote_title">haigui.chen 写道</div><div class="quote_div">感觉这是和GC的copying算法相关吧，既然是拷贝，就得有地方做from，有地方做to？</div>
+<br>嗯，正是如此。在原始的copying收集算法里，空间被分为两半，叫做semispace。空间分配和回收的过程就是把其中一半用作from来分配空间，当from快满或满足别的一些条件时将可到达的对象复制到to，并将from与to逻辑交换的过程。
+<br>
+<br>单纯的copying收集不能很好的应对长时间存活的对象，因为那样的对象每次经历收集的时候都还活着，带来拷贝的开销。出于权衡，HotSpot里目前除G1外都采用相似的方式实现分代式GC，并且在young gen都使用copying收集算法。不过它使用的copying算法是原始算法的变种，留一块较大的区域作为eden，在eden与old gen之间设置semispace来作为缓冲，让“中等寿命”的对象尽量在进入old gen之前被收集掉。这就是HotSpot的survivor spaces了。
+<br>
+<br>嗯虽说是相似的方式，不过HotSpot里Parallel Scavenge与另外几种GC在实现上有点不同。其它的几种是共用了一套从JDK 1.4开始用的分代式GC框架，PS则是自己实现了类似的功能而没用那套框架。
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://rednaxelafx.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://rednaxelafx.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=RednaxelaFX" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://rednaxelafx.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=RednaxelaFX" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1884176" title="RednaxelaFX回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1884176" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1885386">
+  <td class="postauthor">
+    <ul>
+      <li class="name">kingkan</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://kingkan.iteye.com/" target="_blank"><img alt="kingkan的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/54d4affc-bcdd-3db8-8d28-935775843a14.jpg" title="kingkan的博客: kingkan" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 125</li>
+      <li>积分: 30</li>
+      <li>来自: 杭州</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-27&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      <div class="quote_title">RednaxelaFX 写道</div><div class="quote_div"><div class="quote_title">haigui.chen 写道</div><div class="quote_div">感觉这是和GC的copying算法相关吧，既然是拷贝，就得有地方做from，有地方做to？</div>
+<br>嗯，正是如此。在原始的copying收集算法里，空间被分为两半，叫做semispace。空间分配和回收的过程就是把其中一半用作from来分配空间，当from快满或满足别的一些条件时将可到达的对象复制到to，并将from与to逻辑交换的过程。
+<br>
+<br>单纯的copying收集不能很好的应对长时间存活的对象，因为那样的对象每次经历收集的时候都还活着，带来拷贝的开销。出于权衡，HotSpot里目前除G1外都采用相似的方式实现分代式GC，并且在young gen都使用copying收集算法。不过它使用的copying算法是原始算法的变种，留一块较大的区域作为eden，在eden与old gen之间设置semispace来作为缓冲，让“中等寿命”的对象尽量在进入old gen之前被收集掉。这就是HotSpot的survivor spaces了。
+<br>
+<br>嗯虽说是相似的方式，不过HotSpot里Parallel Scavenge与另外几种GC在实现上有点不同。其它的几种是共用了一套从JDK 1.4开始用的分代式GC框架，PS则是自己实现了类似的功能而没用那套框架。</div>
+<br>
+<br>请教下前辈们：
+<br>
+<br>1.手动System.gc()与JVM自动gc有什么根本上的区别么？在程序里面一个对象用完的时候，马上使用System.gc()，通过内存使用数据查看，该对象的内存是还没释放的。但是对象使用完，马上设置为null，再System.gc()，该对象的内存就被释放了，不解。
+<br>
+<br>2.用户能自己设置JVM选择何种GC算法来进行GC么？
+<br>
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://kingkan.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://kingkan.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=kingkan" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://kingkan.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=kingkan" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1885386" title="kingkan回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1885386" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1885461">
+  <td class="postauthor">
+    <ul>
+      <li class="name">phyeas</li>
+      <li>等级: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/star2.gif" alt="二星会员" title="二星会员"></li>
+      <li><a href="http://phyeas.iteye.com/" target="_blank"><img alt="phyeas的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/d62b3d93-1933-34e7-b38d-98ff37b308f5.jpg" title="phyeas的博客: Phy Eas" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 145</li>
+      <li>积分: 220</li>
+      <li>来自: 珠海</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-27&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      我没看过GC算法，不过对于LS说置为NULL就马上释放的问题，我认为是引用计数的问题，如果该对象还在别的地方有引用也是不会马上释放的。
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://phyeas.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://phyeas.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=phyeas" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://phyeas.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=phyeas" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1885461" title="phyeas回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1885461" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1885627">
+  <td class="postauthor">
+    <ul>
+      <li class="name">kingkan</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://kingkan.iteye.com/" target="_blank"><img alt="kingkan的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/54d4affc-bcdd-3db8-8d28-935775843a14.jpg" title="kingkan的博客: kingkan" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 125</li>
+      <li>积分: 30</li>
+      <li>来自: 杭州</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-27&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      <div class="quote_title">phyeas 写道</div><div class="quote_div">我没看过GC算法，不过对于LS说置为NULL就马上释放的问题，我认为是引用计数的问题，如果该对象还在别的地方有引用也是不会马上释放的。</div>
+<br>
+<br>引用计数的问题？呵呵，能说说它底层的实现机制吗？
+<br>因为随便写一个main()中，new一个对象(最好是图片对象，够大)，再设置为null。
+<br>整个过程使用
+<br>Runtime.getRuntime().totalMemory();
+<br>Runtime.getRuntime().freeMemory();
+<br>来监控内存使用数。
+<br>看到内存使用数的变化，如果是引用计数的问题，难道这个数据是虚的？
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://kingkan.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://kingkan.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=kingkan" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://kingkan.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=kingkan" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1885627" title="kingkan回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1885627" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1885862">
+  <td class="postauthor">
+    <ul>
+      <li class="name">haigui.chen</li>
+      <li>等级: 初级会员</li>
+      <li><a href="http://chenxiba.iteye.com/" target="_blank"><img alt="haigui.chen的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/user-logo.gif" title="haigui.chen的博客: 用扯淡的时间来思考" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 25</li>
+      <li>积分: 30</li>
+      <li>来自: 南京</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-27&nbsp;&nbsp;
+        
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      <div class="quote_title">kingkan 写道</div><div class="quote_div">
+<br>请教下前辈们：
+<br>
+<br>1.手动System.gc()与JVM自动gc有什么根本上的区别么？在程序里面一个对象用完的时候，马上使用System.gc()，通过内存使用数据查看，该对象的内存是还没释放的。但是对象使用完，马上设置为null，再System.gc()，该对象的内存就被释放了，不解。
+<br>
+<br>2.用户能自己设置JVM选择何种GC算法来进行GC么？
+<br></div>
+<br>1，System.gc()只是提醒JVM去花点精力去回收，具体JVM回收不回收那要看JVM自己啦，你把object设置为null，内存被释放那是JVM去回收了...
+<br>
+<br>2，可以设置JVM选择何种GC算法的，你自己参考LZ的附件...
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://chenxiba.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://chenxiba.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=haigui.chen" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://chenxiba.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=haigui.chen" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1885862" title="haigui.chen回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1885862" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">0</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+<tr id="1886654">
+  <td class="postauthor">
+    <ul>
+      <li class="name">RednaxelaFX</li>
+      <li>等级: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/dimd2.gif" alt="二钻会员" title="二钻会员"></li>
+      <li><a href="http://rednaxelafx.iteye.com/" target="_blank"><img alt="RednaxelaFX的博客" class="logo" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/e7f2a3da-4ed0-3627-ba26-c63a7a4f5f13.jpg" title="RednaxelaFX的博客: Script Ahead, Code Behind" width=""></a></li>
+      <li>性别: <img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_minigender_1.gif" title="男"></li>      <li>文章: 576</li>
+      <li>积分: 1110</li>
+      <li>来自: 海外</li>
+      <li><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/offline.gif"></li>
+    </ul>
+  </td>
+  <td class="postcontent">
+    <div class="postactions">
+      <div class="description">
+        &nbsp;&nbsp;
+        发表时间：2011-01-28&nbsp;&nbsp;
+        最后修改：2011-05-09
+      </div>
+      <div class="links">
+        
+        
+          
+          
+          
+        
+      </div>
+    </div>
+    <div class="postbody clearfix">
+	    
+      
+      
+      <div class="quote_title">kingkan 写道</div><div class="quote_div">请教下前辈们：
+<br>
+<br>1.手动System.gc()与JVM自动gc有什么根本上的区别么？在程序里面一个对象用完的时候，马上使用System.gc()，通过内存使用数据查看，该对象的内存是还没释放的。但是对象使用完，马上设置为null，再System.gc()，该对象的内存就被释放了，不解。
+<br>
+<br>2.用户能自己设置JVM选择何种GC算法来进行GC么？</div>
+<br>1、根本的区别之一：System.gc()可能在自动GC原本不会进入GC的位置上进入GC。
+<br>正常情况下，Java代码要尝试在GC堆上分配空间的时候才会触发GC；换句话说，基本上是“new”的时候才会触发GC。但System.gc()、JVMTI的强制GC等动作都在正常情况之外提示系统要做一次GC。
+<br><div class="quote_title">kingkan 写道</div><div class="quote_div">在程序里面一个对象用完的时候，马上使用System.gc()，通过内存使用数据查看，该对象的内存是还没释放的。但是对象使用完，马上设置为null，再System.gc()，该对象的内存就被释放了，不解。</div>
+<br>这个情况即便在HotSpot上也不一定，要看被测的方法有没有被JIT编译过。解释执行的时候基本上没啥优化，所以局部变量的存活范围跟源码里看起来是一致的。但因为HotSpot的JIT编译带有优化，一个局部变量在一个方法里被使用过的赋值才会有效，而未被使用过的赋值很可能被消除掉。这样，在方法最后把局部变量设为null就是徒劳的，赋值动作本身都会被消除。事实上不需要额外的赋值为null的动作，JIT编译器也会尽可能的缩小变量的有效范围，所以完全没必要在方法末尾将局部变量置null。
+<br>在.NET的CLR上，由于方法总是要被编译了才可以执行（AOT或者JIT），而且编译也带有优化，源码里变量的引用状况跟实际运行时的引用状况的差异可能更明显些，像<a href="http://rednaxelafx.iteye.com/blog/248610" target="_blank">这个例子</a>就比较极端。
+<br>
+<br>话说回来，Runtime.totalMemory()和Runtime.freeMemory()都是很RP的方法，其实并不适合细粒度观察…不知道您是用什么方式来“通过内存使用数据查看，该对象的内存是还没释放的”呢？
+<br>HotSpot默认会对方法调用次数的计数器做“衰减”，每进一次GC就会检查是否已到半衰周期，到了就会把所有方法的调用次数的计数器减半。如果写microbenchmark的话，在被测的方法里插入System.gc()很可能会带来干扰，使被测方法的调用次数始终达不到编译的条件，导致其不被JIT编译。要禁用计数器衰减的话，启动VM的时候要给参数<strong>-XX:-UseCounterDecay</strong>。要确认某个方法有没有被JIT编译请使用<strong>-XX:+PrintCompilation</strong>。
+<br>靠microbenchmark来观察某个对象有没有被GC回收多半是不准确的。可以具体情况具体分析。
+<br>
+<br>另外值得注意的是，System.gc()不一定是触发所谓的“full GC”或者叫“major GC”。
+<br>在Sun JDK6与OpenJDK 6的HotSpot里，"<a href="http://hg.openjdk.java.net/jdk6/jdk6/hotspot/file/tip/src/share/vm/gc_interface/gcCause.hpp" target="_blank">GCCause</a>是<strong>_java_lang_system_gc</strong>"的时候，如果VM启动参数<a href="http://hg.openjdk.java.net/jdk6/jdk6/hotspot/file/tip/src/share/vm/runtime/globals.hpp" target="_blank"><strong>DisableExplicitGC</strong></a>为false，则会触发一次full GC，如果该参数为true则完全不触发任何GC。要将这个参数设置为true，启动的时候写上<strong>-XX:+DisableExplicitGC</strong>就行。
+<br>HotSpot对System.gc()有特别处理，最主要的地方体现在一次System.gc()是否与普通GC一样会触发GC的统计/阈值数据的更新——HotSpot里的许多GC算法都带有自适应的功能，会根据先前收集的效率来决定接下来的GC中使用的参数，但System.gc()默认不更新这些统计数据，避免用户强行调用GC对这些自适应功能的干扰（可以参考HotSpot的<strong>UseAdaptiveSizePolicyWithSystemGC</strong>参数，默认是false）。除此之外，在HotSpot里，System.gc()所触发的full GC跟普通的full GC没啥大差别。
+<br>当使用Concurrent Mark-Sweep (CMS)时，可以通过<strong>-XX:+ExplicitGCInvokesConcurrent</strong> 或 <strong>-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses</strong> 参数来指定System.gc()触发并发GC而不是full GC。在CMS中，并发GC不对old gen做压缩，而full GC是stop-the-world的并且会做压缩。
+<br>
+<br>------------------
+<br>
+<br>在Oracle JRockit里，<a href="http://download.oracle.com/docs/cd/E13150_01/jrockit_jvm/jrockit/geninfo/devapps/codeprac.html#wp998554" target="_blank">System.gc()触发的是nursery GC</a>（如果选择了分代GC的话；如果选择的不是分代式GC算法则谈不上nursery还是old）。与HotSpot相同，可以通过一个参数禁用System.gc()：<strong>-XXnoSystemGC</strong>。也可以通过另一个参数来强制System.gc()做full GC：<strong>-XXfullSystemGC</strong>。
+<br>JRockit R28里，禁用System.gc()的推荐参数是<strong>-XX:AllowSystemGC=false</strong>，而设定System.gc()触发full GC的参数是<strong>-XX:FullSystemGC=true</strong>。
+<br>
+<br>------------------
+<br>
+<br>在IBM JDK的JVM里，System.gc()同样可以禁用——使用<strong>-Xdisableexplicitgc</strong>参数。另外也有一些可以调节System.gc()触发的GC内容的参数，如-Xcompactexplicitgc、-Xnocompactexplicitgc之类。
+<br>
+<br>============================================================
+<br>
+<br>2、对OpenJDK 6里的HotSpot VM，请看这个文件，grep出/Use.*GC,/就知道了：
+<br><div class="dp-highlighter" id=""><div class="bar"><div class="tools">Command prompt代码 <embed wmode="transparent" src="/javascripts/syntaxhighlighter/clipboard_new.swf" width="14" height="15" flashvars="clipboard=curl%20&#39;http%3A%2F%2Fhg.openjdk.java.net%2Fjdk6%2Fjdk6%2Fhotspot%2Fraw-file%2Ftip%2Fsrc%2Fshare%2Fvm%2Fruntime%2Fglobals.hpp&#39;%20%7C%20grep%20-A%202%20-E%20&#39;Use.*GC%2C&#39;" quality="high" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">&nbsp;<a href="javascript:void()" title="收藏这段代码" onclick="code_favorites_do_favorite(this);return false;"><img class="star" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_star.png" alt="收藏代码"><img class="spinner" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/spinner.gif" style="display:none"></a></div></div><ol start="1" class="dp-default"><li><span><span>curl&nbsp;</span><span class="string">'http://hg.openjdk.java.net/jdk6/jdk6/hotspot/raw-file/tip/src/share/vm/runtime/globals.hpp'</span><span>&nbsp;|&nbsp;grep&nbsp;-A&nbsp;</span><span class="number">2</span><span>&nbsp;-E&nbsp;</span><span class="string">'Use.*GC,'</span><span>&nbsp;&nbsp;</span></span></li></ol></div><pre name="code" class="command prompt" codeable_type="Post" codeable_id="1886654" source_url="http://www.iteye.com/topic/894148#1886654" pre_index="0" title="HotSpot VM 内存堆的两个Servivor区" style="display: none;">curl 'http://hg.openjdk.java.net/jdk6/jdk6/hotspot/raw-file/tip/src/share/vm/runtime/globals.hpp' | grep -A 2 -E 'Use.*GC,'</pre>
+<br><div class="dp-highlighter" id=""><div class="bar"><div class="tools">Grep output代码 <embed wmode="transparent" src="/javascripts/syntaxhighlighter/clipboard_new.swf" width="14" height="15" flashvars="clipboard=%20%20product(bool%2C%20UseSerialGC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20the%20serial%20garbage%20collector%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20product(bool%2C%20UseG1GC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20the%20Garbage-First%20garbage%20collector%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20product(bool%2C%20UseParallelGC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20the%20Parallel%20Scavenge%20garbage%20collector%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20product(bool%2C%20UseParallelOldGC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20the%20Parallel%20Old%20garbage%20collector%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A--%0A%20%20product(bool%2C%20UseMaximumCompactionOnSystemGC%2C%20true%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22In%20the%20Parallel%20Old%20garbage%20collector%20maximum%20compaction%20for%20%22%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22a%20system%20GC%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A--%0A%20%20product(bool%2C%20UseConcMarkSweepGC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20Concurrent%20Mark-Sweep%20GC%20in%20the%20old%20generation%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A--%0A%20%20develop(bool%2C%20UseAsyncConcMarkSweepGC%2C%20true%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20Asynchronous%20Concurrent%20Mark-Sweep%20GC%20in%20the%20old%20generation%22)%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A--%0A%20%20product(bool%2C%20UseParNewGC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20parallel%20threads%20in%20the%20new%20generation.%22)%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A--%0A%20%20product(bool%2C%20UseAdaptiveSizePolicyWithSystemGC%2C%20false%2C%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%22Use%20statistics%20from%20System.GC%20for%20adaptive%20size%20policy%22)%20%20%20%20%20%20%20%20%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%5C" quality="high" allowscriptaccess="always" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer">&nbsp;<a href="javascript:void()" title="收藏这段代码" onclick="code_favorites_do_favorite(this);return false;"><img class="star" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/icon_star.png" alt="收藏代码"><img class="spinner" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/spinner.gif" style="display:none"></a></div></div><ol start="1" class="dp-default"><li><span><span>&nbsp;&nbsp;product(bool,&nbsp;UseSerialGC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;the&nbsp;serial&nbsp;garbage&nbsp;collector"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseG1GC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;the&nbsp;Garbage-First&nbsp;garbage&nbsp;collector"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseParallelGC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;the&nbsp;Parallel&nbsp;Scavenge&nbsp;garbage&nbsp;collector"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseParallelOldGC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;the&nbsp;Parallel&nbsp;Old&nbsp;garbage&nbsp;collector"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>--&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseMaximumCompactionOnSystemGC,&nbsp;true,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"In&nbsp;the&nbsp;Parallel&nbsp;Old&nbsp;garbage&nbsp;collector&nbsp;maximum&nbsp;compaction&nbsp;for&nbsp;"</span><span>&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"a&nbsp;system&nbsp;GC"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>--&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseConcMarkSweepGC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;Concurrent&nbsp;Mark-Sweep&nbsp;GC&nbsp;in&nbsp;the&nbsp;old&nbsp;generation"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>--&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;develop(bool,&nbsp;UseAsyncConcMarkSweepGC,&nbsp;true,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;Asynchronous&nbsp;Concurrent&nbsp;Mark-Sweep&nbsp;GC&nbsp;in&nbsp;the&nbsp;old&nbsp;generation"</span><span>)\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>--&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseParNewGC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;parallel&nbsp;threads&nbsp;in&nbsp;the&nbsp;new&nbsp;generation."</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>--&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;product(bool,&nbsp;UseAdaptiveSizePolicyWithSystemGC,&nbsp;false,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="string">"Use&nbsp;statistics&nbsp;from&nbsp;System.GC&nbsp;for&nbsp;adaptive&nbsp;size&nbsp;policy"</span><span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></span></li><li><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\&nbsp;&nbsp;</span></li></ol></div><pre name="code" class="grep output" codeable_type="Post" codeable_id="1886654" source_url="http://www.iteye.com/topic/894148#1886654" pre_index="1" title="HotSpot VM 内存堆的两个Servivor区" style="display: none;">  product(bool, UseSerialGC, false,                                         \
+          "Use the serial garbage collector")                               \
+                                                                            \
+  product(bool, UseG1GC, false,                                             \
+          "Use the Garbage-First garbage collector")                        \
+                                                                            \
+  product(bool, UseParallelGC, false,                                       \
+          "Use the Parallel Scavenge garbage collector")                    \
+                                                                            \
+  product(bool, UseParallelOldGC, false,                                    \
+          "Use the Parallel Old garbage collector")                         \
+                                                                            \
+--
+  product(bool, UseMaximumCompactionOnSystemGC, true,                       \
+          "In the Parallel Old garbage collector maximum compaction for "   \
+          "a system GC")                                                    \
+--
+  product(bool, UseConcMarkSweepGC, false,                                  \
+          "Use Concurrent Mark-Sweep GC in the old generation")             \
+                                                                            \
+--
+  develop(bool, UseAsyncConcMarkSweepGC, true,                              \
+          "Use Asynchronous Concurrent Mark-Sweep GC in the old generation")\
+                                                                            \
+--
+  product(bool, UseParNewGC, false,                                         \
+          "Use parallel threads in the new generation.")                    \
+                                                                            \
+--
+  product(bool, UseAdaptiveSizePolicyWithSystemGC, false,                   \
+          "Use statistics from System.GC for adaptive size policy")         \
+                                                                            \</pre>
+<br>这样grep出来的启动参数中，UseMaximumCompactionOnSystemGC和UseAdaptiveSizePolicyWithSystemGC不是选择GC算法类型的参数，另外几个都是。它们分别是
+<br>·UseSerialGC
+<br>·UseG1GC
+<br>·UseParallelGC
+<br>·UseParallelOldGC
+<br>·UseAsyncConcMarkSweepGC（产品模式不可调）
+<br>·UseConcMarkSweepGC
+<br>·UseParNewGC
+<br>它们之间的关系请参考：<a href="http://blogs.sun.com/jonthecollector/entry/our_collectors" target="_blank">Jon Masamitsu: Our Collectors</a>
+<br><div class="quote_title">Jon Masamitsu 写道</div><div class="quote_div"><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/Collectors.jpg"></div>
+<br>
+<br>Sun（=&gt; Oracle）的产品版JDK 6里的HotSpot同上。
+<br>
+<br>------------------
+<br>
+<br>JRockit R28的话，GC算法的基本设定可以用下面几个参数：
+<br>-Xgc:singlecon
+<br>-Xgc:gencon
+<br>-Xgc:singlepar
+<br>-Xgc:genpar
+<br>不过更推荐并且也更简单的是设定优化的目标，例如这几个参数：
+<br>-XgcPrio:throughput
+<br>-XgcPrio:pausetime
+<br>-XgcPrio:deterministic
+<br>
+<br>有<a href="http://blogs.oracle.com/jrockitdetails/entry/on_garbage_collector_selection" target="_blank">老帖描述了当时的JRockit该如何选择GC实现</a>。
+<br>
+<br>------------------
+<br>
+<br>IBM J9有诸如下面几种设定GC算法的VM参数：
+<br>-Xgcpolicy:optthruput
+<br>-Xgcpolicy:optavgpause
+<br>-Xgcpolicy:gencon
+<br>-Xgcpolicy:subpool
+    </div>
+    
+
+            </td>
+  </tr>
+  <tr>
+    <td class="postauthor"><a href="http://www.iteye.com/topic/894148#">返回顶楼</a></td>
+    <td class="postcontent">
+      <div class="icons">
+        <a href="http://rednaxelafx.iteye.com/" class="icon_www" title="浏览作者的博客">&nbsp;</a>
+        <a href="http://rednaxelafx.iteye.com/blog/profile" class="icon_profile" title="浏览作者资料">&nbsp;</a>
+        <a href="http://my.iteye.com/messages/new?message%5Breceiver_name%5D=RednaxelaFX" class="icon_pm" title="发送站内短信">&nbsp;</a>
+        <a href="http://rednaxelafx.iteye.com/blog/guest_book" class="icon_guestbook" title="给作者留言">&nbsp;</a>
+        <a href="http://my.iteye.com/feed?subscription%5Bsubscribed_user_name%5D=RednaxelaFX" class="icon_rss" onclick="var f = document.createElement(&#39;form&#39;); f.style.display = &#39;none&#39;; this.parentNode.appendChild(f); f.method = &#39;POST&#39;; f.action = this.href;var s = document.createElement(&#39;input&#39;); s.setAttribute(&#39;type&#39;, &#39;hidden&#39;); s.setAttribute(&#39;name&#39;, &#39;authenticity_token&#39;); s.setAttribute(&#39;value&#39;, &#39;miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac=&#39;); f.appendChild(s);f.submit();return false;" title="关注作者">&nbsp;</a>
+                  <a href="http://www.iteye.com/topic/894148#1886654" title="RednaxelaFX回帖:HotSpot VM 内存堆的两个Servivor区">回帖地址</a>
+              </div>
+                        <div id="post_rate_box_1886654" class="post_rate_box"><a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="good" title="好">1</a> <a href="http://www.iteye.com/topic/894148#" onclick="return false;" class="hidden" title="差">0</a> 请登录后投票</div>              </td>
+</tr>
+<tr class="sep2"><td colspan="2"></td></tr>
+
+  </tbody>
+</table>
+
+
+<div class="actions">
+  <div class="buttons"></div>
+  <div class="wrapper"><div class="pagination"><span class="disabled prev_page">« 上一页</span> <span class="current">1</span> <a href="http://www.iteye.com/topic/894148?page=2" rel="next">2</a> <a href="http://www.iteye.com/topic/894148?page=3">3</a> <a href="http://www.iteye.com/topic/894148?page=2" class="next_page" rel="next">下一页 »</a></div></div>
+</div>
+
+<div>
+  <div class="crumbs">
+    <a href="http://www.iteye.com/forums">论坛首页</a> <span class="arrow">→</span>
+    <a href="http://www.iteye.com/forums/board/Java">Java企业应用版</a>
+    <br><br>跳转论坛:<select id="forum_urlname" name="forum[urlname]" onchange="window.location=&#39;/forums/board/&#39;+this.value"><option value="mobile">移动开发技术</option>
+<option value="web">Web前端技术</option>
+<option value="Java" selected="selected">Java企业应用</option>
+<option value="language">编程语言技术</option>
+<option value="Tech">综合技术</option>
+<option value="New">入门技术</option>
+<option value="Job">招聘求职</option>
+<option value="Life">海阔天空</option></select>
+    
+  </div>
+
+  
+</div>
+
+<div style="display:none">
+  <form action="http://www.iteye.com/posts/rate" id="post_rate_form" method="post" onsubmit="new Ajax.Request(&#39;/posts/rate&#39;, {asynchronous:true, evalScripts:true, parameters:Form.serialize(this)}); return false;"><div style="margin:0;padding:0;display:inline"><input name="authenticity_token" type="hidden" value="miGIF34lBbjhfXu16Jy4Sqot8Rwx8vdcDDNho8WH9ac="></div>
+    <input type="hidden" id="post_rate_id" name="id">
+    <input type="hidden" id="post_rate_type" name="type">
+  </form></div>
+
+<script type="text/javascript">
+  function processComment() {
+    fix_image_size($$('div.postbody img'), 760);
+    
+    $$('#forum_main > #posts > tr[id]').each(function(tr){
+      var post_id = tr.id;
+      $$("#"+post_id+" pre[name=code]").each(function(pre, index){
+        var location = window.location;
+        source_url = location.protocol + "//" + location.host + location.pathname + location.search;
+        source_url += "#" + post_id;
+        pre.writeAttribute('codeable_type', 'Post');
+        pre.writeAttribute('codeable_id', post_id);
+        pre.writeAttribute('source_url', source_url);
+        pre.writeAttribute('pre_index', index);
+        pre.writeAttribute('title', 'HotSpot VM 内存堆的两个Servivor区');
+      });
+    });
+  }
+
+  dp.SyntaxHighlighter.HighlightAll('code', true, true);
+  processComment();
+  code_favorites_init();
+
+  function rate_post(id, type) {
+    Element.update('post_rate_box_' + id, '提交中...');
+    new Ajax.Request('/posts/rate', {asynchronous:true, evalScripts:true, parameters:{"id":id, "type":type}});
+  }
+
+  function rate_topic(type) {
+    Element.update('topic_rate_box', '提交中...');
+    new Ajax.Request('/topics/rate', {asynchronous:true, evalScripts:true, parameters:{"id":894148, "type":type}});
+  }
+</script>
+
+
+
+        </div>
+        <div id="nav">
+  <div class="wrapper">
+    <ul>
+            <li><a href="http://www.iteye.com/">首页</a></li>
+      <li><a href="http://www.iteye.com/news">资讯</a></li>
+      <li><a href="http://www.iteye.com/magazines">精华</a></li>
+      <li><a href="http://www.iteye.com/forums" class="selected">论坛</a></li>
+      <li><a href="http://www.iteye.com/ask">问答</a></li>
+      <li><a href="http://www.iteye.com/blogs">博客</a></li>
+      <li><a href="http://www.iteye.com/blogs/subjects">专栏</a></li>
+      <li><a href="http://www.iteye.com/groups">群组</a></li>
+      <!-- <li><a target="_blank" href="http://job.iteye.com/iteye">招聘</a></li>-->
+      <li><a target="_blank" href="http://lib.csdn.net/">知识库</a></li>
+      <li class="last"><a href="http://www.iteye.com/search">搜索</a></li>
+    </ul>
+  </div>
+</div>
+      </div>
+      <div id="footer">
+  <div id="site_nav">
+    <ul>
+      <li><a href="http://www.iteye.com/index/service">广告服务</a></li>
+      <li><a href="http://webmaster.iteye.com/">ITeye黑板报</a></li>
+      <li><a href="http://www.iteye.com/index/contactus">联系我们</a></li>
+      <li class="last"><a href="http://www.iteye.com/index/friend_links">友情链接</a></li>
+    </ul>
+  </div>
+  <div id="copyright">
+    © 2003-2017 ITeye.com.    [ <a href="http://www.miibeian.gov.cn/">京ICP证070598号</a>  京公网安备11010502027441 ]<br>
+    北京创新乐知信息技术有限公司 版权所有<br>
+  </div>
+</div>
+    </div>
+    <script type="text/javascript">
+  document.write("<img src='http://stat.iteye.com/?url="+ encodeURIComponent(document.location.href) + "&referrer=" + encodeURIComponent(document.referrer) + "&user_id=' width='0' height='0' />");
+</script><img src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/saved_resource" width="0" height="0">
+
+<script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/tracking.js.下载" type="text/javascript"></script>
+
+    <script language="javascript" type="text/javascript" src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/async_new.js.下载"></script>
+<script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/jquery-1.11.1.min.js.下载" type="text/javascript"></script>
+<script type="text/javascript">var $csdn_iteye_jq = jQuery.noConflict();// 解决jq与prototype.js命名空间冲突的问题</script>
+<script src="./HotSpot VM 内存堆的两个Servivor区 - Java综合 - Java - ITeye论坛_files/tracking.js(1).下载" type="text/javascript"></script>
+  
+
+</body></html>

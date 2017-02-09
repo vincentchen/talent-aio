@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
+<title>404 Not Found</title>
+<link rel="stylesheet" type="text/css" href="/main/resource/resources/theme.css"/>
+<link rel="stylesheet" type="text/css" href="/main/resource/resources/a2v8.css"/>
+
+<!-- a reliable way to detect ie in javascript -->
+<script type="text/javascript">lteie6=lteie7=false;</script>
+<!--[if lte IE 6]><script type="text/javascript">lteie6=true;</script><![endif]-->
+<!--[if lte IE 7]><script type="text/javascript">lteie7=true;</script><![endif]-->
+
+<script type="text/javascript" src="/main/resource/resources/reg.js"></script>
+
+</head>
+
+<body>
+<div id="pagewrap">
+
+<div id="banner">
+<!-- BEGIN A2 COMPONENT V.8 -->
+<div id="a2v8" class="a2v8blogs">
+<div class="a2v8w1"><div class="a2v8w2"><div class="a2v8w3">
+
+<ul class="a2v8links">
+<li class="a2v8sunlogo"><a href="http://www.oracle.com" title="www.oracle.com"><span>Oracle.com</span></a></li>
+<li class="a2v8site"><a href="http://blogs.oracle.com" title="blogs.oracle.com"><span>Blogs</span></a></li>
+</ul>
+<div class="a2v8x1"></div>
+</div></div></div>
+</div>
+<!-- END A2 COMPONENT V.8 -->
+
+<div id="loginregister">
+<p>&nbsp;</p>
+</div>
+</div><!-- end #banner -->
+
+<div id="content">
+
+<h1>404 Not Found!</h1>
+<p class="disclaimer">
+Sorry, that page does not exist. Please try another location or you can search...
+</p>
+
+<p>&nbsp;</p>
+
+<div class="search block noblockhead">
+<div class="blockwrap">
+<div class="blockwrap2">
+<div class="blockbody">
+<div class="blockbodywrap">
+<div id="search">
+<script type="text/javascript">
+    function prepareSearchForm() {
+        document.getElementById("searchForm").searchQuery.name = "oq";
+        document.getElementById("searchFilter").innerHTML = "<input type='hidden' id='searchFilteredQuery' name='q' value=''>";
+    }
+    function submitSearchForm() {
+        var form = document.getElementById("searchForm");
+        var query = form.searchQuery.value;
+        if (query == null || query == "") {
+            return false;
+        }
+        form.searchFilteredQuery.value = form.searchQuery.value + " site:blogs.oracle.com";
+        return true;
+    }
+</script>
+<form id="searchForm" action="http://search.oracle.com/search/search"
+      onsubmit="return submitSearchForm();" method="get">
+    <p>
+        <strong>Search Blogs</strong>
+        <input type="hidden" id="searchOp" name="search_p_main_operator" value="all" />
+        <input type="hidden" id="searchGroup" name="group" value="Blogs">
+        <input type="text" id="searchQuery" name="q" size="40" />
+        <input id="searchSubmit" alt="search" title="search" src="/main/resource/resources/searchbutton.png" type="image" />
+    </p>
+    <div id="searchFilter">
+    <noscript>Search filtering requires JavaScript</noscript>
+    </div>
+</form>
+<script type="text/javascript">prepareSearchForm();</script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+</div><!-- end #content -->
+
+<div id="footer">
+  <table>
+  <tr>  
+  <td width="200"><img src="/main/resource/resources/HardwareSoftware.gif" width="182" height="34" alt="Oracle Corporate Tagline" /></td>
+  <td width="20">&nbsp;</td>
+  <td>The views expressed on this blog are those of the author and do not necessarily reflect the views of Oracle. <a href="http://www.oracle.com/html/terms.html">Terms of Use</a> | <a href="http://www.oracle.com/us/legal/privacy/index.html">Your Privacy Rights</a></td>
+  </tr>
+  </table>
+</div><!-- end #footer -->
+
+</div><!-- end #pagewrap -->
+
+<script type="text/javascript" src="/main/resource/resources/setup.js"></script>
+<script type="text/javascript" src="/main/resource/resources/a2v8.js"></script>
+    
+</body>
+</html>
