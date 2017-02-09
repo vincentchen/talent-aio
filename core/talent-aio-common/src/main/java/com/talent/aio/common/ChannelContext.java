@@ -48,8 +48,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 //	private SendRunnable<Ext, P, R> sendRunnableHighPrior = null;
 	private SendRunnable<Ext, P, R> sendRunnableNormPrior = null;
 	private ReentrantReadWriteLock closeLock = new ReentrantReadWriteLock();
-	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = new ReadCompletionHandler<>(this);
-	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = new WriteCompletionHandler<>(this);
+	private ReadCompletionHandler<Ext, P, R> readCompletionHandler = null;//new ReadCompletionHandler<>(this);
+	private WriteCompletionHandler<Ext, P, R> writeCompletionHandler = null;//new WriteCompletionHandler<>(this);
 	
 	private int reconnCount = 0;//连续重连次数，连接成功后，此值会被重置0
 
@@ -98,6 +98,8 @@ public abstract class ChannelContext<Ext, P extends Packet, R>
 		super();
 		this.setGroupContext(groupContext);
 		this.setAsynchronousSocketChannel(asynchronousSocketChannel);
+		this.readCompletionHandler = new ReadCompletionHandler<>(this);
+		this.writeCompletionHandler = new WriteCompletionHandler<>(this);
 	}
 
 	/**

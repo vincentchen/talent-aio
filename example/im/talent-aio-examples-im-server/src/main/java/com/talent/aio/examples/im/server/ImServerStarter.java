@@ -77,27 +77,6 @@ public class ImServerStarter
 		serverGroupContext.setEncodeCareWithChannelContext(false);
 		aioServer = new AioServer<>(serverGroupContext);
 		aioServer.start(ip, port);
-
-		
-		//下面的代码就是定时打印日志，实际生产环境中可以不用。
-//		new Thread(new Runnable()
-//		{
-//			@Override
-//			public void run()
-//			{
-//				while (true)
-//				{
-//					try
-//					{
-//						log.info("[{}]: command stat:{}", SystemTimer.currentTimeMillis(), Json.toJson(CommandStat.commandAndCount));
-//						Thread.sleep(5000);
-//					} catch (Throwable e)
-//					{
-//						log.error("", e);
-//					}
-//				}
-//			}
-//		}, "t-aio-server-monitor").start();
 	}
 
 }

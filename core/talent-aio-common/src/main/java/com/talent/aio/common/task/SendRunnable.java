@@ -16,7 +16,6 @@ import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
-import com.talent.aio.common.utils.ByteBufferUtils;
 import com.talent.aio.common.utils.SystemTimer;
 
 /**
@@ -197,7 +196,7 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 		ByteBuffer byteBuffer = packet.getPreEncodedByteBuffer();
 		if (byteBuffer != null)
 		{
-			byteBuffer = ByteBufferUtils.copy(byteBuffer, 0, byteBuffer.limit());
+			byteBuffer = byteBuffer.duplicate();
 		} else
 		{
 			byteBuffer = aioHandler.encode(packet, groupContext, channelContext);

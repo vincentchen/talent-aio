@@ -77,13 +77,10 @@ public class ByteBufferUtils
 	public static ByteBuffer copy(ByteBuffer src, int startindex, int endindex)
 	{
 		int size = endindex - startindex;
-		ByteBuffer ret = ByteBuffer.allocate(size);
-		src.position(startindex);
-		for (int i = startindex; i < endindex; i++)
-		{
-			ret.put(src.get(i));
-		}
-		return ret;
+		byte[] dest = new byte[size];
+		System.arraycopy(src.array(), startindex, dest, 0, dest.length);
+		ByteBuffer newByteBuffer = ByteBuffer.wrap(dest);
+		return newByteBuffer;
 	}
 
 	/**

@@ -90,8 +90,10 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 			}
 
 			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-			ByteBuffer newByteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
-			asynchronousSocketChannel.read(newByteBuffer, newByteBuffer, readCompletionHandler);
+			ByteBuffer readByteBuffer = readCompletionHandler.getReadByteBuffer();//ByteBuffer.allocateDirect(channelContext.getGroupContext().getReadBufferSize());
+			readByteBuffer.position(0);
+			readByteBuffer.limit(readByteBuffer.capacity());
+			asynchronousSocketChannel.read(readByteBuffer, readByteBuffer, readCompletionHandler);
 		} catch (Exception e)
 		{
 			log.error("", e);

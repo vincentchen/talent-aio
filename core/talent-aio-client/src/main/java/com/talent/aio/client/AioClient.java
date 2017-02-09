@@ -238,8 +238,10 @@ public class AioClient<Ext, P extends Packet, R>
 				channelContext.setClosed(false);
 				
 				ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-				ByteBuffer byteBuffer = ByteBuffer.allocate(channelContext.getGroupContext().getReadBufferSize());
-				asynchronousSocketChannel.read(byteBuffer, byteBuffer, readCompletionHandler);
+				ByteBuffer readByteBuffer = readCompletionHandler.getReadByteBuffer();//ByteBuffer.allocateDirect(channelContext.getGroupContext().getReadBufferSize());
+				readByteBuffer.position(0);
+				readByteBuffer.limit(readByteBuffer.capacity());
+				asynchronousSocketChannel.read(readByteBuffer, readByteBuffer, readCompletionHandler);
 				
 				log.info("connected to {}", serverNode);
 				try
