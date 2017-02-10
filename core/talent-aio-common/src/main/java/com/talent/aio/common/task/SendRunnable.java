@@ -16,6 +16,7 @@ import com.talent.aio.common.intf.AioHandler;
 import com.talent.aio.common.intf.Packet;
 import com.talent.aio.common.threadpool.AbstractQueueRunnable;
 import com.talent.aio.common.utils.AioUtils;
+import com.talent.aio.common.utils.ByteBufferUtils;
 import com.talent.aio.common.utils.SystemTimer;
 
 /**
@@ -150,15 +151,15 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			{
 				if ((packet = msgQueue.poll()) != null)
 				{
-//					ByteBuffer byteBuffer = packet.getPreEncodedByteBuffer();//aioHandler.encode(packet, groupContext, channelContext);
-//					if (byteBuffer != null)
-//					{
-//						byteBuffer = ByteBufferUtils.copy(byteBuffer, 0, byteBuffer.limit());
-//					} else
-//					{
-//						byteBuffer = aioHandler.encode(packet, groupContext, channelContext);
-//					}
-					
+					//					ByteBuffer byteBuffer = packet.getPreEncodedByteBuffer();//aioHandler.encode(packet, groupContext, channelContext);
+					//					if (byteBuffer != null)
+					//					{
+					//						byteBuffer = ByteBufferUtils.copy(byteBuffer, 0, byteBuffer.limit());
+					//					} else
+					//					{
+					//						byteBuffer = aioHandler.encode(packet, groupContext, channelContext);
+					//					}
+
 					ByteBuffer byteBuffer = getByteBuffer(packet, groupContext, aioHandler);
 
 					packets.add(packet);
@@ -172,12 +173,15 @@ public class SendRunnable<Ext, P extends Packet, R> extends AbstractQueueRunnabl
 			}
 
 			ByteBuffer allByteBuffer = ByteBuffer.allocate(allBytebufferCapacity);
+			byte[] dest = allByteBuffer.array();
 			for (ByteBuffer byteBuffer : byteBuffers)
 			{
 				if (byteBuffer != null)
 				{
-					byteBuffer.flip();
-					allByteBuffer.put(byteBuffer);
+					int length = byteBuffer.limit();
+					int position = allByteBuffer.position();
+					System.arraycopy(byteBuffer.array(), 0, dest, position, length);
+					allByteBuffer.position(position + length);
 				}
 			}
 			sendByteBuffer(allByteBuffer, packetCount, packets);

@@ -82,6 +82,12 @@ public class ByteBufferUtils
 		ByteBuffer newByteBuffer = ByteBuffer.wrap(dest);
 		return newByteBuffer;
 	}
+	
+	
+	public static void copy(ByteBuffer src, int srcStartindex, ByteBuffer dest, int destStartIndex, int length)
+	{
+		System.arraycopy(src.array(), srcStartindex, dest.array(), destStartIndex, length);
+	}
 
 	/**
 	 * @param args
