@@ -190,7 +190,7 @@ public class ImClientAioListener implements ClientAioListener<Object, ImPacket, 
 			
 			//汇总：耗时31毫秒、接收消息100条共10KB，发送消息100条共30KB
 			//每秒：接收消息100条共10KB，发送消息100条共30KB
-			log.error("汇总：耗时{}毫秒，接收消息{}条共{}B，发送消息{}条共{}B \r\n"
+			log.error("\r\n汇总：耗时{}毫秒，接收消息{}条共{}B，发送消息{}条共{}B \r\n"
 					+ "每秒：接收消息{}条共{}B，发送消息{}条共{}B\r\n"
 					+ "接收消息每条平均{}B，发送消息每条平均{}B\r\n",
 					numberFormat.format(in), numberFormat.format(receivedPacket), numberFormat.format(receivedBytes), numberFormat.format(sentPacket), numberFormat.format(sentBytes),
