@@ -62,7 +62,7 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	protected ServerGroupStat serverGroupStat = new ServerGroupStat();
 
 	/** The accept executor. */
-	private ThreadPoolExecutor acceptExecutor = null;
+	//private ThreadPoolExecutor acceptExecutor = null;
 
 	private Thread checkHeartbeatThread = null;
 
@@ -99,7 +99,7 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 		this.setServerAioHandler(serverAioHandler);
 		this.setServerAioListener(serverAioListener);
 
-		this.acceptExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), DefaultThreadFactory.getInstance("t-aio-server-accept"));
+		//this.acceptExecutor = new ThreadPoolExecutor(1, 1, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), DefaultThreadFactory.getInstance("t-aio-server-accept"));
 
 		checkHeartbeatThread = new Thread(new Runnable()
 		{
@@ -219,20 +219,20 @@ public class ServerGroupContext<Ext, P extends Packet, R> extends GroupContext<E
 	 *
 	 * @return the acceptExecutor
 	 */
-	public ThreadPoolExecutor getAcceptExecutor()
-	{
-		return acceptExecutor;
-	}
-
-	/**
-	 * Sets the accept executor.
-	 *
-	 * @param acceptExecutor the acceptExecutor to set
-	 */
-	public void setAcceptExecutor(ThreadPoolExecutor acceptExecutor)
-	{
-		this.acceptExecutor = acceptExecutor;
-	}
+//	public ThreadPoolExecutor getAcceptExecutor()
+//	{
+//		return acceptExecutor;
+//	}
+//
+//	/**
+//	 * Sets the accept executor.
+//	 *
+//	 * @param acceptExecutor the acceptExecutor to set
+//	 */
+//	public void setAcceptExecutor(ThreadPoolExecutor acceptExecutor)
+//	{
+//		this.acceptExecutor = acceptExecutor;
+//	}
 
 	//	/**
 	//	 * @return the serverGroupStat

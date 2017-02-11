@@ -66,9 +66,15 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 	{
 		try
 		{
-			AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
-			serverSocketChannel.accept(aioServer, this);
-			
+			if (aioServer.isWaitingStop())
+			{
+				log.info("即将关闭服务器");
+			} else
+			{
+				AsynchronousServerSocketChannel serverSocketChannel = aioServer.getServerSocketChannel();
+				serverSocketChannel.accept(aioServer, this);
+			}
+
 			ServerGroupContext<Ext, P, R> serverGroupContext = aioServer.getServerGroupContext();
 			ServerGroupStat serverGroupStat = serverGroupContext.getServerGroupStat();
 			serverGroupStat.getAccepted().incrementAndGet();
@@ -89,17 +95,20 @@ public class AcceptCompletionHandler<Ext, P extends Packet, R> implements Comple
 				log.error(e.toString(), e);
 			}
 
-			ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
-			ByteBuffer readByteBuffer = readCompletionHandler.getReadByteBuffer();//ByteBuffer.allocateDirect(channelContext.getGroupContext().getReadBufferSize());
-			readByteBuffer.position(0);
-			readByteBuffer.limit(readByteBuffer.capacity());
-			asynchronousSocketChannel.read(readByteBuffer, readByteBuffer, readCompletionHandler);
+			if (!aioServer.isWaitingStop())
+			{
+				ReadCompletionHandler<Ext, P, R> readCompletionHandler = channelContext.getReadCompletionHandler();
+				ByteBuffer readByteBuffer = readCompletionHandler.getReadByteBuffer();//ByteBuffer.allocateDirect(channelContext.getGroupContext().getReadBufferSize());
+				readByteBuffer.position(0);
+				readByteBuffer.limit(readByteBuffer.capacity());
+				asynchronousSocketChannel.read(readByteBuffer, readByteBuffer, readCompletionHandler);
+			}
 		} catch (Exception e)
 		{
 			log.error("", e);
 		} finally
 		{
-			
+
 		}
 	}
 

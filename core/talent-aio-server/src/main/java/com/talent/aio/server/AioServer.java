@@ -17,6 +17,7 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.Node;
 import com.talent.aio.common.intf.Packet;
+import com.talent.aio.common.threadpool.SynThreadPoolExecutor;
+import com.talent.aio.common.threadpool.intf.SynRunnableIntf;
 
 /**
  * 
@@ -37,7 +40,6 @@ import com.talent.aio.common.intf.Packet;
  */
 public class AioServer<Ext, P extends Packet, R>
 {
-	@SuppressWarnings("unused")
 	private static Logger log = LoggerFactory.getLogger(AioServer.class);
 
 	/**
@@ -54,8 +56,10 @@ public class AioServer<Ext, P extends Packet, R>
 	private ServerGroupContext<Ext, P, R> serverGroupContext;
 
 	private AsynchronousServerSocketChannel serverSocketChannel;
-		
+
 	private Node serverNode;
+
+	private boolean isWaitingStop = false;
 
 	/**
 	 * 
@@ -126,6 +130,41 @@ public class AioServer<Ext, P extends Packet, R>
 	}
 
 	/**
+	 * 
+	 * @return
+	 *
+	 * @author: tanyaowu
+	 * @创建时间:　2017年2月11日 上午8:04:04
+	 *
+	 */
+	public boolean stop()
+	{
+		isWaitingStop = true;
+		boolean ret = true;
+		ExecutorService groupExecutor = serverGroupContext.getGroupExecutor();
+		SynThreadPoolExecutor<SynRunnableIntf> executor = serverGroupContext.getDecodeExecutor();
+		groupExecutor.shutdown();
+		executor.shutdown();
+		try
+		{
+			ret = ret && groupExecutor.awaitTermination(6000, TimeUnit.SECONDS);
+		} catch (InterruptedException e)
+		{
+			log.error(e.getLocalizedMessage(), e);
+		}
+		
+		try
+		{
+			ret = ret && executor.awaitTermination(6000, TimeUnit.SECONDS);
+		} catch (InterruptedException e)
+		{
+			log.error(e.getLocalizedMessage(), e);
+		}
+		
+		return ret;
+	}
+
+	/**
 	 * @return the serverNode
 	 */
 	public Node getServerNode()
@@ -133,11 +172,27 @@ public class AioServer<Ext, P extends Packet, R>
 		return serverNode;
 	}
 
-//	/**
-//	 * @param serverNode the serverNode to set
-//	 */
-//	public void setServerNode(Node serverNode)
-//	{
-//		this.serverNode = serverNode;
-//	}
+	/**
+	 * @return the isWaitingStop
+	 */
+	public boolean isWaitingStop()
+	{
+		return isWaitingStop;
+	}
+
+	/**
+	 * @param isWaitingStop the isWaitingStop to set
+	 */
+	public void setWaitingStop(boolean isWaitingStop)
+	{
+		this.isWaitingStop = isWaitingStop;
+	}
+
+	//	/**
+	//	 * @param serverNode the serverNode to set
+	//	 */
+	//	public void setServerNode(Node serverNode)
+	//	{
+	//		this.serverNode = serverNode;
+	//	}
 }
