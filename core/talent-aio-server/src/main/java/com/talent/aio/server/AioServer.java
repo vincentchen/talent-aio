@@ -125,8 +125,7 @@ public class AioServer<Ext, P extends Packet, R>
 		AcceptCompletionHandler<Ext, P, R> acceptCompletionHandler = serverGroupContext.getAcceptCompletionHandler();
 		serverSocketChannel.accept(this, acceptCompletionHandler);
 
-		String ipstr = StringUtils.isNotBlank(serverIp) ? serverIp : "0.0.0.0";
-		System.out.println("start listening on " + ipstr + ":" + serverPort);
+		System.out.println("start server on " + this.serverNode);
 	}
 
 	/**
@@ -161,6 +160,7 @@ public class AioServer<Ext, P extends Packet, R>
 			log.error(e.getLocalizedMessage(), e);
 		}
 		
+		System.out.println(this.serverNode + " stopped");
 		return ret;
 	}
 
