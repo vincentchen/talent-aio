@@ -3,14 +3,10 @@
  */
 package com.talent.aio.examples.im.client.handler;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.talent.aio.common.ChannelContext;
-import com.talent.aio.common.utils.SystemTimer;
-import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.ImPacket;
 
 /**

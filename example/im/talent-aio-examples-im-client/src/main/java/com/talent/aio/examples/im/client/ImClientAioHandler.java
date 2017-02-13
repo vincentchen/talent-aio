@@ -217,6 +217,7 @@ public class ImClientAioHandler implements ClientAioHandler<Object, ImPacket, Ob
 		int headerLength = ImPacket.LEAST_HEADER_LENGHT;
 		ImPacket imPacket = null;
 		byte firstbyte = buffer.get();
+		@SuppressWarnings("unused")
 		byte version = ImPacket.decodeVersion(firstbyte);
 		boolean isCompress = ImPacket.decodeCompress(firstbyte);
 		boolean hasSynSeq = ImPacket.decodeHasSynSeq(firstbyte);

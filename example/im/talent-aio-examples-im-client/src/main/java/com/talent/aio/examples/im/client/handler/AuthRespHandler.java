@@ -12,7 +12,6 @@ import com.talent.aio.common.utils.SystemTimer;
 import com.talent.aio.examples.im.client.ui.JFrameMain;
 import com.talent.aio.examples.im.common.Command;
 import com.talent.aio.examples.im.common.ImPacket;
-import com.talent.aio.examples.im.common.json.Json;
 import com.talent.aio.examples.im.common.packets.JoinReqBody;
 
 /**
