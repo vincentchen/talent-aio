@@ -4,7 +4,7 @@
 
 <ol>
 	<li><h4>简 介</h4>
-		 <strong>talent-aio</strong>是基于java aio实现的即时通讯框架，源于作者另一个久经考验的talent-nio框架，但在易用性、性能及代码可读性方面又远远超越了talent-nio（最好的东西才拿来分享，所以talent-nio并不会开源）。官网地址：<a href="http://www.talent-aio.com/talent-aio" target="_blank">http://www.talent-aio.com/talent-aio</a>，上面有大家期待已久的<a href="http://www.talent-aio.com/talent-aio/quickstart.html" target="_blank">入门文档</a>。同类框架有netty和mina。
+		 <strong>talent-aio</strong>是基于java aio实现的即时通讯框架，源于作者另一个久经考验的talent-nio框架，但在易用性、性能及代码可读性方面又远远超越了talent-nio（最好的东西才拿来分享，所以talent-nio并不会开源）。官网地址：<a href="http://www.talent-tan.com:9292" target="_blank">http://www.talent-tan.com:9292</a>，上面有大家期待已久的<a href="http://www.talent-tan.com:9292/quickstart.html" target="_blank">入门文档</a>。同类框架有netty和mina。
 	</li>
 	
 	<li><h4>愿 景</h4>
@@ -18,7 +18,7 @@
 	<li><h4>特 点</h4>
 		<ul class="masthead-links" style="">
 		  <li>
-			<strong>极简洁清晰易懂的API</strong>: 无需各种折腾，只需<strong>花上30分钟</strong><a href="http://www.talent-aio.com/talent-aio/quickstart.html" target="_blank">学习helloworld</a>就能很好地掌握并实现一个性能极好的即时通讯应用
+			<strong>极简洁清晰易懂的API</strong>: 无需各种折腾，只需<strong>花上30分钟</strong><a href="http://www.talent-tan.com:9292/quickstart.html" target="_blank">学习helloworld</a>就能很好地掌握并实现一个性能极好的即时通讯应用
 		  </li>
 		  <li>
 			<strong>极震撼的性能</strong>
