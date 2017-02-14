@@ -4,7 +4,7 @@
 	<groupId>com.talent-aio</groupId>
 	<artifactId>talent-aio-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.0.1.20170119-SNAPSHOT</version>
+	<version>1.0.1.v20170214-RELEASE</version>
 	<name>talent-aio-parent</name>
 	<url>http://maven.apache.org</url>
 
